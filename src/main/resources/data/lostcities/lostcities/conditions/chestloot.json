@@ -1,0 +1,24 @@
+{
+  "values": [
+    {
+      "factor": 30,
+      "value": "biohazard:chests/food"
+    },
+    {
+      "factor": 30,
+      "value": "biohazard:chests/builder"
+    },
+    {
+      "factor": 30,
+      "value": "biohazard:chests/miner"
+    },
+    {
+      "factor": 30,
+      "value": "biohazard:chests/farmer"
+    },
+    {
+      "factor": 30,
+      "value": "minecraft:chests/simple_dungeon"
+    }
+  ]
+}
