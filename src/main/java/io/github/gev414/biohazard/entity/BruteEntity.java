@@ -8,6 +8,12 @@ import net.minecraft.world.level.Level;
 
 public class BruteEntity extends Zombie {
 
+    public static final float SCALE = 1.5F;
+
+    public static final float WIDTH = 0.6F * SCALE;
+    public static final float HEIGHT = 1.95F * SCALE;
+    public static final float EYE_HEIGHT = 1.74F * SCALE;
+
     public BruteEntity(EntityType<? extends BruteEntity> entityType, Level level) {
         super(entityType, level);
     }

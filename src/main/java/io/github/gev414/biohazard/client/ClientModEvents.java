@@ -2,7 +2,7 @@ package io.github.gev414.biohazard.client;
 
 import io.github.gev414.biohazard.Biohazard;
 import io.github.gev414.biohazard.entity.ModEntities;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
+import io.github.gev414.biohazard.client.renderer.BruteRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,7 +20,7 @@ public final class ClientModEvents {
     ) {
         event.registerEntityRenderer(
                 ModEntities.BRUTE.get(),
-                ZombieRenderer::new
+                BruteRenderer::new
         );
     }
 
