@@ -1,3 +1,5 @@
 {
-  "entity.biohazard.brute": "Brute"
+  "entity.biohazard.brute": "Brute",
+  "death.attack.biohazard.brute_rock_splash": "%1$s was crushed by a rock blast",
+  "death.attack.biohazard.brute_rock_splash.player": "%1$s was crushed by a rock blast while fighting %2$s"
 }
