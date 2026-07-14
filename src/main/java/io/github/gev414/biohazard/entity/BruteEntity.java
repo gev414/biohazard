@@ -10,12 +10,11 @@ import io.github.gev414.biohazard.entity.ai.RockThrowAttackGoal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.RangedAttackMob;
-import net.minecraft.world.entity.projectile.Snowball;
+import io.github.gev414.biohazard.entity.projectile.BruteRockProjectile;
 
 public class BruteEntity extends Zombie implements RangedAttackMob {
 
-    private static final int ROCK_ATTACK_GOAL_PRIORITY = 1;
+    private static final int ROCK_ATTACK_GOAL_PRIORITY = 0;
 
     private static final double ROCK_MINIMUM_RANGE = 6.0D;
     private static final double ROCK_MAXIMUM_RANGE = 18.0D;
@@ -69,7 +68,8 @@ public class BruteEntity extends Zombie implements RangedAttackMob {
             return;
         }
 
-        Snowball projectile = new Snowball(serverLevel, this);
+        BruteRockProjectile projectile =
+                new BruteRockProjectile(serverLevel, this);
 
         double directionX = target.getX() - this.getX();
         double directionY =

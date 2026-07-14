@@ -64,6 +64,12 @@ public final class RockThrowAttackGoal<T extends Mob & RangedAttackMob>
 
     @Override
     public boolean canUse() {
+        long currentGameTime = this.mob.level().getGameTime();
+
+        if (currentGameTime < this.nextAttackGameTime) {
+            return false;
+        }
+
         LivingEntity currentTarget = this.mob.getTarget();
 
         if (!this.isValidTarget(currentTarget)) {
@@ -76,7 +82,8 @@ public final class RockThrowAttackGoal<T extends Mob & RangedAttackMob>
 
     @Override
     public boolean canContinueToUse() {
-        return this.target == this.mob.getTarget()
+        return this.remainingWindupTicks > 0
+                && this.target == this.mob.getTarget()
                 && this.isValidTarget(this.target);
     }
 
@@ -89,7 +96,6 @@ public final class RockThrowAttackGoal<T extends Mob & RangedAttackMob>
     @Override
     public void stop() {
         this.target = null;
-        this.remainingWindupTicks = this.windupTicks;
         this.mob.getNavigation().stop();
     }
 
@@ -108,10 +114,6 @@ public final class RockThrowAttackGoal<T extends Mob & RangedAttackMob>
         );
 
         long currentGameTime = this.mob.level().getGameTime();
-
-        if (currentGameTime < this.nextAttackGameTime) {
-            return;
-        }
 
         this.remainingWindupTicks--;
 
@@ -134,8 +136,6 @@ public final class RockThrowAttackGoal<T extends Mob & RangedAttackMob>
 
         this.nextAttackGameTime =
                 currentGameTime + this.cooldownTicks;
-
-        this.remainingWindupTicks = this.windupTicks;
     }
 
     @Override
