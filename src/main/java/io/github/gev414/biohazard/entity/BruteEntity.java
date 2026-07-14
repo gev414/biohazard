@@ -86,7 +86,7 @@ public class BruteEntity extends Zombie implements RangedAttackMob {
                 directionY + horizontalDistance * 0.2D,
                 directionZ,
                 1.4F,
-                4.0F + distanceFactor * 4.0F
+                2.0F + distanceFactor * 2.0F
         );
 
         this.playSound(
