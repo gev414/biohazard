@@ -1,0 +1,364 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "pointblank:guninternals",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 15.0,
+                "min": 3.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "pointblank:gunmetal_nugget",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 7.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "pointblank:gunmetal_ingot",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "pointblank:gunmetal_mesh",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:iron_ingot",
+          "weight": 18
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 3.0,
+        "min": 1.0
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:aa12", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ak12", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ak47", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ak74", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:an94", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ar57", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:at4", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:aug", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:aughbar", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ballista", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:c14", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:deserteagle", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:g3", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:g36c", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:g36k", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:g41", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:glock17", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:glock18", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:gm6lynx", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:hk416", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ksg12", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:l96a1", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:m4a1", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:mp5", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:mp7", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:p90", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:scarl", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:spas12", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:vector", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:wa2000", "weight": 2 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:xm7", "weight": 2 }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 1.0,
+        "min": 0.0
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:acog", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:aimpoint", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:aimpoint_t2", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ak_romgrip", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ak_suppressor", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ar_muzzlebrake", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ar_suppressor", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:ar_suppressor_tan", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:cantedrail", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:foregrip", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:foregrip_tan", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:glockstock", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:holographic", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:precision_scope", "weight": 5 },
+        { "type": "minecraft:item", "functions": [{ "add": false, "count": { "type": "minecraft:uniform", "max": 1.0, "min": 1.0 }, "function": "minecraft:set_count" }], "name": "pointblank:xm7_suppressor", "weight": 5 }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 3.0,
+        "min": 1.0
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gold_ingot",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bread",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:wheat",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bucket",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:redstone",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:coal",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:melon_seeds",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:pumpkin_seeds",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:beetroot_seeds",
+          "weight": 10
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 4.0,
+        "min": 1.0
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:bone",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gunpowder",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:rotten_flesh",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:string",
+          "weight": 7
+        }
+      ],
+      "rolls": 3.0
+    }
+  ],
+  "random_sequence": "minecraft:chests/simple_dungeon"
+}
