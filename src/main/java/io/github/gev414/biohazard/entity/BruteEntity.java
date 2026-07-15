@@ -90,7 +90,7 @@ public class BruteEntity extends Zombie implements RangedAttackMob {
         );
 
         this.playSound(
-                SoundEvents.SNOWBALL_THROW,
+                SoundEvents.IRON_GOLEM_ATTACK,
                 1.0F,
                 0.8F + this.getRandom().nextFloat() * 0.2F
         );

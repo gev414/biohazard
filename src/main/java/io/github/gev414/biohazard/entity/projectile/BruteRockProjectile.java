@@ -17,6 +17,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 
 public final class BruteRockProjectile extends ThrowableItemProjectile {
 
@@ -56,6 +62,10 @@ public final class BruteRockProjectile extends ThrowableItemProjectile {
 
         Vec3 impactPosition = getImpactPosition(result);
 
+        playImpactSound(impactPosition);
+        spawnImpactParticles(impactPosition);
+
+
         Entity directTarget =
                 result instanceof EntityHitResult entityHitResult
                         ? entityHitResult.getEntity()
@@ -72,6 +82,40 @@ public final class BruteRockProjectile extends ThrowableItemProjectile {
         );
 
         this.discard();
+    }
+
+    private void playImpactSound(Vec3 impactPosition) {
+        this.level().playSound(
+                null,
+                impactPosition.x,
+                impactPosition.y,
+                impactPosition.z,
+                SoundEvents.STONE_BREAK,
+                SoundSource.HOSTILE,
+                1.0F,
+                0.9F
+        );
+    }
+
+    private void spawnImpactParticles(Vec3 impactPosition) {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        serverLevel.sendParticles(
+                new BlockParticleOption(
+                        ParticleTypes.BLOCK,
+                        Blocks.COBBLESTONE.defaultBlockState()
+                ),
+                impactPosition.x,
+                impactPosition.y,
+                impactPosition.z,
+                12,
+                0.2D,
+                0.2D,
+                0.2D,
+                0.08D
+        );
     }
 
     private void hurtDirectTarget(Entity target) {
