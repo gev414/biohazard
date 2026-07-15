@@ -171,10 +171,11 @@ public final class EncounterManager {
         );
 
         if (encounter.regularDeaths() >= encounter.targetKills()) {
-            if (activeRegulars > 0) {
-                return;
-            }
-
+            /*
+             * Boss buildings begin their finale immediately after reaching
+             * the kill target. Existing regular mobs remain in the building,
+             * but no replacements are spawned.
+             */
             if (encounter.bossSelected()) {
                 if (encounter.beginBossWarning(
                         occupied.level().getGameTime()
@@ -186,16 +187,28 @@ public final class EncounterManager {
                             "message.biohazard.encounter.boss_warning"
                     );
                 }
-            } else if (encounter.clear()) {
+
+                return;
+            }
+
+            /*
+             * Non-boss buildings retain the original behavior: all currently
+             * spawned encounter mobs must be gone before the building clears.
+             */
+            if (activeRegulars > 0) {
+                return;
+            }
+
+            if (encounter.clear()) {
                 data.setDirty();
                 announce(
                         occupied.occupants(),
                         "message.biohazard.encounter.cleared"
                 );
             }
+
             return;
         }
-
         if (activeRegulars
                 < EncounterConfig.MAX_ACTIVE_REGULAR_MOBS.get()) {
             EncounterSpawner.spawnRegular(
@@ -211,13 +224,6 @@ public final class EncounterManager {
             EncounterSavedData data,
             BuildingEncounter encounter
     ) {
-        if (EncounterSpawner.countLoadedRegulars(
-                occupied.level(),
-                occupied.building()
-        ) > 0) {
-            return;
-        }
-
         Optional<BruteEntity> existingBoss =
                 EncounterSpawner.findLoadedBoss(
                         occupied.level(),
