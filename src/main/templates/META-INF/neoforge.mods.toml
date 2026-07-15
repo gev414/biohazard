@@ -88,6 +88,22 @@ Adds custom hostile entities and survival gameplay content for the Biohazard mod
     ordering="NONE"
     side="BOTH"
 
+[[dependencies.${mod_id}]]
+    modId="lostcities"
+    type="required"
+    reason="Biohazard building encounters use Lost Cities building metadata"
+    versionRange="[${lostcities_version},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="lostsouls"
+    type="incompatible"
+    reason="Lost Souls and Biohazard both manage Lost Cities building encounters"
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.

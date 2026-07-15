@@ -27,7 +27,17 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 base {
@@ -107,6 +117,11 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
+
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
 }
 
 // Sets up a dependency configuration called 'localRuntime'.
@@ -118,6 +133,10 @@ configurations {
 }
 
 dependencies {
+    implementation "maven.modrinth:8VDCUS3b:${lostcities_modrinth_version}"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -153,6 +172,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            lostcities_version     : lostcities_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties
@@ -181,6 +201,11 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.compilerArgs.add('-Xlint:deprecation')
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
