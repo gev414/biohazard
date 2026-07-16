@@ -1,0 +1,21 @@
+{
+  "name": "Portable Travel",
+  "category": "biohazard:travel",
+  "icon": "waystones:warp_stone",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "waystones:warp_stone",
+      "title": "Warp Stone",
+      "text": "Warp Stones use a 1.6s charge time. Warp Stone travel is EXPENSIVE. 1 full XP level for every 100 blocks. Use only when necessary."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "waystones:warp_plate",
+      "recipe2": "waystones:warp_dust",
+      "title": "Travel Infrastructure",
+      "text": "Warp Plates are configured as free destinations. Build them into defended routes rather than exposed shortcuts."
+    }
+  ]
+}

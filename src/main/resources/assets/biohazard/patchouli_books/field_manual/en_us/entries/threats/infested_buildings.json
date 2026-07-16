@@ -1,0 +1,28 @@
+{
+  "name": "Infested Buildings",
+  "category": "biohazard:threats",
+  "icon": "minecraft:chest",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Recognizing an Encounter",
+      "text": "Seventy percent of eligible Lost Cities buildings become infested. Their randomizable containers remain locked while the encounter is active, and the building announces when it is infected and when it is clear."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Regular Sites",
+      "text": "A regular site chooses a persistent target of 8 to 15 zombie or husk kills. Up to 4 regular encounter mobs remain active at once, with replacements checked every 10s and placed roughly 8 to 16 blocks away.$(br2)Clearing requires both the kill target and no loaded regular encounter mobs remaining."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Boss Sites",
+      "text": "Twenty percent of infested buildings are boss sites—about 14 percent of all eligible buildings. After the regular kill target is reached, a 10s warning begins before the Brute arrives.$(br2)Regular enemies already present may remain, but no new regular replacements are created."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Safe Clearing",
+      "text": "Work from a defensible edge and avoid opening too many floors at once. Reaching the counter is not permission to ignore loaded enemies. At a boss site, use the warning to reload, create distance, and choose a route that can survive the Brute's rock attack."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Travel",
+  "description": "Activating Waystones and planning the cost of a safe return route.",
+  "icon": "waystones:waystone",
+  "sortnum": 30
+}

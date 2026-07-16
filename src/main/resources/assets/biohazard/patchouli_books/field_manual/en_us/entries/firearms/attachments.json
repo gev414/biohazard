@@ -1,0 +1,25 @@
+{
+  "name": "Attachments",
+  "category": "biohazard:firearms",
+  "icon": "pointblank:glockstock",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:glockstock",
+      "title": "Glock Stock",
+      "text": "The installed Glock definition accepts the Glock Stock attachment. It also supports handgun sights, SMG muzzle attachments, and Glock 17 skins."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fitting Equipment",
+      "text": "Use the configured Attachment Mode control to manage compatible parts. Use Switch Scope when a fitted optic provides more than one viewing state.$(br2)If a part is rejected, trust the live compatibility shown by PointBlank rather than forcing a visually similar attachment."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:workstation",
+      "title": "Arms Dealer Workstation",
+      "text": "PointBlank's workstation supports its broader equipment loop. Use JEI and the in-world interface for pack-specific recipes that are not standard crafting recipes."
+    }
+  ]
+}

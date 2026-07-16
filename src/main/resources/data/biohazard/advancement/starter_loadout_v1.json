@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "receive_starter_loadout": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "receive_starter_loadout"
+    ]
+  ],
+  "rewards": {
+    "loot": [
+      "biohazard:gameplay/starter_loadout_v1"
+    ]
+  },
+  "sends_telemetry_event": false
+}

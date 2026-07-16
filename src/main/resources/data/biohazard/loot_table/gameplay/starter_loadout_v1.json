@@ -1,0 +1,56 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pointblank:glock17"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pointblank:ammo9mm",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 17
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "toughasnails:empty_leather_canteen"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "patchouli:guide_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "patchouli:book": "biohazard:field_manual"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:gameplay/starter_loadout_v1"
+}

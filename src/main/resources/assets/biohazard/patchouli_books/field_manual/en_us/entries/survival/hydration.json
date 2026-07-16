@@ -1,0 +1,33 @@
+{
+  "name": "Hydration",
+  "category": "biohazard:survival",
+  "icon": "toughasnails:empty_leather_canteen",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "toughasnails:empty_leather_canteen",
+      "title": "Carry Water",
+      "text": "Hand drinking is disabled. Fill a canteen instead. This pack allows canteens to fill without consuming the source block, so a protected water source can support a base."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "toughasnails:empty_leather_canteen",
+      "recipe2": "toughasnails:water_purifier",
+      "title": "Canteen and Purifier",
+      "text": "Both standard crafting recipes are shown live. Keep the empty canteen from your starter kit even after you establish a purifier."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "toughasnails:leather_water_canteen",
+      "title": "Untreated Water",
+      "text": "A filled leather canteen is not the same as a purified one. You can get sick if you drink too much unpurified water."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "toughasnails:leather_purified_water_canteen",
+      "title": "Purified Water",
+      "text": "Prefer purified water for routine travel. If thirst empties, sprinting and natural health regeneration are disabled."
+    }
+  ]
+}
