@@ -6,6 +6,8 @@ import io.github.gev414.biohazard.client.renderer.BruteRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
@@ -14,6 +16,18 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
         value = Dist.CLIENT
 )
 public final class ClientModEvents {
+
+    @SubscribeEvent
+    public static void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            NeoForge.EVENT_BUS.addListener(
+                    HordeAtmosphereClientEvents::onRenderFog
+            );
+            NeoForge.EVENT_BUS.addListener(
+                    HordeAtmosphereClientEvents::onLoggingOut
+            );
+        });
+    }
 
     @SubscribeEvent
     public static void registerRenderers(

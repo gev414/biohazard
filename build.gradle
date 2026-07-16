@@ -136,6 +136,10 @@ configurations {
 dependencies {
     implementation "maven.modrinth:8VDCUS3b:${lostcities_modrinth_version}"
 
+    // Biohazard reads The Hordes' authoritative per-player event state, while
+    // keeping the mod as a non-transitive runtime dependency for consumers.
+    compileOnly "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
+
     // Required modpack integrations and their mandatory runtime libraries.
     // Pin exact Modrinth version IDs so development runs and NeoForge unit tests
     // use the same artifacts as the acceptance-test instance without publishing

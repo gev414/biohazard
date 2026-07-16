@@ -124,7 +124,7 @@ Adds custom hostile entities and survival gameplay content for the Biohazard mod
     modId="hordes"
     type="required"
     reason="Biohazard's threat progression includes configured horde events"
-    versionRange="[${hordes_version},)"
+    versionRange="[${hordes_version},1.7)"
     ordering="AFTER"
     side="BOTH"
 
