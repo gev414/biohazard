@@ -8,7 +8,7 @@
       "type": "patchouli:entity",
       "entity": "minecraft:zombie",
       "name": "The Horde",
-      "text": "Horde events are enabled. The configured schedule begins every fifth day at time 18000 (midnight), using world time rather than per-player play time."
+      "text": "Horde events are enabled. The configured schedule begins every fifth day at time 18000 (midnight), using world time rather than per-player play time.$(br2)On a scheduled horde day, fog begins gathering around noon and reaches full strength as the horde begins."
     },
     {
       "type": "patchouli:text",

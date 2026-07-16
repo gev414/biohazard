@@ -33,6 +33,13 @@ server-side state synchronization
 
 Encounter progress survives world saves and server restarts.
 
+Horde Atmosphere
+
+Biohazard reads The Hordes' authoritative per-player event state on the
+server and synchronizes a compact atmospheric state to each client. Scheduled
+horde days gradually draw in fog before the event without reimplementing The
+Hordes' calendar, random variation, or player-time rules.
+
 Entity System
 
 Custom entities are isolated inside the entity package.
