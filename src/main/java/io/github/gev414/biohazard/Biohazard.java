@@ -1,10 +1,13 @@
 package io.github.gev414.biohazard;
 
 import io.github.gev414.biohazard.config.EncounterConfig;
+import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
 import io.github.gev414.biohazard.entity.ModEntities;
 import io.github.gev414.biohazard.event.EncounterEvents;
+import io.github.gev414.biohazard.event.HordeAtmosphereSyncEvents;
 import io.github.gev414.biohazard.event.ModEntityEvents;
 import io.github.gev414.biohazard.lostcities.LostCitiesIntegration;
+import io.github.gev414.biohazard.network.ModPayloads;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
@@ -23,12 +26,19 @@ public final class Biohazard {
     public Biohazard(IEventBus modEventBus, ModContainer modContainer) {
         ModEntities.ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(ModEntityEvents::registerAttributes);
+        modEventBus.addListener(ModPayloads::register);
 
         EncounterConfig.initialize();
         modContainer.registerConfig(
                 ModConfig.Type.SERVER,
                 EncounterConfig.SPEC,
                 "biohazard-encounters.toml"
+        );
+        HordeAtmosphereConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.CLIENT,
+                HordeAtmosphereConfig.SPEC,
+                "biohazard-client.toml"
         );
 
         LostCitiesIntegration.initialize(modEventBus);
@@ -38,5 +48,17 @@ public final class Biohazard {
                 EncounterEvents::onLivingDeath
         );
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onRightClickBlock);
+        NeoForge.EVENT_BUS.addListener(
+                HordeAtmosphereSyncEvents::onServerTick
+        );
+        NeoForge.EVENT_BUS.addListener(
+                HordeAtmosphereSyncEvents::onPlayerLoggedIn
+        );
+        NeoForge.EVENT_BUS.addListener(
+                HordeAtmosphereSyncEvents::onPlayerLoggedOut
+        );
+        NeoForge.EVENT_BUS.addListener(
+                HordeAtmosphereSyncEvents::onServerStopped
+        );
     }
 }
