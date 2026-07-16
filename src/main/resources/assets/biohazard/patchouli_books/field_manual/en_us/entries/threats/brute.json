@@ -1,0 +1,39 @@
+{
+  "name": "Biohazard Brute",
+  "category": "biohazard:threats",
+  "icon": "waystones:warp_stone",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "biohazard:brute",
+      "scale": 0.72,
+      "offset": 0.0,
+      "rotate": true,
+      "name": "The Brute",
+      "text": "A boss-site Brute has 250 health, 8 attack damage, 6 armor, and strong knockback resistance. It follows targets from long range and awards 100 experience when defeated."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rock Attack",
+      "text": "At roughly 6 to 18 blocks, the Brute can begin a 1s rock windup. The attack then enters a 6s cooldown.$(br2)A direct hit deals 6 damage and extra knockback. The impact also creates a 2-block, line-of-sight splash that deals 4 damage."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Counterplay",
+      "text": "Do not bunch up. Break line of sight during the windup, keep solid cover between the impact point and the group, and avoid fighting with a wall or drop behind you.$(br2)Use the warning period to reload and clear a lateral escape route."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "waystones:warp_stone",
+      "title": "Guaranteed Reward",
+      "text": "The Brute always drops one Warp Stone, giving a successful team a reusable travel tool."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:gunmetal_ingot",
+      "title": "Gunmetal Cache",
+      "text": "The Brute also always drops 2 to 5 Gunmetal Ingots for the PointBlank manufacturing chain."
+    }
+  ]
+}

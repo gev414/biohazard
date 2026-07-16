@@ -1,0 +1,29 @@
+{
+  "name": "Horde Events",
+  "category": "biohazard:threats",
+  "icon": "minecraft:zombie_head",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:zombie",
+      "name": "The Horde",
+      "text": "Horde events are enabled. The configured schedule begins every fifth day at time 18000 (midnight), using world time rather than per-player play time."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Pack Configuration",
+      "text": "Each wave attempts 15 spawns at 30s intervals. The event lasts 5 minutes, allows up to 160 event mobs, and spawns them about 75 blocks from their target.$(br2)Sleeping is blocked during the event, and an empty server pauses it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Prepare the Perimeter",
+      "text": "Expect the default horde spawn table. Ocean biomes switch the event toward drowned, except in frozen oceans. Keep escape lanes lit, stocked, and wide enough that one blocked doorway does not trap the whole group."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Infection Status",
+      "text": "Zombie infection is disabled in this Biohazard configuration: mob infection and player infection are both off.$(br2)"
+    }
+  ]
+}

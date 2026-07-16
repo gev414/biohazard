@@ -1,0 +1,32 @@
+{
+  "name": "Glock 17",
+  "category": "biohazard:firearms",
+  "icon": "pointblank:glock17",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:glock17",
+      "title": "Service Pistol",
+      "text": "The Glock 17 accepts 9mm ammunition and holds 17 rounds. In survival, this pack does not automatically reload an empty weapon. Use the configured Reload Gun control."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Printing a Replacement",
+      "text": "The Glock is made in the Weapon Printer, not a vanilla crafting grid. Its installed recipe costs 20 Gunmetal Ingots, 4 Gun Internals, and 3 Iron Ingots.$(br2)"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "pointblank:printer",
+      "title": "Weapon Printer",
+      "text": "This standard crafting recipe is shown live. Place and use the printer to browse PointBlank firearm and ammunition jobs."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "pointblank:processor",
+      "recipe2": "pointblank:guninternals",
+      "title": "Manufacturing Chain",
+      "text": "The processor and Gun Internals are part of the path from scavenged materials to replacement weapons."
+    }
+  ]
+}

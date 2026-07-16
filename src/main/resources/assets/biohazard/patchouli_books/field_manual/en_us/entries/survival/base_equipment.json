@@ -1,0 +1,21 @@
+{
+  "name": "Base Equipment",
+  "category": "biohazard:survival",
+  "icon": "toughasnails:rain_collector",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "toughasnails:rain_collector",
+      "title": "Rain Collector",
+      "text": "A rain collector reduces dependence on exposed water sources. Protect it and keep spare canteens near your shelter."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "toughasnails:water_purifier",
+      "recipe2": "toughasnails:thermoregulator",
+      "title": "A Sustainable Shelter",
+      "text": "Water treatment and temperature control solve different problems. Plan room for both before a horde night makes outdoor work dangerous."
+    }
+  ]
+}

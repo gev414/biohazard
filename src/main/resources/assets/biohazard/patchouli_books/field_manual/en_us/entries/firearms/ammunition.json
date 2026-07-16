@@ -1,0 +1,32 @@
+{
+  "name": "9mm Ammunition",
+  "category": "biohazard:firearms",
+  "icon": "pointblank:ammo9mm",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:ammo9mm",
+      "title": "9mm Rounds",
+      "text": "The installed Weapon Printer recipe converts 1 Copper Ingot and 1 Gunpowder into 19 rounds. That output is two rounds more than a full Glock magazine."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reload Discipline",
+      "text": "Reload behind cover and count magazines by what you actually carry, not by what the printer produces. The starter stack is 17 rounds; each printer job produces 19.$(br2)"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "pointblank:gunmetal_mesh",
+      "recipe2": "pointblank:guninternals",
+      "title": "Weapon Components",
+      "text": "These standard recipes render live and support the wider firearm manufacturing chain."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:gunmetal_ingot",
+      "title": "Gunmetal",
+      "text": "Gunmetal is a core material for your firearm arsenal. Check JEI for the live smelting and blasting routes in the installed content pack."
+    }
+  ]
+}

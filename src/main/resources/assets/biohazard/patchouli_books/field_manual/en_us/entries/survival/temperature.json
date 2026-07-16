@@ -1,0 +1,26 @@
+{
+  "name": "Temperature",
+  "category": "biohazard:survival",
+  "icon": "toughasnails:thermometer",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Read the Climate",
+      "text": "Temperature is enabled alongside thirst. Watch the HUD before long trips and change shelter, clothing, or equipment before exposure becomes an emergency.$(br2)Respawning does not grant temporary climate protection in this pack."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "toughasnails:thermometer",
+      "recipe2": "toughasnails:temperature_gauge",
+      "title": "Measuring Tools",
+      "text": "These live recipes provide tools for reading environmental and personal temperature conditions."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "toughasnails:thermoregulator",
+      "title": "Thermoregulator",
+      "text": "Build climate control into a permanent base rather than relying only on emergency consumables."
+    }
+  ]
+}

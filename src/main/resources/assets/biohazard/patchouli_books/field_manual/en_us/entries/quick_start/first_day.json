@@ -1,0 +1,23 @@
+{
+  "name": "The First Day",
+  "category": "biohazard:quick_start",
+  "icon": "minecraft:clock",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "First Priorities",
+      "text": "1. Fill your canteen and find a route to purified water.$(br2)2. Activate any Waystone you find and intend to use.$(br2)3. Establish shelter before night.$(br2)4. Save the Glock for threats that cannot be handled quietly."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Know the Controls",
+      "text": "Firearm controls are configurable. Check the Controls menu for PointBlank's Reload Gun, Change Fire Mode, Inspect Gun, Attachment Mode, and Switch Scope. This manual names the actions instead of assuming a particular key layout."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Entering Buildings",
+      "text": "A building warning means its containers are locked until the encounter is cleared. Do not let the kill target distract you from the enemies already loaded around you. Boss sites give a separate warning before the Brute arrives."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Your Starter Loadout",
+  "category": "biohazard:quick_start",
+  "icon": "pointblank:glock17",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:glock17",
+      "title": "Glock 17",
+      "text": "Every survivor receives one Glock 17. Its magazine holds 17 rounds. Keep distance, choose shots carefully."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:ammo9mm",
+      "title": "One Full Magazine",
+      "text": "The kit includes exactly 17 rounds of 9mm ammunition: one full Glock magazine. These are emergency supplies, not a renewable stockpile."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "toughasnails:empty_leather_canteen",
+      "title": "Leather Canteen",
+      "text": "The canteen begins empty. Fill it early; direct hand drinking is disabled in this pack, and thirst can prevent sprinting and natural health regeneration."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Issued Once",
+      "text": "The starter loadout is awarded once per player. If your inventory is full when it arrives, check the ground nearby."
+    }
+  ]
+}

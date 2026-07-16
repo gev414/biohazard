@@ -130,10 +130,28 @@ neoForge {
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    testRuntimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {
     implementation "maven.modrinth:8VDCUS3b:${lostcities_modrinth_version}"
+
+    // Required modpack integrations and their mandatory runtime libraries.
+    // Pin exact Modrinth version IDs so development runs and NeoForge unit tests
+    // use the same artifacts as the acceptance-test instance without publishing
+    // these dependencies transitively from Biohazard.
+    localRuntime "maven.modrinth:nU0bVIaL:${patchouli_modrinth_version}"
+    localRuntime "maven.modrinth:RghT3FYJ:${pointblank_modrinth_version}"
+    localRuntime "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
+    localRuntime "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
+    localRuntime "maven.modrinth:LOpKHB2A:${waystones_modrinth_version}"
+
+    localRuntime "maven.modrinth:8BmcQJ2H:${geckolib_modrinth_version}"
+    localRuntime "maven.modrinth:zg2tT2Vu:${gml_modrinth_version}"
+    localRuntime "maven.modrinth:s3dmwKy5:${glitchcore_modrinth_version}"
+    localRuntime "maven.modrinth:G6VHtQr4:${atlaslib_modrinth_version}"
+    localRuntime "maven.modrinth:MBAkmtvl:${balm_modrinth_version}"
+
     testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
@@ -173,6 +191,11 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             lostcities_version     : lostcities_version,
+            patchouli_version      : patchouli_version,
+            pointblank_version     : pointblank_version,
+            toughasnails_version   : toughasnails_version,
+            hordes_version         : hordes_version,
+            waystones_version      : waystones_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

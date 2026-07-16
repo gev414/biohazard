@@ -1,0 +1,25 @@
+{
+  "name": "Waystones",
+  "category": "biohazard:travel",
+  "icon": "waystones:waystone",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "waystones:waystone",
+      "title": "Activate First",
+      "text": "Waystones use activation visibility in this pack. Interact with a Waystone before relying on it as a destination; merely finding one is not enough."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "waystones:waystone",
+      "title": "Crafted Waystone",
+      "text": "This standard recipe is shown live. Place permanent travel anchors where you can defend and identify them."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Experience Cost",
+      "text": "Same-dimension travel scales with distance and the configured maximum is 27XP points.$(br2)Warp Plates and global targets are free."
+    }
+  ]
+}
