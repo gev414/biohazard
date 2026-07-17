@@ -57,6 +57,17 @@ Rather than modifying Lost Cities directly, Biohazard consumes building metadata
 
 This keeps the integration loosely coupled and easier to maintain across Lost Cities updates.
 
+Handcrafted is a required dependency. Its furniture is placed through data-driven
+Lost Cities palettes in selected libraries and civic interiors. When Lost Cities
+Modern Tweaks 2.0.7 is installed, Biohazard also supplies narrowly targeted
+`lcmt:` part overrides for those interiors and railway seating; the common empty
+town, library, civic, factory, and shop interior slots are also replaced with
+small Handcrafted furniture arrangements so generated floors are rarely blank.
+The regular LCMT apartment tower families (`lcmt:building1` through
+`lcmt:building8`) also receive the same furnished interior overlay on non-top
+floors.
+The rest of the Modern Tweaks world-generation data remains untouched.
+
 ## Patchouli Documentation
 
 The in-game Survivor's Field Manual is treated as part of the project itself rather than external documentation.
@@ -95,6 +106,7 @@ This separation allows gameplay tuning without requiring Java changes or recompi
  Dependencies
 Dependency	Purpose
 Lost Cities	World generation integration
+Handcrafted	Generated furniture palettes
 PointBlank	Firearms and ammunition
 Waystones	Travel mechanics
 Tough As Nails	Survival systems

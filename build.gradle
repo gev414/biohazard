@@ -136,6 +136,16 @@ configurations {
 dependencies {
     implementation "maven.modrinth:8VDCUS3b:${lostcities_modrinth_version}"
 
+    // Handcrafted is declared as required mod metadata.  Biohazard only
+    // references it from Lost Cities JSON resources, so it is needed in the
+    // development runtime rather than on the Java compilation classpath.
+    localRuntime "maven.modrinth:G1hIVOrD:${resourcefullib_modrinth_version}"
+    localRuntime "maven.modrinth:pJmCFF0p:${handcrafted_modrinth_version}"
+
+    // Modern Tweaks is an optional runtime companion.  Its resources are
+    // needed when exercising Biohazard's targeted lcmt: palette overrides.
+    localRuntime "maven.modrinth:HdIQwHGq:${lostcities_modern_tweaks_modrinth_version}"
+
     // Biohazard reads The Hordes' authoritative per-player event state, while
     // keeping the mod as a non-transitive runtime dependency for consumers.
     compileOnly "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
@@ -195,6 +205,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             lostcities_version     : lostcities_version,
+            handcrafted_version    : handcrafted_version,
+            lostcities_modern_tweaks_version: lostcities_modern_tweaks_version,
             patchouli_version      : patchouli_version,
             pointblank_version     : pointblank_version,
             toughasnails_version   : toughasnails_version,

@@ -97,6 +97,22 @@ Adds custom hostile entities and survival gameplay content for the Biohazard mod
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="handcrafted"
+    type="required"
+    reason="Biohazard's Lost Cities furniture palettes place Handcrafted blocks"
+    versionRange="[${handcrafted_version},4.1)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="lcmt"
+    type="optional"
+    reason="Biohazard enhances selected Lost Cities Modern Tweaks interiors when it is installed"
+    versionRange="[${lostcities_modern_tweaks_version},2.1)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="patchouli"
     type="required"
     reason="Biohazard provides the Patchouli-powered Survivor's Field Manual"

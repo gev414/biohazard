@@ -1,0 +1,20 @@
+{
+  "palette": [
+    {
+      "char": "k",
+      "block": "minecraft:red_wool"
+    },
+    {
+      "char": "①",
+      "block": "handcrafted:oak_table[color=none,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "②",
+      "block": "handcrafted:oak_chair[color=none,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "④",
+      "block": "handcrafted:oak_chair[color=none,facing=south,waterlogged=false]"
+    }
+  ]
+}
