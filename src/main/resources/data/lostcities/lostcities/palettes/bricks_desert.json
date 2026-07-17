@@ -18,7 +18,7 @@
           "block": "minecraft:sandstone"
         },
         {
-          "random": 2000,
+          "random": 200,
           "block": "minecraft:cut_sandstone"
         }
       ],
