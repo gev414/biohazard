@@ -69,6 +69,12 @@ parts. Each decorated part retains the original walls, windows, doors, lights,
 chests, and other LCMT/vanilla objects, with Handcrafted furniture merged into
 the same 16x16 slices. This makes the exact files used by world generation easy
 to edit in-place. Empty, roof, and special parts remain supplied by LCMT.
+Furniture is confined to `slices[1]`, directly above the untouched floor in
+`slices[0]`. Its circled symbols (`①` through `⑳` and `ⓐ` through `ⓜ`) are
+reserved for Biohazard and do not overlap any character used by LCMT 2.0.7.
+To customize a normal floor, edit the corresponding full part under
+`data/biohazard/lostcities/parts/building1` through `building8`; the original
+room shell and its vanilla objects remain visible around the furniture markers.
 The rest of the Modern Tweaks world-generation data remains untouched.
 
 ## Patchouli Documentation
