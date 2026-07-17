@@ -3,31 +3,31 @@
     "rubble": "}",
     "parts": [{
             "top": false,
-            "part": "lcmt:building1/building1_1"
+            "part": "biohazard:building1/building1_1"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_2"
+            "part": "biohazard:building1/building1_2"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_3"
+            "part": "biohazard:building1/building1_3"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_4"
+            "part": "biohazard:building1/building1_4"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_5"
+            "part": "biohazard:building1/building1_5"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_6"
+            "part": "biohazard:building1/building1_6"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_7"
+            "part": "biohazard:building1/building1_7"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_8"
+            "part": "biohazard:building1/building1_8"
         }, {
             "top": false,
-            "part": "lcmt:building1/building1_9"
+            "part": "biohazard:building1/building1_9"
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_1"
@@ -61,11 +61,6 @@
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_ex_medium_exit"
-        }
-    ],
-    "parts2": [{
-            "top": false,
-            "part": "lcmt:shared/apartment_compact"
         }
     ]
 }

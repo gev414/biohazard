@@ -3,16 +3,16 @@
     "rubble": "}",
     "parts": [{
             "top": false,
-            "part": "lcmt:building2/building2_1"
+            "part": "biohazard:building2/building2_1"
         }, {
             "top": false,
-            "part": "lcmt:building2/building2_2"
+            "part": "biohazard:building2/building2_2"
         }, {
             "top": false,
-            "part": "lcmt:building2/building2_3"
+            "part": "biohazard:building2/building2_3"
         }, {
             "top": false,
-            "part": "lcmt:building2/building2_4"
+            "part": "biohazard:building2/building2_4"
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_2"
@@ -46,11 +46,6 @@
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_ex_medium_exit"
-        }
-    ],
-    "parts2": [{
-            "top": false,
-            "part": "lcmt:shared/apartment_kitchen"
         }
     ]
 }

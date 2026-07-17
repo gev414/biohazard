@@ -6,16 +6,16 @@
             "part": "lcmt:building6/building6_empty"
         }, {
             "top": false,
-            "part": "lcmt:building6/building6_1"
+            "part": "biohazard:building6/building6_1"
         }, {
             "top": false,
-            "part": "lcmt:building6/building6_2"
+            "part": "biohazard:building6/building6_2"
         }, {
             "top": false,
-            "part": "lcmt:building6/building6_3"
+            "part": "biohazard:building6/building6_3"
         }, {
             "top": false,
-            "part": "lcmt:building6/building6_4"
+            "part": "biohazard:building6/building6_4"
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_2_with_floor"
@@ -43,11 +43,6 @@
         }, {
             "top": true,
             "part": "lcmt:shared/top/top1x1_ex_medium_exit_with_floor"
-        }
-    ],
-    "parts2": [{
-            "top": false,
-            "part": "lcmt:shared/apartment_studio"
         }
     ]
 }

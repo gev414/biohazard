@@ -64,8 +64,11 @@ Modern Tweaks 2.0.7 is installed, Biohazard also supplies narrowly targeted
 town, library, civic, factory, and shop interior slots are also replaced with
 small Handcrafted furniture arrangements so generated floors are rarely blank.
 The regular LCMT apartment tower families (`lcmt:building1` through
-`lcmt:building8`) also receive the same furnished interior overlay on non-top
-floors.
+`lcmt:building8`) use Biohazard-owned decorated copies of their normal floor
+parts. Each decorated part retains the original walls, windows, doors, lights,
+chests, and other LCMT/vanilla objects, with Handcrafted furniture merged into
+the same 16x16 slices. This makes the exact files used by world generation easy
+to edit in-place. Empty, roof, and special parts remain supplied by LCMT.
 The rest of the Modern Tweaks world-generation data remains untouched.
 
 ## Patchouli Documentation
