@@ -7,6 +7,7 @@ import io.github.gev414.biohazard.encounter.EncounterEntityData;
 import io.github.gev414.biohazard.encounter.EncounterManager;
 import io.github.gev414.biohazard.encounter.EncounterSavedData;
 import io.github.gev414.biohazard.lostcities.LostCitiesBuildingResolver;
+import io.github.gev414.biohazard.loot.HandcraftedStorageLoot;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -39,9 +40,15 @@ public final class EncounterEvents {
     public static void onRightClickBlock(
             PlayerInteractEvent.RightClickBlock event
     ) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+
+        if (HandcraftedStorageLoot.tryStock(level, event)) {
+            return;
+        }
         if (!EncounterConfig.ENABLED.get()
-                || !EncounterConfig.LOCK_RANDOMIZABLE_CONTAINERS.get()
-                || !(event.getLevel() instanceof ServerLevel level)) {
+                || !EncounterConfig.LOCK_RANDOMIZABLE_CONTAINERS.get()) {
             return;
         }
 
