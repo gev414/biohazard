@@ -22,8 +22,8 @@
     ],
     [
       "#aa#aa#aa#aa#aa#",
-      "a     #        a",
-      "a     #②       a",
+      "aLLLLL#        a",
+      "aL    #②       a",
       "#C     ③       #",
       "a     #①       a",
       "a     #        a",
@@ -35,13 +35,13 @@
       "a        :  :  a",
       "#    F#  :  :  #",
       "a    F#        a",
-      "a  ⑥⑦ #        a",
+      "a⑲F⑥⑦ #        a",
       "#aa#aa#aa#aa#aa#"
     ],
     [
       "#aa#aa#aa#aa#aa#",
-      "a     #        a",
-      "a     #        a",
+      "aLLLLL#        a",
+      "aL    #        a",
       "#              #",
       "a     #        a",
       "a     #        a",
@@ -58,8 +58,8 @@
     ],
     [
       "#aa#aa#aa#aa#aa#",
-      "a     #        a",
-      "a     #        a",
+      "aLLLLL#        a",
+      "aL    #        a",
       "#     #        #",
       "a     #        a",
       "a     #        a",
@@ -71,7 +71,7 @@
       "a     #   dd   a",
       "#     #        #",
       "a     #        a",
-      "a     #        a",
+      "a  ⑳⑲ #        a",
       "#aa#aa#aa#aa#aa#"
     ],
     [
