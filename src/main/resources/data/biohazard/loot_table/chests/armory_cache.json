@@ -1,0 +1,52 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "name": "ammunition",
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "entries": [
+        { "type": "minecraft:item", "name": "pointblank:ammo9mm", "weight": 18, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }] },
+        { "type": "minecraft:item", "name": "pointblank:ammo12gauge", "weight": 14, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 2 } }] },
+        { "type": "minecraft:item", "name": "pointblank:ammo45acp", "weight": 12, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 2 } }] },
+        { "type": "minecraft:item", "name": "pointblank:ammo556", "weight": 9, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 2 } }] },
+        { "type": "minecraft:item", "name": "pointblank:ammo545", "weight": 8 },
+        { "type": "minecraft:item", "name": "pointblank:ammo762", "weight": 7 },
+        { "type": "minecraft:item", "name": "pointblank:ammo57", "weight": 5 }
+      ]
+    },
+    {
+      "name": "attachment",
+      "rolls": 1,
+      "conditions": [
+        { "condition": "minecraft:random_chance", "chance": 0.18 }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "pointblank:aimpoint", "weight": 6 },
+        { "type": "minecraft:item", "name": "pointblank:holographic", "weight": 6 },
+        { "type": "minecraft:item", "name": "pointblank:foregrip", "weight": 5 },
+        { "type": "minecraft:item", "name": "pointblank:ar_muzzlebrake", "weight": 4 },
+        { "type": "minecraft:item", "name": "pointblank:cantedrail", "weight": 3 },
+        { "type": "minecraft:item", "name": "pointblank:acog", "weight": 2 }
+      ]
+    },
+    {
+      "name": "firearm",
+      "rolls": 1,
+      "conditions": [
+        { "condition": "minecraft:random_chance", "chance": 0.06 }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "pointblank:glock17", "weight": 8 },
+        { "type": "minecraft:item", "name": "pointblank:m9", "weight": 7 },
+        { "type": "minecraft:item", "name": "pointblank:m1911a1", "weight": 6 },
+        { "type": "minecraft:item", "name": "pointblank:mp5", "weight": 3 },
+        { "type": "minecraft:item", "name": "pointblank:spas12", "weight": 2 }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:chests/armory_cache"
+}

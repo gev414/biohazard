@@ -9,12 +9,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Set;
@@ -23,6 +25,8 @@ public final class HandcraftedStorageLoot {
 
     private static final String STOCKED_KEY =
             "biohazard_handcrafted_storage_stocked";
+    private static final String PLAYER_PLACED_KEY =
+            "biohazard_handcrafted_storage_player_placed";
     private static final ResourceKey<LootTable> LOOT_TABLE = ResourceKey.create(
             Registries.LOOT_TABLE,
             ResourceLocation.fromNamespaceAndPath(
@@ -42,6 +46,25 @@ public final class HandcraftedStorageLoot {
             "handcrafted:oak_desk"
     );
 
+    public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        BlockEntity blockEntity = event.getLevel().getBlockEntity(
+                event.getPos()
+        );
+        if (!isStorage(blockEntity)) {
+            return;
+        }
+
+        blockEntity.getPersistentData().putBoolean(
+                PLAYER_PLACED_KEY,
+                true
+        );
+        blockEntity.setChanged();
+    }
+
     public static boolean tryStock(
             ServerLevel level,
             PlayerInteractEvent.RightClickBlock event
@@ -51,6 +74,9 @@ public final class HandcraftedStorageLoot {
             return false;
         }
         if (!(blockEntity instanceof Container container)
+                || blockEntity.getPersistentData().getBoolean(
+                        PLAYER_PLACED_KEY
+                )
                 || blockEntity.getPersistentData().getBoolean(STOCKED_KEY)) {
             return true;
         }

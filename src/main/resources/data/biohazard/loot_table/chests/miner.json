@@ -3,8 +3,8 @@
     {
       "name": "biohazard:miner",
       "rolls": {
-        "min": 8,
-        "max": 12
+        "min": 3,
+        "max": 5
       },
       "entries": [
         {

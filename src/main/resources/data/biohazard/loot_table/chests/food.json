@@ -3,8 +3,8 @@
     {
       "name": "biohazard:food",
       "rolls": {
-        "min": 12,
-        "max": 24
+        "min": 4,
+        "max": 7
       },
       "entries": [
         {
