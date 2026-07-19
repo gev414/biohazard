@@ -1,0 +1,6 @@
+{
+  "name": "Guns",
+  "description": "Loading, firing, and modifying recovered PointBlank weapons.",
+  "icon": "pointblank:glock17",
+  "sortnum": 15
+}

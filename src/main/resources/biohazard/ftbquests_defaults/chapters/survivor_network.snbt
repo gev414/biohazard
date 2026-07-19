@@ -1,0 +1,60 @@
+{
+	default_hide_dependency_lines: true
+	default_min_width: 250
+	default_quest_shape: "rsquare"
+	filename: "survivor_network"
+	group: "0100000000000001"
+	icon: {
+		components: {
+			"ftbquests:icon": "minecraft:textures/gui/sprites/icon/ping_4.png"
+		}
+		id: "ftbquests:custom_icon"
+	}
+	id: "1000000000000001"
+	order_index: 0
+	quest_links: [ ]
+	quests: [{
+		id: "1100000000000001"
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: {
+				id: "minecraft:bread"
+			}
+			id: "1190000000000001"
+			tags: [
+				"biohazard_radio_delivery"
+				"biohazard_manifest_starter_signal_cache"
+				"biohazard_category_supplies"
+			]
+			type: "custom"
+		}]
+		tasks: [
+			{
+				icon: {
+					components: {
+						"ftbquests:icon": "ftbteams:textures/add.png"
+					}
+					id: "ftbquests:custom_icon"
+				}
+				id: "1110000000000001"
+				tags: ["biohazard_radio_accept"]
+				type: "custom"
+			}
+			{
+				icon: {
+					components: {
+						"ftbquests:icon": "ftblibrary:icons/check"
+					}
+					id: "ftbquests:custom_icon"
+				}
+				id: "1110000000000002"
+				tags: ["biohazard_radio_complete"]
+				type: "custom"
+			}
+		]
+		x: 0.0d
+		y: 0.0d
+	}]
+	require_sequential_tasks: false
+}

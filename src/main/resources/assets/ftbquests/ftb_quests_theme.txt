@@ -1,0 +1,30 @@
+[*]
+// Biohazard's low-light pager/radio presentation. This resource is layered
+// over FTB Quests' default theme, so unspecified properties remain upstream.
+background:          ftblibrary:textures/gui/background_squares.png; color=#F0121912; tile_size=32
+chapter_panel_background: hollow_rectangle:{{widget_border}}; round_edges + {{background}}; color=#E00A100A; padding=1
+key_reference_background: ftblibrary:textures/gui/background_squares.png; color=#F0121912; tile_size=32
+
+text_color:          #A9D6A9
+hover_text_color:    #F0C674
+disabled_text_color: #5B705B
+
+widget_border:       #395839
+widget_background:   #A0101B10
+symbol_in:           #D7EAA1
+symbol_out:          #638B63
+selected_chapter_highlight_1: #80638B63
+selected_chapter_highlight_2: #40506F50
+
+tasks_text_color:                   #88BFA0
+rewards_text_color:                 #D4B66F
+quest_view_title:                   #BFD9BF
+quest_completed_color:              #D0508A50
+quest_started_color:                #D0B39B50
+quest_not_started_color:            #C0A9D6A9
+quest_locked_color:                 #A05B705B
+dependency_line_completed_color:    #6E9F6E
+dependency_line_uncompleted_color:  #546354
+dependency_line_unavailable_color:  #3F493F
+dependency_line_requires_color:     #89A989
+dependency_line_required_for_color: #B39B50

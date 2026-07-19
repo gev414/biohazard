@@ -7,12 +7,12 @@
     {
       "type": "patchouli:text",
       "title": "First Priorities",
-      "text": "1. Fill your canteen and find a route to purified water.$(br2)2. Activate any Waystone you find and intend to use.$(br2)3. Establish shelter before night.$(br2)4. Save the Glock for threats that cannot be handled quietly."
+      "text": "1. Fill your canteen and find a route to purified water.$(br2)2. Activate any Waystone you find and intend to use.$(br2)3. Establish shelter before night.$(br2)4. Search the city carefully; a working radio can turn recovered evidence into supplies."
     },
     {
       "type": "patchouli:text",
-      "title": "Know the Controls",
-      "text": "Firearm controls are configurable. Check the Controls menu for PointBlank's Reload Gun, Change Fire Mode, Inspect Gun, Attachment Mode, and Switch Scope. This manual names the actions instead of assuming a particular key layout."
+      "title": "Know the Systems",
+      "text": "Your condition, thirst, temperature, and infection status all matter. Check them before setting out, and do not wait until a warning becomes a crisis. The field manual records reliable ways to stabilize each one."
     },
     {
       "type": "patchouli:text",

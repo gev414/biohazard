@@ -4,6 +4,7 @@ import io.github.gev414.biohazard.Biohazard;
 import io.github.gev414.biohazard.block.ModBlocks;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -33,6 +34,20 @@ public final class ModItems {
     public static final Supplier<Item> ENCRYPTED_INTEL = ITEMS.registerSimpleItem(
             "encrypted_intel",
             new Item.Properties().stacksTo(16)
+    );
+    public static final Supplier<Item> INFECTION_CURE = ITEMS.register(
+            "infection_cure",
+            () -> new InfectionMedicineItem(
+                    InfectionMedicineItem.Kind.FULL_CURE,
+                    new Item.Properties().stacksTo(4).rarity(Rarity.EPIC)
+            )
+    );
+    public static final Supplier<Item> ANTIVIRAL_SUPPRESSANT = ITEMS.register(
+            "antiviral_suppressant",
+            () -> new InfectionMedicineItem(
+                    InfectionMedicineItem.Kind.SUPPRESSANT,
+                    new Item.Properties().stacksTo(8).rarity(Rarity.RARE)
+            )
     );
 
     private ModItems() {

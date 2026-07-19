@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:golden_apple"}]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:honey_bottle", "functions": [{"function": "minecraft:set_count", "count": 4}]}]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:glistering_melon_slice", "functions": [{"function": "minecraft:set_count", "count": 4}]}]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "biohazard:antiviral_suppressant"}]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/advanced_medical"
+}

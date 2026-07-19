@@ -40,6 +40,16 @@ server and synchronizes a compact atmospheric state to each client. Scheduled
 horde days gradually draw in fog before the event without reimplementing The
 Hordes' calendar, random variation, or player-time rules.
 
+## Survivor Network radio quests
+
+FTB Quests powers a radio-contact progression layer styled as a low-light field
+pager. Players browse contacts as text chapters, accept and turn in contracts
+near a calibrated Radio Transmitter, and collect persistent courier deliveries
+after category-based delays. The quest book remains usable as a journal away
+from the radio, but server-side task checks prevent remote acceptance or final
+submission. See [the radio quest authoring guide](docs/radio-quests.md) for the
+tag contract, delays, persistence rules, and extension notes.
+
 Entity System
 
 Custom entities are isolated inside the entity package.
@@ -121,6 +131,7 @@ Waystones	Travel mechanics
 Tough As Nails	Survival systems
 Patchouli	In-game documentation
 The Hordes	Horde scheduling and infection
+FTB Quests	Survivor Network contacts, contracts, and quest journal
 
 Development dependencies are resolved through Modrinth Maven and are not bundled into the final artifact.
 

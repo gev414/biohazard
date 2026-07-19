@@ -1,0 +1,127 @@
+{
+	default_hide_dependency_lines: true
+	default_min_width: 250
+	default_quest_shape: "hexagon"
+	filename: "surveyor"
+	group: "0100000000000001"
+	icon: {
+		id: "minecraft:compass"
+	}
+	id: "5000000000000001"
+	order_index: 4
+	quest_links: [ ]
+	quests: [
+		{
+			can_repeat: true
+			dependencies: ["1100000000000001"]
+			id: "5100000000000002"
+			repeat_cooldown: 1800
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "waystones:warp_stone" }
+				id: "5190000000000002"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_warp_stone_requisition"
+					"biohazard_category_equipment"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" }
+					id: "5120000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" }
+					id: "5120000000000004"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: false
+					count: 2L
+					id: "5120000000000002"
+					item: { count: 1, id: "biohazard:encrypted_intel" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+				{
+					consume_items: false
+					id: "5120000000000003"
+					item: { count: 1, id: "minecraft:compass" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+			]
+			x: 0.0d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			dependencies: ["1100000000000001"]
+			id: "5100000000000003"
+			repeat_cooldown: 1800
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "minecraft:minecart" }
+				id: "5190000000000003"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_rail_setup"
+					"biohazard_category_equipment"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" }
+					id: "5130000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" }
+					id: "5130000000000005"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: false
+					count: 2L
+					id: "5130000000000002"
+					item: { count: 1, id: "biohazard:research_data" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+				{
+					consume_items: false
+					id: "5130000000000003"
+					item: { count: 1, id: "biohazard:documents" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+				{
+					consume_items: false
+					count: 10L
+					id: "5130000000000004"
+					item: { count: 1, id: "minecraft:gold_ingot" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+			]
+			x: 2.0d
+			y: 0.0d
+		}
+	]
+	require_sequential_tasks: false
+}

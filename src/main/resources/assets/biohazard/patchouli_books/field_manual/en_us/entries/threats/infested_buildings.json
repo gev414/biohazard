@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Recognizing an Encounter",
-      "text": "Seventy percent of eligible Lost Cities buildings become infested. Their randomizable containers remain locked while the encounter is active, and the building announces when it is infected and when it is clear."
+      "text": "Cities are full of abandoned buildings, and many have become infected. Their containers remain locked while the encounter is active, and the building announces when it is infected and when it is clear. Treat every intact structure as uncertain until you have checked it."
     },
     {
       "type": "patchouli:text",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Boss Sites",
-      "text": "Twenty percent of infested buildings are boss sites—about 14 percent of all eligible buildings. After the regular kill target is reached, a 10s warning begins before the Brute arrives.$(br2)Regular enemies already present may remain, but no new regular replacements are created."
+      "text": "After an infected building is cleared, there is a chance that a Brute will emerge. A short warning precedes its arrival. Enemies already in the building may remain, but no new regular replacements are created."
     },
     {
       "type": "patchouli:text",

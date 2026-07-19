@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "minecraft:bread",
+        "functions": [{"function": "minecraft:set_count", "count": 4}]
+      }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "pointblank:ammo9mm",
+        "functions": [{"function": "minecraft:set_count", "count": 12}]
+      }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "toughasnails:purified_water_bottle",
+        "functions": [{"function": "minecraft:set_count", "count": 2}]
+      }]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/starter_signal_cache"
+}

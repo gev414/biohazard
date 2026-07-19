@@ -3,12 +3,14 @@ package io.github.gev414.biohazard.client;
 import io.github.gev414.biohazard.Biohazard;
 import io.github.gev414.biohazard.entity.ModEntities;
 import io.github.gev414.biohazard.client.renderer.BruteRenderer;
+import io.github.gev414.biohazard.item.ModItems;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
 @EventBusSubscriber(
@@ -16,6 +18,8 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
         value = Dist.CLIENT
 )
 public final class ClientModEvents {
+
+    private static final int REGENERATION_PINK = 0xCD5CAB;
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
@@ -45,6 +49,14 @@ public final class ClientModEvents {
                         0.5F,
                         false
                 )
+        );
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register(
+                (stack, tintIndex) -> tintIndex == 0 ? REGENERATION_PINK : 0xFFFFFFFF,
+                ModItems.ANTIVIRAL_SUPPRESSANT.get()
         );
     }
 

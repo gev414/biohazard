@@ -1,0 +1,140 @@
+{
+	default_hide_dependency_lines: true
+	default_min_width: 250
+	default_quest_shape: "heart"
+	filename: "medic"
+	group: "0100000000000001"
+	icon: {
+		components: {
+			"ftbquests:icon": "minecraft:textures/mob_effect/instant_health.png"
+		}
+		id: "ftbquests:custom_icon"
+	}
+	id: "2000000000000001"
+	order_index: 2
+	quest_links: [ ]
+	quests: [
+		{
+			dependencies: ["1100000000000001"]
+			id: "2100000000000001"
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: {
+					id: "minecraft:honey_bottle"
+				}
+				id: "2190000000000001"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_medical_resupply"
+					"biohazard_category_medical"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftbteams:textures/add.png"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "2110000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					entity: "minecraft:zombie"
+					icon: {
+						components: {
+							"!ftbquests:icon": { }
+							"ftbquests:entity_face": "minecraft:zombie"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "2110000000000002"
+					type: "kill"
+					value: 12L
+				}
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftblibrary:icons/check"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "2110000000000004"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: false
+					count: 8L
+					id: "2110000000000003"
+					item: { count: 1, id: "minecraft:rotten_flesh" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+			]
+			x: -1.5d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			dependencies: ["2100000000000001"]
+			id: "2100000000000002"
+			repeat_cooldown: 1200
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: {
+					id: "biohazard:antiviral_suppressant"
+				}
+				id: "2190000000000002"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_advanced_medical"
+					"biohazard_category_medical"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftbteams:textures/add.png"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "2120000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftblibrary:icons/check"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "2120000000000003"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: false
+					count: 2L
+					id: "2120000000000002"
+					item: { count: 1, id: "biohazard:research_data" }
+					tags: ["biohazard_radio_submit"]
+					only_from_crafting: true
+					type: "item"
+				}
+			]
+			x: 1.5d
+			y: 0.0d
+		}
+	]
+	require_sequential_tasks: false
+}

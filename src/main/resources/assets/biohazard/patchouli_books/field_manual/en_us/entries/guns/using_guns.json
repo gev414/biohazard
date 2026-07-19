@@ -1,0 +1,30 @@
+{
+  "name": "Using Guns",
+  "category": "biohazard:guns",
+  "icon": "pointblank:glock17",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "pointblank:glock17",
+      "title": "Ready Your Weapon",
+      "text": "Guns use the ammunition made for their caliber. Keep matching ammunition in your inventory, hold the weapon, and press $(thing)R$(0) to reload. Aim and fire as you would any held weapon, but save rounds: ammunition is valuable and every shot can draw attention."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Weapon Controls",
+      "text": "$(thing)R$(0): Reload the held gun.$(br)$(thing)B$(0): Switch its fire mode when the weapon supports one.$(br)$(thing)V$(0): Switch scope or optic view when the installed scope supports it.$(br2)These are the default PointBlank controls. Other mods may use the same keys; change any conflicts in Minecraft's $(thing)Options > Controls > Key Binds$(0) menu."
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["biohazard:patchouli_books/field_manual/en_us/images/pointblank-gunmod-menu.png"],
+      "title": "Modding a Gun",
+      "text": "Modding Window"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "",
+      "text": "Hold a gun and press $(thing)Y$(0) to open the modding menu. Select an attachment slot, then choose a compatible part from your inventory. Use this screen to inspect installed attachments and their effects before heading out. $(thing)Y$(0) may also conflict with another mod, so rebind it in $(thing)Options > Controls > Key Binds$(0) if needed."
+    }
+  ]
+}

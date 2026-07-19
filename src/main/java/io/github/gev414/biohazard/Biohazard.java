@@ -1,8 +1,10 @@
 package io.github.gev414.biohazard;
 
 import io.github.gev414.biohazard.block.ModBlocks;
+import io.github.gev414.biohazard.block.entity.ModBlockEntities;
 import io.github.gev414.biohazard.config.EncounterConfig;
 import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
+import io.github.gev414.biohazard.config.RadioQuestConfig;
 import io.github.gev414.biohazard.entity.ModEntities;
 import io.github.gev414.biohazard.event.EncounterEvents;
 import io.github.gev414.biohazard.event.HordeAtmosphereSyncEvents;
@@ -12,6 +14,9 @@ import io.github.gev414.biohazard.item.ModItems;
 import io.github.gev414.biohazard.lostcities.LostCitiesIntegration;
 import io.github.gev414.biohazard.loot.HandcraftedStorageLoot;
 import io.github.gev414.biohazard.network.ModPayloads;
+import io.github.gev414.biohazard.quest.FTBQuestsIntegration;
+import io.github.gev414.biohazard.quest.QuestDefaultsInstaller;
+import io.github.gev414.biohazard.quest.delivery.DeliveryManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
@@ -29,6 +34,7 @@ public final class Biohazard {
 
     public Biohazard(IEventBus modEventBus, ModContainer modContainer) {
         ModBlocks.BLOCKS.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(ModCreativeTabEvents::buildContents);
@@ -47,6 +53,15 @@ public final class Biohazard {
                 HordeAtmosphereConfig.SPEC,
                 "biohazard-client.toml"
         );
+        RadioQuestConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                RadioQuestConfig.SPEC,
+                "biohazard-radio-quests.toml"
+        );
+
+        QuestDefaultsInstaller.installIfMissing();
+        FTBQuestsIntegration.initialize();
 
         LostCitiesIntegration.initialize(modEventBus);
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onServerTick);
@@ -70,5 +85,7 @@ public final class Biohazard {
         NeoForge.EVENT_BUS.addListener(
                 HordeAtmosphereSyncEvents::onServerStopped
         );
+        NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerTick);
+        NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerStopped);
     }
 }

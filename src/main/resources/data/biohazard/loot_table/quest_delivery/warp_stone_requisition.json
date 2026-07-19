@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "waystones:warp_stone" }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/warp_stone_requisition"
+}

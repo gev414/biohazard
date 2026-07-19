@@ -153,6 +153,14 @@ Adds custom hostile entities and survival gameplay content for the Biohazard mod
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="ftbquests"
+    type="required"
+    reason="Biohazard's radio contracts and delayed courier rewards use FTB Quests"
+    versionRange="[${ftb_quests_version},2102)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="lostsouls"
     type="incompatible"
     reason="Lost Souls and Biohazard both manage Lost Cities building encounters"

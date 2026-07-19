@@ -1,0 +1,232 @@
+{
+	default_hide_dependency_lines: true
+	default_min_width: 250
+	default_quest_shape: "rsquare"
+	filename: "quartermaster"
+	group: "0100000000000001"
+	icon: {
+		id: "pointblank:ammo50ae"
+	}
+	id: "3000000000000001"
+	order_index: 1
+	quest_links: [ ]
+	quests: [{
+		dependencies: ["1100000000000001"]
+		icon: {
+			id: "pointblank:ammo9mm"
+		}
+		id: "3100000000000001"
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: {
+				id: "pointblank:ammo9mm"
+			}
+			id: "3190000000000001"
+			tags: [
+				"biohazard_radio_delivery"
+				"biohazard_manifest_basic_ammunition"
+				"biohazard_category_ammunition"
+			]
+			type: "custom"
+		}]
+		tasks: [
+			{
+				icon: {
+					components: {
+						"ftbquests:icon": "ftbteams:textures/add.png"
+					}
+					id: "ftbquests:custom_icon"
+				}
+				id: "3110000000000001"
+				tags: ["biohazard_radio_accept"]
+				type: "custom"
+			}
+			{
+				icon: {
+					components: {
+						"ftbquests:icon": "ftblibrary:icons/check"
+					}
+					id: "ftbquests:custom_icon"
+				}
+				id: "3110000000000003"
+				tags: ["biohazard_radio_complete"]
+				type: "custom"
+			}
+			{
+				consume_items: false
+				count: 4L
+				id: "3110000000000002"
+				item: { count: 1, id: "biohazard:documents" }
+				tags: ["biohazard_radio_submit"]
+				only_from_crafting: true
+				type: "item"
+			}
+		]
+		x: 0.0d
+		y: 0.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo9mm" }
+		id: "2E8F33AC76297DAF"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo9mm" }
+			id: "4CE46443D99D4875"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_9mm_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "4EE9D0978464184B" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 3L id: "41A06BB6D749FC65" item: { count: 1, id: "biohazard:documents" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "4A0533D7C14668AE" item: { count: 1, id: "minecraft:bread" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "4B564BD90883A78F" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: -3.0d
+		y: 2.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo12gauge" }
+		id: "4EBC303BB34C359E"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo12gauge" }
+			id: "4170BB45889B924D"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_12gauge_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "43F667CD042CC842" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 4L id: "4438C74C49837F40" item: { count: 1, id: "biohazard:documents" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "49C82A433DF941C1" item: { count: 1, id: "minecraft:cooked_porkchop" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "4052C52B61C9E034" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: -1.0d
+		y: 2.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo45acp" }
+		id: "497CAC011ACE1F27"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo45acp" }
+			id: "463313D7363EDE1A"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_45acp_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "4537EA644C6D34E5" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 3L id: "45EEEFCAB2511870" item: { count: 1, id: "biohazard:research_data" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 6L id: "4A78A0978AC3C1EF" item: { count: 1, id: "minecraft:cooked_beef" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "410390803D661AB9" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: 1.0d
+		y: 2.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo57" }
+		id: "43666292B40996F4"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo57" }
+			id: "4B4503C5E85FFF7A"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_57_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "4FA4581A67D26E22" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 4L id: "416F6C380DA29662" item: { count: 1, id: "biohazard:research_data" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "40CD16C07FED6E1C" item: { count: 1, id: "minecraft:cooked_chicken" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "4A42934D39A78029" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: 3.0d
+		y: 2.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo545" }
+		id: "42AB0DBC8997A3D6"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo545" }
+			id: "42128BFE064DD7EC"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_545_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "4F39F9FC110EF1D1" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 3L id: "4954A1A30EA50AF0" item: { count: 1, id: "biohazard:documents" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "4B257CD53EE895FD" item: { count: 1, id: "minecraft:baked_potato" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "4A8C6D8782E40D61" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: -2.0d
+		y: 4.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo556" }
+		id: "4086863D1F164E00"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo556" }
+			id: "4A13A8EA386045D2"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_556_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "45D834D1F2935294" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 4L id: "45DFAECD4F98DF20" item: { count: 1, id: "biohazard:documents" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "4C12F60CA1D94536" item: { count: 1, id: "minecraft:cooked_beef" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "49E0D6137E2FDE23" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: 0.0d
+		y: 4.0d
+	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "pointblank:ammo762" }
+		id: "4A90128EDED5EFD3"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "pointblank:ammo762" }
+			id: "49C492B49A573F74"
+			tags: ["biohazard_radio_delivery" "biohazard_manifest_ward_762_resupply" "biohazard_category_ammunition"]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "4965B58941DC31EC" tags: ["biohazard_radio_accept"] type: "custom" }
+			{ consume_items: false count: 4L id: "42F1840DF5D0DB74" item: { count: 1, id: "biohazard:research_data" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 8L id: "430D43F32E648C3B" item: { count: 1, id: "minecraft:cooked_mutton" } tags: ["biohazard_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "48238E52DE203D03" tags: ["biohazard_radio_complete"] type: "custom" }
+		]
+		x: 2.0d
+		y: 4.0d
+	}
+	]
+	require_sequential_tasks: false
+}

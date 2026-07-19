@@ -1,0 +1,219 @@
+{
+	default_hide_dependency_lines: true
+	default_min_width: 250
+	default_quest_shape: "diamond"
+	filename: "arms_broker"
+	group: "0100000000000001"
+	icon: {
+		id: "pointblank:ak47"
+	}
+	id: "4000000000000001"
+	order_index: 3
+	quest_links: [ ]
+	quests: [
+		{
+			can_repeat: true
+			dependencies: ["1100000000000001"]
+			icon: {
+				components: {
+					"ftbquests:icon": "fzzy_config:textures/gui/sprites/widget/action/alert_highlighted.png"
+				}
+				id: "ftbquests:custom_icon"
+			}
+			id: "4100000000000001"
+			repeat_cooldown: 1800
+			require_sequential_tasks: true
+			rewards: [{
+				auto: "enabled"
+				icon: {
+					id: "pointblank:glock17"
+				}
+				id: "4190000000000001"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_sidearm_requisition"
+					"biohazard_category_firearm"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftbteams:textures/add.png"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "4110000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftblibrary:icons/check"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "4110000000000003"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: true
+					count: 2L
+					id: "4110000000000002"
+					item: { count: 1, id: "biohazard:encrypted_intel" }
+					tags: ["biohazard_radio_submit"]
+					task_screen_only: true
+					type: "item"
+				}
+			]
+			x: -1.5d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			dependencies: ["4100000000000001"]
+			icon: {
+				id: "pointblank:stahlhelm"
+			}
+			id: "4100000000000002"
+			repeat_cooldown: 1800
+			require_sequential_tasks: true
+			rewards: [{
+				auto: "enabled"
+				icon: {
+					id: "pointblank:aimpoint_t2"
+				}
+				id: "4190000000000002"
+				tags: [
+					"biohazard_radio_delivery"
+					"biohazard_manifest_brute_bounty"
+					"biohazard_category_equipment"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftbteams:textures/add.png"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "4120000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					entity: "biohazard:brute"
+					icon: {
+						components: {
+							"!ftbquests:icon": { }
+							"ftbquests:entity_face": "biohazard:brute"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "4120000000000002"
+					type: "kill"
+					value: 1L
+				}
+				{
+					icon: {
+						components: {
+							"ftbquests:icon": "ftblibrary:icons/check"
+						}
+						id: "ftbquests:custom_icon"
+					}
+					id: "4120000000000003"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+			]
+			x: 1.5d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			dependencies: ["4100000000000001"]
+			icon: { id: "pointblank:ak47" }
+			id: "4100000000000003"
+			repeat_cooldown: 3600
+			require_sequential_tasks: true
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "pointblank:ak47" }
+				id: "4190000000000003"
+				tags: ["biohazard_radio_choice_delivery", "biohazard_manifest_weapons_choice", "biohazard_choice_count_3", "biohazard_category_firearm"]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" }
+					id: "4130000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" }
+					id: "4130000000000003"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: true
+					count: 8L
+					id: "4130000000000002"
+					item: { count: 1, id: "biohazard:encrypted_intel" }
+					tags: ["biohazard_radio_submit"]
+					task_screen_only: true
+					type: "item"
+				}
+			]
+			x: 0.0d
+			y: 1.5d
+		}
+		{
+			can_repeat: true
+			dependencies: ["4100000000000001"]
+			icon: { id: "pointblank:mp5" }
+			id: "4100000000000004"
+			repeat_cooldown: 1800
+			require_sequential_tasks: true
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "pointblank:mp5" }
+				id: "4190000000000004"
+				tags: ["biohazard_radio_delivery", "biohazard_manifest_weapons_random", "biohazard_category_firearm"]
+				type: "custom"
+			}]
+			tasks: [
+				{
+					icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" }
+					id: "4140000000000001"
+					tags: ["biohazard_radio_accept"]
+					type: "custom"
+				}
+				{
+					icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" }
+					id: "4140000000000003"
+					tags: ["biohazard_radio_complete"]
+					type: "custom"
+				}
+				{
+					consume_items: true
+					count: 3L
+					id: "4140000000000002"
+					item: { count: 1, id: "biohazard:encrypted_intel" }
+					tags: ["biohazard_radio_submit"]
+					task_screen_only: true
+					type: "item"
+				}
+			]
+			x: 0.0d
+			y: 3.0d
+		}
+	]
+	require_sequential_tasks: true
+}

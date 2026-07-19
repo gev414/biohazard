@@ -1,7 +1,7 @@
 {
   "name": "Biohazard Brute",
   "category": "biohazard:threats",
-  "icon": "waystones:warp_stone",
+  "icon": "pointblank:stahlhelm",
   "sortnum": 20,
   "pages": [
     {
@@ -11,12 +11,12 @@
       "offset": 0.0,
       "rotate": true,
       "name": "The Brute",
-      "text": "A boss-site Brute has 250 health, 8 attack damage, 6 armor, and strong knockback resistance. It follows targets from long range and awards 100 experience when defeated."
+      "text": "The Brute has an enormous reserve of health and does not give ground easily. It follows targets from long range, hits hard, and tears through blocks at an alarming speed. Never assume a thin wall will buy enough time."
     },
     {
       "type": "patchouli:text",
       "title": "Rock Attack",
-      "text": "At roughly 6 to 18 blocks, the Brute can begin a 1s rock windup. The attack then enters a 6s cooldown.$(br2)A direct hit deals 6 damage and extra knockback. The impact also creates a 2-block, line-of-sight splash that deals 4 damage."
+      "text": "When a target is outside melee range, the Brute can throw rocks. Watch for the windup, then break line of sight or move well clear of the impact point. The blast can hurt anyone standing too close to it."
     },
     {
       "type": "patchouli:text",
@@ -25,15 +25,9 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "waystones:warp_stone",
-      "title": "Guaranteed Reward",
-      "text": "The Brute always drops one Warp Stone, giving a successful team a reusable travel tool."
-    },
-    {
-      "type": "patchouli:spotlight",
       "item": "biohazard:encrypted_intel",
       "title": "Encrypted Intel",
-      "text": "The Brute also drops 1 to 2 pieces of Encrypted Intel. The survivor network will eventually exchange this high-value field information for specialist supplies."
+      "text": "Rumours have it, these ex-military personel were sent here to recover valuable Encrypted Intel. This is the sort of field information the survivor network values most; transmit it to open access to better equipment and support."
     }
   ]
 }

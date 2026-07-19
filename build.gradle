@@ -27,6 +27,20 @@ sourceSets.main.resources {
 }
 
 repositories {
+    maven {
+        name = "FTB"
+        url = "https://maven.ftb.dev/releases"
+        content {
+            includeGroup "dev.ftb.mods"
+        }
+    }
+    maven {
+        name = "Architectury"
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -136,6 +150,11 @@ configurations {
 dependencies {
     implementation "maven.modrinth:8VDCUS3b:${lostcities_modrinth_version}"
 
+    // FTB Quests is the player-facing Survivor Network. Biohazard uses its
+    // custom task/reward hooks and opens the standard quest book from radios;
+    // no FTB classes are copied or bundled into this mod.
+    implementation "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
+
     // Handcrafted is declared as required mod metadata.  Biohazard only
     // references it from Lost Cities JSON resources, so it is needed in the
     // development runtime rather than on the Java compilation classpath.
@@ -149,6 +168,9 @@ dependencies {
     // Biohazard reads The Hordes' authoritative per-player event state, while
     // keeping the mod as a non-transitive runtime dependency for consumers.
     compileOnly "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
+    // The Hordes' cure synchronization packet implements Atlas Lib's network
+    // interface. Atlas remains runtime-supplied by The Hordes.
+    compileOnly "maven.modrinth:G6VHtQr4:${atlaslib_modrinth_version}"
 
     // Required modpack integrations and their mandatory runtime libraries.
     // Pin exact Modrinth version IDs so development runs and NeoForge unit tests
@@ -212,6 +234,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             toughasnails_version   : toughasnails_version,
             hordes_version         : hordes_version,
             waystones_version      : waystones_version,
+            ftb_quests_version     : ftb_quests_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

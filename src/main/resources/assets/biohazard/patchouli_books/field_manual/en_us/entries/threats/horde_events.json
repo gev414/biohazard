@@ -8,12 +8,12 @@
       "type": "patchouli:entity",
       "entity": "minecraft:zombie",
       "name": "The Horde",
-      "text": "Horde events are enabled. The configured schedule begins every fifth day at time 18000 (midnight), using world time rather than per-player play time.$(br2)On a scheduled horde day, fog begins gathering around noon and reaches full strength as the horde begins."
+      "text": "Every fifth day brings a horde night. The horde gathers at midnight, and fog begins building around noon as an early warning. Use that daylight to get inside, restock, and make sure every exit still works."
     },
     {
       "type": "patchouli:text",
-      "title": "Pack Configuration",
-      "text": "Each wave attempts 15 spawns at 30s intervals. The event lasts 5 minutes, allows up to 160 event mobs, and spawns them about 75 blocks from their target.$(br2)Sleeping is blocked during the event, and an empty server pauses it."
+      "title": "Hold the Line",
+      "text": "Sleeping will not carry you through a horde night. Keep a defended shelter, spare tools, water, and a route out before the fog thickens."
     },
     {
       "type": "patchouli:text",
@@ -22,8 +22,8 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Infection Status",
-      "text": "Zombie infection is disabled in this Biohazard configuration: mob infection and player infection are both off.$(br2)"
+      "title": "Infection",
+      "text": "Infection is a condition that worsens if ignored. Antiviral suppressants buy time and give brief immunity; a complete cure removes an active infection. Dr. Mara Voss, the Medic, can secure both kinds of treatment through the survivor network."
     }
   ]
 }

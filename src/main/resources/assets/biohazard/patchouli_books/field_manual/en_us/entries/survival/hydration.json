@@ -15,7 +15,7 @@
       "recipe": "toughasnails:empty_leather_canteen",
       "recipe2": "toughasnails:water_purifier",
       "title": "Canteen and Purifier",
-      "text": "Both standard crafting recipes are shown live. Keep the empty canteen from your starter kit even after you establish a purifier."
+      "text": "Both standard crafting recipes are shown live. Keep an empty canteen; it is still useful long after you establish a purifier."
     },
     {
       "type": "patchouli:spotlight",
@@ -26,8 +26,8 @@
     {
       "type": "patchouli:spotlight",
       "item": "toughasnails:leather_purified_water_canteen",
-      "title": "Purified Water",
-      "text": "Prefer purified water for routine travel. If thirst empties, sprinting and natural health regeneration are disabled."
+      "title": "Water Purification",
+      "text": "Water bottle and filled-canteen purification is performed in the Water Purifier shown earlier. Place sand in its filter slot and the untreated container in the input slot; after a short cycle it returns purified water. Prefer it for routine travel: when thirst empties, sprinting and natural healing stop."
     }
   ]
 }

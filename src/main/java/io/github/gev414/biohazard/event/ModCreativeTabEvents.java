@@ -15,6 +15,10 @@ public final class ModCreativeTabEvents {
             event.accept(ModItems.RESEARCH_DATA.get());
             event.accept(ModItems.ENCRYPTED_INTEL.get());
         }
+        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
+            event.accept(ModItems.ANTIVIRAL_SUPPRESSANT.get());
+            event.accept(ModItems.INFECTION_CURE.get());
+        }
     }
 
     private ModCreativeTabEvents() {

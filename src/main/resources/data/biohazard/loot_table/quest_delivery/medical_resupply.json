@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:honey_bottle", "functions": [{"function": "minecraft:set_count", "count": 2}]}]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:golden_carrot", "functions": [{"function": "minecraft:set_count", "count": 4}]}]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "toughasnails:purified_water_bottle", "functions": [{"function": "minecraft:set_count", "count": 2}]}]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/medical_resupply"
+}

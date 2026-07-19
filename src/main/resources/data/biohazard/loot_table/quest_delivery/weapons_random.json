@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:chest",
+  "pools": [{
+    "rolls": 1,
+    "entries": [
+      {"type":"minecraft:item","name":"pointblank:aa12"}, {"type":"minecraft:item","name":"pointblank:ak12"},
+      {"type":"minecraft:item","name":"pointblank:ak47"}, {"type":"minecraft:item","name":"pointblank:ak74"},
+      {"type":"minecraft:item","name":"pointblank:an94"}, {"type":"minecraft:item","name":"pointblank:ar57"},
+      {"type":"minecraft:item","name":"pointblank:aug"}, {"type":"minecraft:item","name":"pointblank:aughbar"},
+      {"type":"minecraft:item","name":"pointblank:ballista"}, {"type":"minecraft:item","name":"pointblank:c14"},
+      {"type":"minecraft:item","name":"pointblank:citoricxs"}, {"type":"minecraft:item","name":"pointblank:deserteagle"},
+      {"type":"minecraft:item","name":"pointblank:g3"}, {"type":"minecraft:item","name":"pointblank:g36c"},
+      {"type":"minecraft:item","name":"pointblank:g36k"}, {"type":"minecraft:item","name":"pointblank:g41"},
+      {"type":"minecraft:item","name":"pointblank:glock17"}, {"type":"minecraft:item","name":"pointblank:glock18"},
+      {"type":"minecraft:item","name":"pointblank:gm6lynx"}, {"type":"minecraft:item","name":"pointblank:hk416"},
+      {"type":"minecraft:item","name":"pointblank:hs12"}, {"type":"minecraft:item","name":"pointblank:ksg12"},
+      {"type":"minecraft:item","name":"pointblank:l96a1"}, {"type":"minecraft:item","name":"pointblank:lamg"},
+      {"type":"minecraft:item","name":"pointblank:m1014"}, {"type":"minecraft:item","name":"pointblank:m134minigun"},
+      {"type":"minecraft:item","name":"pointblank:m16a1"}, {"type":"minecraft:item","name":"pointblank:m1911a1"},
+      {"type":"minecraft:item","name":"pointblank:m249"}, {"type":"minecraft:item","name":"pointblank:m32mgl"},
+      {"type":"minecraft:item","name":"pointblank:m4a1"}, {"type":"minecraft:item","name":"pointblank:m4a1mod1"},
+      {"type":"minecraft:item","name":"pointblank:m4sopmodii"}, {"type":"minecraft:item","name":"pointblank:m590"},
+      {"type":"minecraft:item","name":"pointblank:m870"}, {"type":"minecraft:item","name":"pointblank:m9"},
+      {"type":"minecraft:item","name":"pointblank:m950"}, {"type":"minecraft:item","name":"pointblank:mk14ebr"},
+      {"type":"minecraft:item","name":"pointblank:mk23"}, {"type":"minecraft:item","name":"pointblank:mk48"},
+      {"type":"minecraft:item","name":"pointblank:mp5"}, {"type":"minecraft:item","name":"pointblank:mp7"},
+      {"type":"minecraft:item","name":"pointblank:p30l"}, {"type":"minecraft:item","name":"pointblank:p90"},
+      {"type":"minecraft:item","name":"pointblank:rhino"}, {"type":"minecraft:item","name":"pointblank:ro635"},
+      {"type":"minecraft:item","name":"pointblank:scarl"}, {"type":"minecraft:item","name":"pointblank:sl8"},
+      {"type":"minecraft:item","name":"pointblank:spas12"}, {"type":"minecraft:item","name":"pointblank:star15"},
+      {"type":"minecraft:item","name":"pointblank:tmp"}, {"type":"minecraft:item","name":"pointblank:tti_viper"},
+      {"type":"minecraft:item","name":"pointblank:uar10"}, {"type":"minecraft:item","name":"pointblank:ump45"},
+      {"type":"minecraft:item","name":"pointblank:vector"}, {"type":"minecraft:item","name":"pointblank:wa2000"},
+      {"type":"minecraft:item","name":"pointblank:xm29"}, {"type":"minecraft:item","name":"pointblank:xm3"},
+      {"type":"minecraft:item","name":"pointblank:xm7"}, {"type":"minecraft:item","name":"pointblank:m1garand"},
+      {"type":"minecraft:item","name":"pointblank:mosin"}, {"type":"minecraft:item","name":"pointblank:wlvrn"}
+    ]
+  }],
+  "random_sequence": "biohazard:quest_delivery/weapons_random"
+}

@@ -1,6 +1,6 @@
 {
-  "name": "Firearms",
-  "description": "Scavenged PointBlank weapons, scarce ammunition, and attachments.",
-  "icon": "pointblank:glock17",
+  "name": "Survivor Network",
+  "description": "Radio contacts, supply lines, and the people rebuilding them.",
+  "icon": "biohazard:radio_transmitter",
   "sortnum": 10
 }

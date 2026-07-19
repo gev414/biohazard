@@ -14,6 +14,16 @@ public final class ModPayloads {
                 HordeAtmospherePayload.STREAM_CODEC,
                 HordeAtmospherePayload::handle
         );
+        registrar.playToClient(
+                CourierChoiceOpenPayload.TYPE,
+                CourierChoiceOpenPayload.STREAM_CODEC,
+                CourierChoiceOpenPayload::handle
+        );
+        registrar.playToServer(
+                CourierChoiceSelectPayload.TYPE,
+                CourierChoiceSelectPayload.STREAM_CODEC,
+                CourierChoiceSelectPayload::handle
+        );
     }
 
     private ModPayloads() {

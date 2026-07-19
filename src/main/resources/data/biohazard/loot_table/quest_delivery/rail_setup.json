@@ -1,0 +1,52 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rail",
+          "functions": [{ "function": "minecraft:set_count", "count": 64 }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:powered_rail",
+          "functions": [{ "function": "minecraft:set_count", "count": 12 }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:detector_rail",
+          "functions": [{ "function": "minecraft:set_count", "count": 24 }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:activator_rail",
+          "functions": [{ "function": "minecraft:set_count", "count": 6 }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:minecart" }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/rail_setup"
+}

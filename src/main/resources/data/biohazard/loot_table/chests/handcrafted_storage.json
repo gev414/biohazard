@@ -135,7 +135,6 @@
         { "type": "minecraft:item", "name": "pointblank:ar_muzzlebrake", "weight": 4 },
         { "type": "minecraft:item", "name": "pointblank:smg_muzzlebrake", "weight": 4 },
         { "type": "minecraft:item", "name": "pointblank:cantedrail", "weight": 4 },
-        { "type": "minecraft:item", "name": "pointblank:railriser", "weight": 4 },
         { "type": "minecraft:item", "name": "pointblank:aimpoint_t2", "weight": 2 },
         { "type": "minecraft:item", "name": "pointblank:acog", "weight": 2 },
         { "type": "minecraft:item", "name": "pointblank:hamr", "weight": 2 },

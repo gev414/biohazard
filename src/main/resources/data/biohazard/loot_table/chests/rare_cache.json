@@ -21,7 +21,8 @@
         { "type": "minecraft:item", "name": "pointblank:precision_scope", "weight": 2 },
         { "type": "minecraft:item", "name": "pointblank:glock18", "weight": 2 },
         { "type": "minecraft:item", "name": "pointblank:scarl", "weight": 1 },
-        { "type": "minecraft:item", "name": "pointblank:hk416", "weight": 1 }
+        { "type": "minecraft:item", "name": "pointblank:hk416", "weight": 1 },
+        { "type": "minecraft:item", "name": "biohazard:infection_cure", "weight": 1 }
       ]
     }
   ],

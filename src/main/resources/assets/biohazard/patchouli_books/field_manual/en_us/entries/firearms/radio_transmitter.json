@@ -1,0 +1,32 @@
+{
+  "name": "Radio Transmitter",
+  "category": "biohazard:firearms",
+  "icon": "biohazard:radio_transmitter",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "biohazard:radio_transmitter",
+      "title": "Reach the Network",
+      "text": "The Radio Transmitter is your link to the surviving logistics network. Place one at a secure base, then use it to review available work, accept contracts, and collect courier deliveries when they arrive. Stay near a calibrated transmitter while handling network business."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "biohazard:radio_transmitter",
+      "title": "Build a Transmitter",
+      "text": "Copper and iron form the receiver, mounted on a plank base. Build one early: city finds become much more valuable once they can be turned into requests and deliveries."
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["biohazard:patchouli_books/field_manual/en_us/images/radio-transmitter.png"],
+      "title": "Field Setup",
+      "text": "A transmitter is best kept indoors, supplied, and easy to reach after an expedition."
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["biohazard:patchouli_books/field_manual/en_us/images/survivor-network-panel.png"],
+      "title": "Network Contacts",
+      "text": "Dr. Mara Voss, the Medic, provides medicine. Elias Ward, the Quartermaster, provides ammunition. Rook provides recovered guns. Nadia Vale provides transport and route-support utility. Complete their work and claim the resulting courier deliveries through the transmitter."
+    }
+  ]
+}
