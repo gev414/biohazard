@@ -1,12 +1,16 @@
 package io.github.gev414.biohazard;
 
+import io.github.gev414.biohazard.block.ModBlocks;
 import io.github.gev414.biohazard.config.EncounterConfig;
 import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
 import io.github.gev414.biohazard.entity.ModEntities;
 import io.github.gev414.biohazard.event.EncounterEvents;
 import io.github.gev414.biohazard.event.HordeAtmosphereSyncEvents;
 import io.github.gev414.biohazard.event.ModEntityEvents;
+import io.github.gev414.biohazard.event.ModCreativeTabEvents;
+import io.github.gev414.biohazard.item.ModItems;
 import io.github.gev414.biohazard.lostcities.LostCitiesIntegration;
+import io.github.gev414.biohazard.loot.HandcraftedStorageLoot;
 import io.github.gev414.biohazard.network.ModPayloads;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.EventPriority;
@@ -24,7 +28,10 @@ public final class Biohazard {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public Biohazard(IEventBus modEventBus, ModContainer modContainer) {
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
+        modEventBus.addListener(ModCreativeTabEvents::buildContents);
         modEventBus.addListener(ModEntityEvents::registerAttributes);
         modEventBus.addListener(ModPayloads::register);
 
@@ -48,6 +55,9 @@ public final class Biohazard {
                 EncounterEvents::onLivingDeath
         );
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onRightClickBlock);
+        NeoForge.EVENT_BUS.addListener(
+                HandcraftedStorageLoot::onBlockPlaced
+        );
         NeoForge.EVENT_BUS.addListener(
                 HordeAtmosphereSyncEvents::onServerTick
         );

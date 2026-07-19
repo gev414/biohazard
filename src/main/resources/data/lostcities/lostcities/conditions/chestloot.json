@@ -1,24 +1,36 @@
 {
   "values": [
     {
-      "factor": 30,
+      "factor": 20,
       "value": "biohazard:chests/food"
     },
     {
-      "factor": 30,
+      "factor": 15,
       "value": "biohazard:chests/builder"
     },
     {
-      "factor": 30,
+      "factor": 15,
       "value": "biohazard:chests/miner"
     },
     {
-      "factor": 30,
+      "factor": 10,
       "value": "biohazard:chests/farmer"
     },
     {
-      "factor": 30,
-      "value": "minecraft:chests/simple_dungeon"
+      "factor": 15,
+      "value": "biohazard:chests/medical_cache"
+    },
+    {
+      "factor": 12,
+      "value": "biohazard:chests/records_cache"
+    },
+    {
+      "factor": 10,
+      "value": "biohazard:chests/armory_cache"
+    },
+    {
+      "factor": 3,
+      "value": "biohazard:chests/rare_cache"
     }
   ]
 }

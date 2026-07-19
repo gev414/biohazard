@@ -3,8 +3,8 @@
     {
       "name": "biohazard:farmer",
       "rolls": {
-        "min": 12,
-        "max": 16
+        "min": 4,
+        "max": 6
       },
       "entries": [
         {

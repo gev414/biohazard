@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "biohazard:block/radio_transmitter"
+    },
+    "facing=east": {
+      "model": "biohazard:block/radio_transmitter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "biohazard:block/radio_transmitter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "biohazard:block/radio_transmitter",
+      "y": 270
+    }
+  }
+}

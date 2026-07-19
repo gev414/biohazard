@@ -145,7 +145,7 @@
         },
         {
           "random": 8,
-          "block": "pointblank:printer"
+          "block": "minecraft:blast_furnace[facing=north]"
         },
         {
           "random": 7,

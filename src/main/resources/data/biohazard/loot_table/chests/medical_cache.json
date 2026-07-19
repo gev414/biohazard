@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "name": "medical_supplies",
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 4
+      },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:golden_carrot", "weight": 8, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }] },
+        { "type": "minecraft:item", "name": "minecraft:honey_bottle", "weight": 10, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }] },
+        { "type": "minecraft:item", "name": "minecraft:glass_bottle", "weight": 12, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 4 } }] },
+        { "type": "minecraft:item", "name": "minecraft:fermented_spider_eye", "weight": 5 },
+        { "type": "minecraft:item", "name": "minecraft:glistering_melon_slice", "weight": 6, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 3 } }] },
+        { "type": "minecraft:item", "name": "minecraft:golden_apple", "weight": 2 },
+        { "type": "minecraft:item", "name": "toughasnails:purified_water_bottle", "weight": 12 },
+        { "type": "minecraft:item", "name": "toughasnails:empty_iron_canteen", "weight": 5 }
+      ]
+    },
+    {
+      "name": "research_data",
+      "rolls": 1,
+      "conditions": [
+        { "condition": "minecraft:random_chance", "chance": 0.65 }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "biohazard:research_data" }
+      ]
+    },
+    {
+      "name": "medical_documents",
+      "rolls": 1,
+      "conditions": [
+        { "condition": "minecraft:random_chance", "chance": 0.25 }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "biohazard:documents", "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1, "max": 2 } }] }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:chests/medical_cache"
+}

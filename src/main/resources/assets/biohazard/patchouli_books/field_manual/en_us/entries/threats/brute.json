@@ -31,9 +31,9 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "pointblank:gunmetal_ingot",
-      "title": "Gunmetal Cache",
-      "text": "The Brute also always drops 2 to 5 Gunmetal Ingots for the PointBlank manufacturing chain."
+      "item": "biohazard:encrypted_intel",
+      "title": "Encrypted Intel",
+      "text": "The Brute also drops 1 to 2 pieces of Encrypted Intel. The survivor network will eventually exchange this high-value field information for specialist supplies."
     }
   ]
 }

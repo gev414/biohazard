@@ -1,4 +1,8 @@
 {
+  "block.biohazard.radio_transmitter": "Radio Transmitter",
+  "item.biohazard.documents": "Documents",
+  "item.biohazard.research_data": "Research Data",
+  "item.biohazard.encrypted_intel": "Encrypted Intel",
   "entity.biohazard.brute": "Brute",
   "death.attack.biohazard.brute_rock_splash": "%1$s was crushed by a rock blast",
   "death.attack.biohazard.brute_rock_splash.player": "%1$s was crushed by a rock blast while fighting %2$s",

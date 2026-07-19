@@ -3,8 +3,8 @@
     {
       "name": "biohazard:builder",
       "rolls": {
-        "min": 6,
-        "max": 7
+        "min": 2,
+        "max": 3
       },
       "entries": [
         {
