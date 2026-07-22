@@ -302,9 +302,9 @@ deserve extra scrutiny.
 
 ### Persistent format versioning
 
-`BuildingEncounter` writes version 1 but does not yet branch while loading.
-Courier data has no explicit version. Introduce real migrations before the
-first incompatible format change.
+`BuildingEncounter` writes version 2 and explicitly defaults records without a
+spawn mode to `WAVE`. Courier data has no explicit version. Add further
+version-aware migrations before the next incompatible encounter format change.
 
 ### Global static throttles
 
@@ -400,4 +400,3 @@ Before merging a feature or maintenance change, ask:
 - Did player behavior change? Update Patchouli and release notes.
 - Did copied/adapted third-party material change? Update notices and license
   attribution.
-

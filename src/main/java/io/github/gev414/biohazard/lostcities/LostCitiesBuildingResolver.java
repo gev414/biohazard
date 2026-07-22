@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public final class LostCitiesBuildingResolver {
@@ -30,8 +32,81 @@ public final class LostCitiesBuildingResolver {
             return Optional.empty();
         }
 
-        int chunkX = position.getX() >> 4;
-        int chunkZ = position.getZ() >> 4;
+        return resolveChunk(
+                level,
+                cityInformation,
+                position.getX() >> 4,
+                position.getZ() >> 4
+        );
+    }
+
+    public static Optional<BuildingDescriptor> resolveNearest(
+            ServerLevel level,
+            BlockPos position,
+            double radius
+    ) {
+        ILostCities lostCities = LostCitiesIntegration.api();
+        if (lostCities == null) {
+            return Optional.empty();
+        }
+
+        ILostCityInformation cityInformation =
+                lostCities.getLostInfo(level);
+        if (cityInformation == null) {
+            return Optional.empty();
+        }
+
+        double effectiveRadius = Math.max(0.0D, radius);
+        int minimumChunkX = (int) Math.floor(
+                (position.getX() - effectiveRadius) / 16.0D
+        );
+        int maximumChunkX = (int) Math.floor(
+                (position.getX() + effectiveRadius) / 16.0D
+        );
+        int minimumChunkZ = (int) Math.floor(
+                (position.getZ() - effectiveRadius) / 16.0D
+        );
+        int maximumChunkZ = (int) Math.floor(
+                (position.getZ() + effectiveRadius) / 16.0D
+        );
+
+        Map<BuildingKey, BuildingDescriptor> candidates =
+                new LinkedHashMap<>();
+        for (int chunkX = minimumChunkX;
+             chunkX <= maximumChunkX;
+             chunkX++) {
+            for (int chunkZ = minimumChunkZ;
+                 chunkZ <= maximumChunkZ;
+                 chunkZ++) {
+                resolveChunk(level, cityInformation, chunkX, chunkZ)
+                        .ifPresent(building -> candidates.putIfAbsent(
+                                building.key(),
+                                building
+                        ));
+            }
+        }
+
+        double maximumDistanceSquared =
+                effectiveRadius * effectiveRadius;
+        BuildingDescriptor nearest = null;
+        double nearestDistanceSquared = Double.POSITIVE_INFINITY;
+        for (BuildingDescriptor candidate : candidates.values()) {
+            double distanceSquared = candidate.distanceToSqr(position);
+            if (distanceSquared <= maximumDistanceSquared
+                    && distanceSquared < nearestDistanceSquared) {
+                nearest = candidate;
+                nearestDistanceSquared = distanceSquared;
+            }
+        }
+        return Optional.ofNullable(nearest);
+    }
+
+    private static Optional<BuildingDescriptor> resolveChunk(
+            ServerLevel level,
+            ILostCityInformation cityInformation,
+            int chunkX,
+            int chunkZ
+    ) {
         ILostChunkInfo chunkInfo = cityInformation.getChunkInfo(
                 chunkX,
                 chunkZ

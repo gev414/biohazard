@@ -15,7 +15,8 @@ class BuildingEncounterTest {
     void bossStateAndUuidSurviveSerialization() {
         BuildingEncounter encounter = BuildingEncounter.materialize(
                 ResourceLocation.parse("lostcities:test_multibuilding"),
-                new EncounterSelection(true, true, 2)
+                new EncounterSelection(true, true, 2),
+                EncounterSpawnMode.WAVE
         );
 
         assertTrue(encounter.recordRegularDeath());
@@ -34,17 +35,58 @@ class BuildingEncounterTest {
         assertEquals(2, loaded.regularDeaths());
         assertEquals(bossUuid, loaded.bossUuid());
         assertTrue(loaded.bossSelected());
+        assertEquals(EncounterSpawnMode.WAVE, loaded.spawnMode());
     }
 
     @Test
     void nonHauntedBuildingMaterializesAsSafe() {
         BuildingEncounter encounter = BuildingEncounter.materialize(
                 ResourceLocation.parse("lostcities:test_building"),
-                new EncounterSelection(false, false, 0)
+                new EncounterSelection(false, false, 0),
+                EncounterSpawnMode.INSTANT
         );
 
         assertEquals(EncounterPhase.SAFE, encounter.phase());
         assertFalse(encounter.phase().locksContainers());
         assertFalse(encounter.recordRegularDeath());
+    }
+
+    @Test
+    void instantPopulationProgressSurvivesSerialization() {
+        BuildingEncounter encounter = BuildingEncounter.materialize(
+                ResourceLocation.parse("lostcities:test_instant"),
+                new EncounterSelection(true, false, 3),
+                EncounterSpawnMode.INSTANT
+        );
+
+        assertTrue(encounter.beginInitialPopulation());
+        assertFalse(encounter.beginInitialPopulation());
+        assertTrue(encounter.recordRegularSpawn());
+        assertTrue(encounter.recordRegularSpawn());
+        assertEquals(1, encounter.remainingInitialSpawns());
+
+        BuildingEncounter loaded = BuildingEncounter.load(encounter.save());
+        assertEquals(EncounterSpawnMode.INSTANT, loaded.spawnMode());
+        assertTrue(loaded.initialPopulationAttempted());
+        assertEquals(2, loaded.regularSpawns());
+        assertEquals(1, loaded.remainingInitialSpawns());
+    }
+
+    @Test
+    void versionOneEncounterLoadsAsWaveMode() {
+        BuildingEncounter encounter = BuildingEncounter.materialize(
+                ResourceLocation.parse("lostcities:test_legacy"),
+                new EncounterSelection(true, false, 3),
+                EncounterSpawnMode.WAVE
+        );
+        var legacyTag = encounter.save();
+        legacyTag.remove("spawnMode");
+        legacyTag.remove("regularSpawns");
+        legacyTag.remove("initialPopulationAttempted");
+
+        BuildingEncounter loaded = BuildingEncounter.load(legacyTag);
+        assertEquals(EncounterSpawnMode.WAVE, loaded.spawnMode());
+        assertEquals(0, loaded.regularSpawns());
+        assertFalse(loaded.initialPopulationAttempted());
     }
 }

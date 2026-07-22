@@ -110,13 +110,15 @@ call. Detailed defaults and operational implications are in
 Source: [`EncounterConfig.java`](../src/main/java/io/github/gev414/biohazard/config/EncounterConfig.java)
 
 Defines the server-side `biohazard-encounters.toml` contract: master switch,
-selection probabilities, kill range, active-mob cap, update interval, spawn
-distances and attempts, boss warning, container lock/message toggles, regular
-mob IDs, and excluded Lost Cities building IDs.
+selection probabilities, snapshotted spawn mode, activation radius/scan
+interval, kill range, active-mob cap, update interval, spawn distances and
+attempts, boss warning, container lock/message toggles, regular mob IDs, and
+excluded Lost Cities building IDs.
 
 Helper methods normalize reversed min/max settings. `isExcluded` compares the
 full resource-location string exactly. Config values are read live by services,
-except selection decisions and target kills already persisted for a building.
+except selection decisions, target kills, and spawn mode already persisted for
+a building.
 
 Consumed by: `EncounterManager`, `EncounterSpawner`, `EncounterEvents`.
 
@@ -213,8 +215,9 @@ its handshake, only this adapter should need structural changes.
 
 Source: [`LostCitiesBuildingResolver.java`](../src/main/java/io/github/gev414/biohazard/lostcities/LostCitiesBuildingResolver.java)
 
-Converts the Lost Cities API's current-chunk metadata into Biohazard's stable
-`BuildingDescriptor`.
+Converts Lost Cities chunk metadata into Biohazard's stable
+`BuildingDescriptor`. It can resolve the current chunk or search chunk metadata
+for the nearest deduplicated building inside a configured radius.
 
 Algorithm:
 
@@ -228,6 +231,10 @@ Algorithm:
 6. Extend downward by `numCellars * 6` and upward by
    `(numFloors + 1) * 6`, clamped to dimension build bounds.
 7. Return a descriptor keyed by dimension and root chunk.
+
+`resolveNearest` applies that conversion across the chunk square intersecting
+the configured radius, deduplicates multi-building members by `BuildingKey`,
+filters by distance to each descriptor AABB, and returns the closest match.
 
 The constant six-block floor height is an external-format assumption and must
 be revalidated on Lost Cities upgrades.
@@ -260,8 +267,9 @@ bounds. Constructor validation rejects null IDs, nonpositive dimensions, and
 empty vertical ranges.
 
 `bounds()` creates the full AABB used for loaded-entity searches.
-`contains(BlockPos)` performs half-open integer bound checks used for occupants,
-containers, and spawn positions.
+`contains(BlockPos)` performs half-open integer bound checks used for players,
+containers, and spawn positions. `distanceToSqr(BlockPos)` supports proximity
+selection against the building volume rather than its chunk center.
 
 This object is reconstructed from external metadata and is not itself saved.
 
@@ -305,12 +313,15 @@ The enum name is serialized. Renaming a constant is a save-format change.
 Source: [`BuildingEncounter.java`](../src/main/java/io/github/gev414/biohazard/encounter/BuildingEncounter.java)
 
 Mutable aggregate containing one building's durable encounter state. Immutable
-decisions are building ID, boss selection, and kill target; mutable progress is
-phase, regular deaths, boss UUID, and boss-ready game time.
+decisions are building ID, boss selection, kill target, and spawn mode; mutable
+progress is phase, regular deaths, successful initial regular spawns, initial
+population-attempt state, boss UUID, and boss-ready game time.
 
 Mutation methods enforce legal transitions:
 
 - `recordRegularDeath` ignores terminal phases and caps at the target;
+- `beginInitialPopulation` records the one-time instant-population attempt;
+- `recordRegularSpawn` advances bounded instant-population progress;
 - `beginBossWarning` works only from `REGULAR_WAVE`;
 - `activateBoss` works only from `BOSS_PENDING`;
 - `clear` rejects `SAFE` and already-cleared encounters.
@@ -319,7 +330,9 @@ The manager is responsible for calling `EncounterSavedData.setDirty()` after a
 successful mutation. The aggregate does not know its persistence owner.
 
 Serialization keys: `version`, `buildingId`, `bossSelected`, `targetKills`,
-`phase`, `regularDeaths`, optional `bossUuid`, `bossReadyGameTime`.
+`spawnMode`, `phase`, `regularDeaths`, `regularSpawns`,
+`initialPopulationAttempted`, optional `bossUuid`, `bossReadyGameTime`.
+Legacy records without `spawnMode` load as `WAVE`.
 
 ### `EncounterSavedData`
 
@@ -361,7 +374,7 @@ storage.
 
 Public API:
 
-- `tick(server)` throttles and scans occupied buildings when enabled;
+- `tick(server)` throttles proximity scans and scheduled encounter updates;
 - `materialize(level, descriptor)` creates and persists initial selection once;
 - `recordDeath(server, marker)` applies role-specific progress and marks data
   dirty.
@@ -369,16 +382,21 @@ Public API:
 Tick responsibilities:
 
 - filter dead/spectator players;
-- resolve and group occupants by `BuildingKey`;
+- resolve each player's nearest building in range and group by `BuildingKey`;
 - honor building exclusions;
 - announce newly haunted buildings;
-- maintain regular population;
+- create one-time instant populations or maintain wave populations;
 - transition to warning/clear at the target;
 - find/adopt or spawn the Brute after the warning.
 
 Key semantics:
 
 - encounter spawning pauses when globally disabled, but saved state remains;
+- only the nearest building per player is activated on a proximity scan,
+  preventing dense-city fan-out;
+- the configured spawn mode is snapshotted for each newly discovered building;
+- instant populations are persistent and retry missing placements without
+  replacing successfully placed members;
 - boss buildings stop replacing regular mobs as soon as the target is reached;
 - non-boss buildings clear only after loaded marked regulars reach zero;
 - `BOSS_ACTIVE` never creates a replacement when the saved boss is absent from
@@ -398,22 +416,26 @@ Public operations:
 - count loaded marked regulars in a descriptor AABB;
 - find a loaded marked Brute boss;
 - spawn one configured regular hostile mob;
+- spawn a bounded one-time batch of persistent regular hostile mobs;
 - spawn one persistent full-health Brute.
 
 Regular pool resolution is deliberately late-bound from config strings through
 the entity registry. Entries are rejected when missing, equal to the Brute, or
 not in `MobCategory.MONSTER`; each invalid string warns only once per process.
 
-Spawn search samples a distance and angle around a random occupant, then tries
-vertical offsets `0, +1, -1, +2, -2, +3, -3`. A candidate must be inside the
-building, at least the minimum distance from every occupant, within maximum
-distance of at least one occupant, loaded, inside the world border, dry,
-supported by a sturdy upper face, fully within the building AABB,
-collision-free, and unobstructed according to the mob.
+Wave search first samples a distance and angle around a random nearby player.
+If that cannot reach the building, and for instant population directly, search
+samples the full building volume. Both paths try vertical offsets
+`0, +1, -1, +2, -2, +3, -3`. A candidate must be inside the building, at least
+the minimum distance from every nearby player, loaded, inside the world border,
+dry, supported by a sturdy upper face, fully within the building AABB,
+collision-free, and unobstructed according to the mob. The near-player path
+also requires the configured maximum distance from at least one player.
 
-The helper positions the temporary mob during validation, then the caller adds
-it to the level. Regular zombies receive an ambient sound after successful
-spawn. Bosses are persistence-required and marked before insertion.
+The helper positions the temporary mob during validation. Regular mobs then run
+normal event-spawn initialization before insertion. Wave zombies receive an
+ambient sound after successful spawn. Instant regulars and bosses require
+persistence and are marked before insertion.
 
 ## 7. Brute entity domain
 
@@ -883,4 +905,3 @@ Handcrafted storage ID requires confirming that its block entity implements
 | Horde atmosphere | yes | no | no | direct API | no | translations not required |
 | Infection medicine | yes | no | no | direct API/packet | no | models, translations, loot |
 | Handcrafted storage loot | yes | generated placement context | no | no | block IDs/entities | chest loot table |
-

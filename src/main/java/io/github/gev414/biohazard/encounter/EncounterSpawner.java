@@ -16,10 +16,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.monster.Zombie;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -76,11 +78,60 @@ public final class EncounterSpawner {
             BuildingDescriptor building,
             List<ServerPlayer> occupants
     ) {
+        return spawnRegular(
+                level,
+                building,
+                occupants,
+                regularMobPool(),
+                RegularSpawnBehavior.WAVE
+        );
+    }
+
+    public static int spawnInitialPopulation(
+            ServerLevel level,
+            BuildingDescriptor building,
+            List<ServerPlayer> nearbyPlayers,
+            int requestedCount
+    ) {
+        if (requestedCount <= 0) {
+            return 0;
+        }
+
+        List<EntityType<?>> pool = regularMobPool();
+        if (pool.isEmpty()) {
+            return 0;
+        }
+
+        int spawned = 0;
+        int consecutiveFailures = 0;
+        while (spawned < requestedCount && consecutiveFailures < 3) {
+            if (spawnRegular(
+                    level,
+                    building,
+                    nearbyPlayers,
+                    pool,
+                    RegularSpawnBehavior.INSTANT
+            )) {
+                spawned++;
+                consecutiveFailures = 0;
+            } else {
+                consecutiveFailures++;
+            }
+        }
+        return spawned;
+    }
+
+    private static boolean spawnRegular(
+            ServerLevel level,
+            BuildingDescriptor building,
+            List<ServerPlayer> nearbyPlayers,
+            List<EntityType<?>> pool,
+            RegularSpawnBehavior behavior
+    ) {
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
         }
 
-        List<EntityType<?>> pool = regularMobPool();
         if (pool.isEmpty()) {
             return false;
         }
@@ -101,13 +152,25 @@ public final class EncounterSpawner {
         BlockPos spawnPosition = findSpawnPosition(
                 level,
                 building,
-                occupants,
+                nearbyPlayers,
                 mob,
-                random
+                random,
+                behavior == RegularSpawnBehavior.WAVE
         );
         if (spawnPosition == null) {
             mob.discard();
             return false;
+        }
+
+        EventHooks.finalizeMobSpawn(
+                mob,
+                level,
+                level.getCurrentDifficultyAt(spawnPosition),
+                MobSpawnType.EVENT,
+                null
+        );
+        if (behavior == RegularSpawnBehavior.INSTANT) {
+            mob.setPersistenceRequired();
         }
 
         EncounterEntityData.mark(
@@ -116,9 +179,14 @@ public final class EncounterSpawner {
                 EncounterEntityData.Role.REGULAR
         );
 
-        boolean spawned = level.addFreshEntity(mob);
+        boolean spawned = level.tryAddFreshEntityWithPassengers(mob);
+        if (!spawned) {
+            mob.discard();
+            return false;
+        }
 
-        if (spawned && mob instanceof Zombie) {
+        if (behavior == RegularSpawnBehavior.WAVE
+                && mob instanceof Zombie) {
             level.playSound(
                     null,
                     mob.blockPosition(),
@@ -151,7 +219,8 @@ public final class EncounterSpawner {
                 building,
                 occupants,
                 brute,
-                level.getRandom()
+                level.getRandom(),
+                true
         );
         if (spawnPosition == null) {
             brute.discard();
@@ -175,6 +244,37 @@ public final class EncounterSpawner {
 
     @Nullable
     private static BlockPos findSpawnPosition(
+            ServerLevel level,
+            BuildingDescriptor building,
+            List<ServerPlayer> occupants,
+            Mob mob,
+            RandomSource random,
+            boolean preferNearOccupant
+    ) {
+        if (preferNearOccupant) {
+            BlockPos nearOccupant = findNearOccupantSpawnPosition(
+                    level,
+                    building,
+                    occupants,
+                    mob,
+                    random
+            );
+            if (nearOccupant != null) {
+                return nearOccupant;
+            }
+        }
+
+        return findBuildingWideSpawnPosition(
+                level,
+                building,
+                occupants,
+                mob,
+                random
+        );
+    }
+
+    @Nullable
+    private static BlockPos findNearOccupantSpawnPosition(
             ServerLevel level,
             BuildingDescriptor building,
             List<ServerPlayer> occupants,
@@ -242,6 +342,63 @@ public final class EncounterSpawner {
         return null;
     }
 
+    @Nullable
+    private static BlockPos findBuildingWideSpawnPosition(
+            ServerLevel level,
+            BuildingDescriptor building,
+            List<ServerPlayer> nearbyPlayers,
+            Mob mob,
+            RandomSource random
+    ) {
+        int minimumX = building.key().rootChunkX() * 16;
+        int minimumZ = building.key().rootChunkZ() * 16;
+        int width = building.widthChunks() * 16;
+        int depth = building.depthChunks() * 16;
+        int height = building.maxYExclusive() - building.minY();
+        double minimumDistance =
+                EncounterConfig.minimumSpawnDistance();
+
+        for (int attempt = 0;
+             attempt < EncounterConfig.SPAWN_POSITION_ATTEMPTS.get();
+             attempt++) {
+            int x = minimumX + random.nextInt(width);
+            int y = building.minY() + random.nextInt(height);
+            int z = minimumZ + random.nextInt(depth);
+
+            for (int verticalOffset : VERTICAL_OFFSETS) {
+                BlockPos candidate = new BlockPos(
+                        x,
+                        y + verticalOffset,
+                        z
+                );
+                if (!building.contains(candidate)
+                        || !isMinimumDistanceValid(
+                        candidate,
+                        nearbyPlayers,
+                        minimumDistance
+                )
+                        || !canSpawnAt(
+                        level,
+                        building.bounds(),
+                        candidate,
+                        mob
+                )) {
+                    continue;
+                }
+
+                mob.moveTo(
+                        candidate.getX() + 0.5D,
+                        candidate.getY(),
+                        candidate.getZ() + 0.5D,
+                        random.nextFloat() * 360.0F,
+                        0.0F
+                );
+                return candidate;
+            }
+        }
+        return null;
+    }
+
     private static boolean isDistanceValid(
             BlockPos position,
             List<ServerPlayer> occupants,
@@ -266,6 +423,24 @@ public final class EncounterSpawner {
             }
         }
         return withinMaximumOfAnOccupant;
+    }
+
+    private static boolean isMinimumDistanceValid(
+            BlockPos position,
+            List<ServerPlayer> players,
+            double minimumDistance
+    ) {
+        double minimumSquared = minimumDistance * minimumDistance;
+        for (ServerPlayer player : players) {
+            if (player.distanceToSqr(
+                    position.getX() + 0.5D,
+                    position.getY(),
+                    position.getZ() + 0.5D
+            ) < minimumSquared) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean canSpawnAt(
@@ -332,6 +507,11 @@ public final class EncounterSpawner {
                     id
             );
         }
+    }
+
+    private enum RegularSpawnBehavior {
+        INSTANT,
+        WAVE
     }
 
     private EncounterSpawner() {

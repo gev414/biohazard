@@ -16,20 +16,32 @@ import java.util.Optional;
 
 public final class EncounterManager {
 
+    private static int ticksUntilActivationScan;
     private static int ticksUntilUpdate;
 
     public static void tick(MinecraftServer server) {
+        if (!EncounterConfig.ENABLED.get()) {
+            ticksUntilActivationScan = 0;
+            ticksUntilUpdate = 0;
+            return;
+        }
+
         if (ticksUntilUpdate > 0) {
             ticksUntilUpdate--;
+        }
+        if (ticksUntilActivationScan > 0) {
+            ticksUntilActivationScan--;
             return;
         }
-        ticksUntilUpdate = EncounterConfig.UPDATE_INTERVAL_TICKS.get() - 1;
+        ticksUntilActivationScan =
+                EncounterConfig.ACTIVATION_SCAN_INTERVAL_TICKS.get() - 1;
 
-        if (!EncounterConfig.ENABLED.get()) {
-            return;
+        boolean scheduledUpdate = ticksUntilUpdate <= 0;
+        if (scheduledUpdate) {
+            ticksUntilUpdate =
+                    EncounterConfig.UPDATE_INTERVAL_TICKS.get() - 1;
         }
-
-        updateOccupiedBuildings(server);
+        updateActivatedBuildings(server, scheduledUpdate);
     }
 
     public static EncounterSavedData.MaterializedEncounter materialize(
@@ -50,7 +62,8 @@ public final class EncounterManager {
             );
             return BuildingEncounter.materialize(
                     building.buildingId(),
-                    selection
+                    selection,
+                    EncounterConfig.SPAWN_MODE.get()
             );
         });
     }
@@ -75,8 +88,11 @@ public final class EncounterManager {
         }
     }
 
-    private static void updateOccupiedBuildings(MinecraftServer server) {
-        Map<BuildingKey, OccupiedBuilding> occupied =
+    private static void updateActivatedBuildings(
+            MinecraftServer server,
+            boolean scheduledUpdate
+    ) {
+        Map<BuildingKey, ActivatedBuilding> activated =
                 new LinkedHashMap<>();
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -85,34 +101,35 @@ public final class EncounterManager {
             }
 
             ServerLevel level = player.serverLevel();
-            LostCitiesBuildingResolver.resolveCurrentChunk(
+            LostCitiesBuildingResolver.resolveNearest(
                             level,
-                            player.blockPosition()
+                            player.blockPosition(),
+                            EncounterConfig.ACTIVATION_RADIUS.get()
                     )
-                    .filter(building -> building.contains(
-                            player.blockPosition()
-                    ))
-                    .ifPresent(building -> occupied
+                    .ifPresent(building -> activated
                             .computeIfAbsent(
                                     building.key(),
-                                    ignored -> new OccupiedBuilding(
+                                    ignored -> new ActivatedBuilding(
                                             level,
                                             building,
                                             new ArrayList<>()
                                     )
                             )
-                            .occupants()
+                            .nearbyPlayers()
                             .add(player));
         }
 
-        for (OccupiedBuilding building : occupied.values()) {
-            updateBuilding(building);
+        for (ActivatedBuilding building : activated.values()) {
+            updateBuilding(building, scheduledUpdate);
         }
     }
 
-    private static void updateBuilding(OccupiedBuilding occupied) {
-        ServerLevel level = occupied.level();
-        BuildingDescriptor building = occupied.building();
+    private static void updateBuilding(
+            ActivatedBuilding activated,
+            boolean scheduledUpdate
+    ) {
+        ServerLevel level = activated.level();
+        BuildingDescriptor building = activated.building();
 
         EncounterSavedData data = EncounterSavedData.get(
                 level.getServer()
@@ -135,7 +152,7 @@ public final class EncounterManager {
         if (materialized.created()
                 && encounter.phase() == EncounterPhase.REGULAR_WAVE) {
             announce(
-                    occupied.occupants(),
+                    activated.nearbyPlayers(),
                     "message.biohazard.encounter.haunted"
             );
         }
@@ -143,16 +160,29 @@ public final class EncounterManager {
         switch (encounter.phase()) {
             case SAFE, CLEARED -> {
             }
-            case REGULAR_WAVE -> updateRegularWave(
-                    occupied,
-                    data,
-                    encounter
-            );
-            case BOSS_PENDING -> updateBossPending(
-                    occupied,
-                    data,
-                    encounter
-            );
+            case REGULAR_WAVE -> {
+                boolean populationNotStarted =
+                        encounter.spawnMode() == EncounterSpawnMode.INSTANT
+                                && !encounter.initialPopulationAttempted();
+                if (materialized.created()
+                        || scheduledUpdate
+                        || populationNotStarted) {
+                    updateRegularWave(
+                            activated,
+                            data,
+                            encounter
+                    );
+                }
+            }
+            case BOSS_PENDING -> {
+                if (scheduledUpdate) {
+                    updateBossPending(
+                            activated,
+                            data,
+                            encounter
+                    );
+                }
+            }
             case BOSS_ACTIVE -> {
                 // A missing loaded entity means unloaded, not permission to
                 // create another boss. Its persisted UUID remains authoritative.
@@ -161,13 +191,13 @@ public final class EncounterManager {
     }
 
     private static void updateRegularWave(
-            OccupiedBuilding occupied,
+            ActivatedBuilding activated,
             EncounterSavedData data,
             BuildingEncounter encounter
     ) {
         int activeRegulars = EncounterSpawner.countLoadedRegulars(
-                occupied.level(),
-                occupied.building()
+                activated.level(),
+                activated.building()
         );
 
         if (encounter.regularDeaths() >= encounter.targetKills()) {
@@ -178,12 +208,12 @@ public final class EncounterManager {
              */
             if (encounter.bossSelected()) {
                 if (encounter.beginBossWarning(
-                        occupied.level().getGameTime()
+                        activated.level().getGameTime()
                                 + EncounterConfig.BOSS_WARNING_TICKS.get()
                 )) {
                     data.setDirty();
                     announce(
-                            occupied.occupants(),
+                            activated.nearbyPlayers(),
                             "message.biohazard.encounter.boss_warning"
                     );
                 }
@@ -191,10 +221,6 @@ public final class EncounterManager {
                 return;
             }
 
-            /*
-             * Non-boss buildings retain the original behavior: all currently
-             * spawned encounter mobs must be gone before the building clears.
-             */
             if (activeRegulars > 0) {
                 return;
             }
@@ -202,32 +228,51 @@ public final class EncounterManager {
             if (encounter.clear()) {
                 data.setDirty();
                 announce(
-                        occupied.occupants(),
+                        activated.nearbyPlayers(),
                         "message.biohazard.encounter.cleared"
                 );
             }
 
             return;
         }
+
+        if (encounter.spawnMode() == EncounterSpawnMode.INSTANT) {
+            if (encounter.beginInitialPopulation()) {
+                data.setDirty();
+            }
+            int spawned = EncounterSpawner.spawnInitialPopulation(
+                    activated.level(),
+                    activated.building(),
+                    activated.nearbyPlayers(),
+                    encounter.remainingInitialSpawns()
+            );
+            for (int index = 0; index < spawned; index++) {
+                if (encounter.recordRegularSpawn()) {
+                    data.setDirty();
+                }
+            }
+            return;
+        }
+
         if (activeRegulars
                 < EncounterConfig.MAX_ACTIVE_REGULAR_MOBS.get()) {
             EncounterSpawner.spawnRegular(
-                    occupied.level(),
-                    occupied.building(),
-                    occupied.occupants()
+                    activated.level(),
+                    activated.building(),
+                    activated.nearbyPlayers()
             );
         }
     }
 
     private static void updateBossPending(
-            OccupiedBuilding occupied,
+            ActivatedBuilding activated,
             EncounterSavedData data,
             BuildingEncounter encounter
     ) {
         Optional<BruteEntity> existingBoss =
                 EncounterSpawner.findLoadedBoss(
-                        occupied.level(),
-                        occupied.building()
+                        activated.level(),
+                        activated.building()
                 );
         if (existingBoss.isPresent()) {
             if (encounter.activateBoss(existingBoss.get().getUUID())) {
@@ -236,15 +281,15 @@ public final class EncounterManager {
             return;
         }
 
-        if (occupied.level().getGameTime()
+        if (activated.level().getGameTime()
                 < encounter.bossReadyGameTime()) {
             return;
         }
 
         EncounterSpawner.spawnBoss(
-                occupied.level(),
-                occupied.building(),
-                occupied.occupants()
+                activated.level(),
+                activated.building(),
+                activated.nearbyPlayers()
         ).ifPresent(brute -> {
             if (encounter.activateBoss(brute.getUUID())) {
                 data.setDirty();
@@ -265,10 +310,10 @@ public final class EncounterManager {
         }
     }
 
-    private record OccupiedBuilding(
+    private record ActivatedBuilding(
             ServerLevel level,
             BuildingDescriptor building,
-            List<ServerPlayer> occupants
+            List<ServerPlayer> nearbyPlayers
     ) {
     }
 

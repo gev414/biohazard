@@ -1,5 +1,6 @@
 package io.github.gev414.biohazard.config;
 
+import io.github.gev414.biohazard.encounter.EncounterSpawnMode;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -15,6 +16,9 @@ public final class EncounterConfig {
     public static ModConfigSpec.BooleanValue ENABLED;
     public static ModConfigSpec.DoubleValue HAUNTED_CHANCE;
     public static ModConfigSpec.DoubleValue BOSS_CHANCE;
+    public static ModConfigSpec.EnumValue<EncounterSpawnMode> SPAWN_MODE;
+    public static ModConfigSpec.DoubleValue ACTIVATION_RADIUS;
+    public static ModConfigSpec.IntValue ACTIVATION_SCAN_INTERVAL_TICKS;
     public static ModConfigSpec.IntValue MIN_REGULAR_KILLS;
     public static ModConfigSpec.IntValue MAX_REGULAR_KILLS;
     public static ModConfigSpec.IntValue MAX_ACTIVE_REGULAR_MOBS;
@@ -48,6 +52,22 @@ public final class EncounterConfig {
         BOSS_CHANCE = BUILDER
                 .comment("Chance that a haunted building has a Brute finale.")
                 .defineInRange("bossChance", 0.20D, 0.0D, 1.0D);
+        SPAWN_MODE = BUILDER
+                .comment(
+                        "How newly discovered haunted buildings populate regular mobs.",
+                        "INSTANT creates the full population once with no replacements.",
+                        "WAVE maintains up to maxActiveRegularMobs until the kill target."
+                )
+                .defineEnum("spawnMode", EncounterSpawnMode.INSTANT);
+        ACTIVATION_RADIUS = BUILDER
+                .comment(
+                        "Distance from a player to the nearest Lost Cities building",
+                        "at which its encounter is discovered and activated."
+                )
+                .defineInRange("activationRadius", 64.0D, 0.0D, 256.0D);
+        ACTIVATION_SCAN_INTERVAL_TICKS = BUILDER
+                .comment("Ticks between player-proximity scans for building activation.")
+                .defineInRange("activationScanIntervalTicks", 40, 1, 1_200);
         MIN_REGULAR_KILLS = BUILDER
                 .comment("Minimum regular kills required, inclusive.")
                 .defineInRange("minRegularKills", 8, 0, 10_000);
@@ -58,13 +78,13 @@ public final class EncounterConfig {
                 .comment("Maximum loaded regular encounter mobs per building.")
                 .defineInRange("maxActiveRegularMobs", 4, 1, 128);
         UPDATE_INTERVAL_TICKS = BUILDER
-                .comment("Ticks between occupied-building scans and spawn attempts.")
+                .comment("Ticks between progression checks and spawn retries.")
                 .defineInRange("updateIntervalTicks", 200, 1, 72_000);
         MIN_SPAWN_DISTANCE = BUILDER
-                .comment("Minimum regular/boss spawn distance from an occupant.")
+                .comment("Minimum regular/boss spawn distance from nearby players.")
                 .defineInRange("minSpawnDistance", 8.0D, 0.0D, 128.0D);
         MAX_SPAWN_DISTANCE = BUILDER
-                .comment("Maximum regular/boss spawn distance from an occupant.")
+                .comment("Maximum near-player wave/boss spawn distance.")
                 .defineInRange("maxSpawnDistance", 16.0D, 0.0D, 128.0D);
         SPAWN_POSITION_ATTEMPTS = BUILDER
                 .comment("Bounded candidate positions tried per building update.")

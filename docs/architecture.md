@@ -158,8 +158,11 @@ The value is `BuildingEncounter`:
 building id
 boss-selected decision
 target kill count
+spawn mode (`INSTANT` or `WAVE`)
 current phase
 regular death count
+successful initial regular spawn count
+whether initial population was attempted
 boss UUID, if activated
 boss-ready game time
 ```
@@ -170,10 +173,9 @@ is also persisted. Changing encounter chances or kill ranges affects only
 buildings that have not yet been materialized.
 
 Malformed individual saved entries are skipped so one damaged record does not
-invalidate all encounter data. `BuildingEncounter` writes a `version` field,
-currently `1`; the loader currently does not branch on it. A future format
-change should add explicit version-aware migration rather than simply renaming
-keys.
+invalidate all encounter data. `BuildingEncounter` writes version `2`.
+Version-1 records have no spawn-mode fields and load as `WAVE`, preserving
+their original behavior.
 
 ### 5.2 Encounter entity markers
 
@@ -246,15 +248,19 @@ sequenceDiagram
     participant SP as EncounterSpawner
     participant Mob as Marked encounter mob
 
-    Tick->>EM: post-tick (throttled)
-    EM->>LC: resolve each eligible player's current building
+    Tick->>EM: post-tick (proximity scan throttled)
+    EM->>LC: resolve nearest building within activation radius
     LC-->>EM: BuildingDescriptor
     EM->>SD: get or create by BuildingKey
     alt first discovery
         EM->>EM: deterministic EncounterSelection
         EM->>SD: persist SAFE or REGULAR_WAVE
     end
-    alt regular wave below target
+    alt instant population below target
+        EM->>SP: place all missing initial regulars
+        SP->>Mob: normal spawn initialization + persistence
+        SP->>Mob: attach building/REGULAR marker
+    else wave below target
         EM->>SP: spawn regular if below active cap
         SP->>Mob: attach building/REGULAR marker
     else target reached and boss selected
@@ -269,27 +275,33 @@ sequenceDiagram
 
 Detailed rules:
 
-1. Every configured interval, living non-spectator players are grouped by
-   resolved physical building. Multi-building chunks normalize to their root
-   chunk so occupants in different member chunks share one encounter.
+1. Every activation-scan interval, each living non-spectator player resolves
+   the nearest physical building within the configured radius. Selecting only
+   the nearest avoids mass activation in dense cities. Multi-building chunks
+   normalize to their root so players near different member chunks share one
+   encounter.
 2. Excluded building IDs are ignored before materialization. If a building was
    already persisted, its persisted ID is used for the exclusion check.
 3. First materialization deterministically chooses safe/haunted, optional boss,
-   and inclusive kill target.
-4. A regular wave maintains at most `maxActiveRegularMobs` loaded marked mobs.
-5. Spawn candidates are generated around a random occupant, constrained to the
-   building volume, configured distance annulus, loaded area, world border,
-   solid support, empty fluid, collision-free mob bounds, and spawn
-   obstruction rules.
-6. A regular death increments progress only when the dead entity carries the
+   and inclusive kill target, and snapshots the configured spawn mode.
+4. `INSTANT` attempts the entire target population once, persists successful
+   spawn progress, retries only missing placements, and never replaces a
+   successfully spawned member. These mobs require persistence.
+5. `WAVE` maintains at most `maxActiveRegularMobs` loaded marked mobs and
+   replaces them until the kill target.
+6. Near-player spawn search uses the configured distance annulus. Proximity
+   activation and instant population can instead sample the full building,
+   while still enforcing minimum player distance, loaded area, world border,
+   solid support, empty fluid, collision-free bounds, and obstruction rules.
+7. A regular death increments progress only when the dead entity carries the
    correct marker.
-7. At the target, boss buildings enter `BOSS_PENDING` immediately even if
+8. At the target, boss buildings enter `BOSS_PENDING` immediately even if
    surviving regular mobs remain. Non-boss buildings wait for all loaded
    marked regulars to be gone before clearing.
-8. A pending boss is spawned after the warning time. If a correctly marked
+9. A pending boss is spawned after the warning time. If a correctly marked
    Brute already exists, it is adopted. A missing boss during `BOSS_ACTIVE` is
    treated as unloaded, not as permission to duplicate it.
-9. A marked boss death clears the encounter. Cleared and safe states are
+10. A marked boss death clears the encounter. Cleared and safe states are
    terminal in the current implementation.
 
 Container locking is interaction-driven rather than a separate tick:
@@ -505,4 +517,3 @@ Prefer the smallest owning layer when adding behavior:
   content as resources.
 - Add external-mod integration behind a small adapter package so API churn does
   not spread through the domain.
-

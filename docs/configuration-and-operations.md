@@ -34,10 +34,13 @@ Section: `[encounters]`
 | `enabled` | boolean | `true` | manager and container event | Immediately stops new encounter scans/spawns and locking when false; does not delete progress or mobs |
 | `hauntedChance` | 0.0 to 1.0 | `0.70` | materialization | Newly materialized buildings only |
 | `bossChance` | 0.0 to 1.0 | `0.20` | materialization | Newly materialized haunted buildings only |
+| `spawnMode` | `INSTANT` or `WAVE` | `INSTANT` | materialization | Newly materialized buildings only; version-1 saved encounters load as `WAVE` |
+| `activationRadius` | 0 to 256 blocks | `64.0` | proximity scan | Live for future scans |
+| `activationScanIntervalTicks` | 1 to 1,200 | `40` | manager throttle | Live after the current scan delay; 40 ticks is about 2 seconds |
 | `minRegularKills` | 0 to 10,000 | `8` | materialization helper | Newly materialized haunted buildings only |
 | `maxRegularKills` | 0 to 10,000 | `15` | materialization helper | Newly materialized haunted buildings only |
 | `maxActiveRegularMobs` | 1 to 128 | `4` | wave update | Live; prevents replacements above cap but does not remove existing mobs |
-| `updateIntervalTicks` | 1 to 72,000 | `200` | manager throttle | Live after next throttle reset; 200 ticks is about 10 seconds |
+| `updateIntervalTicks` | 1 to 72,000 | `200` | encounter progression/retry | Live after next throttle reset; 200 ticks is about 10 seconds |
 | `minSpawnDistance` | 0 to 128 | `8.0` | spawn search | Live for future spawn attempts |
 | `maxSpawnDistance` | 0 to 128 | `16.0` | spawn search | Live for future spawn attempts |
 | `spawnPositionAttempts` | 1 to 128 | `16` | spawn search | Live; more attempts increase success and cost |
@@ -64,8 +67,28 @@ clear by writing them in normal ascending order.
 Every `regularMobs` entry must resolve to a registered hostile entity whose
 category is `MONSTER`. `biohazard:brute` is explicitly rejected. Invalid IDs are
 ignored and logged once per server process. An entirely invalid/empty pool means
-regular encounters cannot spawn replacements and therefore cannot naturally
-reach their kill target.
+regular encounters cannot populate and therefore cannot naturally reach their
+kill target.
+
+### Spawn modes and proximity
+
+Each proximity scan resolves only the nearest real Lost Cities building within
+`activationRadius` for each player. This avoids activating every building in a
+dense 64-block city radius at once. Players selecting the same physical
+building are grouped before it is updated.
+
+`INSTANT` creates the selected target population once. Successful mobs are
+initialized using normal mob spawn setup, marked as encounter entities, and
+made persistent so ordinary despawning cannot invalidate the fixed kill
+target. Failed placements are retried during the regular update interval, but
+killed or otherwise removed members are never replaced after their successful
+initial placement.
+
+`WAVE` preserves the original behavior: the manager maintains up to
+`maxActiveRegularMobs` loaded marked mobs and creates replacements until the
+kill target is reached. A building snapshots the configured mode when first
+materialized, so changing `spawnMode` does not rewrite encounters already in
+progress.
 
 ### Excluding buildings
 
@@ -225,14 +248,16 @@ After installation or upgrade, verify at least:
 Check in this order:
 
 - server config `enabled`;
-- player is alive, not spectator, and physically inside a Lost Cities building;
+- player is alive, not spectator, and within `activationRadius` of the nearest
+  Lost Cities building;
 - Lost Cities API initialized without errors;
 - building ID is not excluded;
 - difficulty is not Peaceful;
 - regular mob pool has at least one valid hostile ID;
-- spawn range/attempts permit a collision-free loaded position inside the
+- spawn distance/attempts permit a collision-free loaded position inside the
   building;
-- update interval has elapsed.
+- activation scan interval has elapsed; incomplete instant placement retries
+  use the regular update interval.
 
 A safe building is expected behavior for the configured percentage. A persisted
 safe selection remains safe even if `hauntedChance` later increases.
@@ -347,4 +372,3 @@ player-placed and stocked flags, and that
 - When a malformed-entry log appears, preserve the file before letting the
   server save again so the skipped source record remains available for forensic
   recovery.
-

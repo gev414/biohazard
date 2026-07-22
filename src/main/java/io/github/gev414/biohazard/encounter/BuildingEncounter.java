@@ -4,18 +4,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class BuildingEncounter {
 
-    private static final int DATA_VERSION = 1;
+    private static final int DATA_VERSION = 2;
 
     private final ResourceLocation buildingId;
     private final boolean bossSelected;
     private final int targetKills;
+    private final EncounterSpawnMode spawnMode;
 
     private EncounterPhase phase;
     private int regularDeaths;
+    private int regularSpawns;
+    private boolean initialPopulationAttempted;
     @Nullable
     private UUID bossUuid;
     private long bossReadyGameTime;
@@ -24,27 +28,38 @@ public final class BuildingEncounter {
             ResourceLocation buildingId,
             boolean bossSelected,
             int targetKills,
+            EncounterSpawnMode spawnMode,
             EncounterPhase phase,
             int regularDeaths,
+            int regularSpawns,
+            boolean initialPopulationAttempted,
             @Nullable UUID bossUuid,
             long bossReadyGameTime
     ) {
         this.buildingId = buildingId;
         this.bossSelected = bossSelected;
         this.targetKills = Math.max(0, targetKills);
+        this.spawnMode = Objects.requireNonNull(spawnMode, "spawnMode");
         this.phase = phase;
         this.regularDeaths = Math.clamp(
                 regularDeaths,
                 0,
                 this.targetKills
         );
+        this.regularSpawns = Math.clamp(
+                regularSpawns,
+                0,
+                this.targetKills
+        );
+        this.initialPopulationAttempted = initialPopulationAttempted;
         this.bossUuid = bossUuid;
         this.bossReadyGameTime = bossReadyGameTime;
     }
 
     public static BuildingEncounter materialize(
             ResourceLocation buildingId,
-            EncounterSelection selection
+            EncounterSelection selection,
+            EncounterSpawnMode spawnMode
     ) {
         EncounterPhase initialPhase = selection.haunted()
                 ? EncounterPhase.REGULAR_WAVE
@@ -53,8 +68,11 @@ public final class BuildingEncounter {
                 buildingId,
                 selection.bossSelected(),
                 selection.targetKills(),
+                spawnMode,
                 initialPhase,
                 0,
+                0,
+                false,
                 null,
                 0L
         );
@@ -72,12 +90,28 @@ public final class BuildingEncounter {
         return targetKills;
     }
 
+    public EncounterSpawnMode spawnMode() {
+        return spawnMode;
+    }
+
     public EncounterPhase phase() {
         return phase;
     }
 
     public int regularDeaths() {
         return regularDeaths;
+    }
+
+    public int regularSpawns() {
+        return regularSpawns;
+    }
+
+    public int remainingInitialSpawns() {
+        return Math.max(0, targetKills - regularSpawns);
+    }
+
+    public boolean initialPopulationAttempted() {
+        return initialPopulationAttempted;
     }
 
     @Nullable
@@ -96,6 +130,26 @@ public final class BuildingEncounter {
             return false;
         }
         regularDeaths++;
+        return true;
+    }
+
+    public boolean recordRegularSpawn() {
+        if (spawnMode != EncounterSpawnMode.INSTANT
+                || phase != EncounterPhase.REGULAR_WAVE
+                || regularSpawns >= targetKills) {
+            return false;
+        }
+        regularSpawns++;
+        return true;
+    }
+
+    public boolean beginInitialPopulation() {
+        if (spawnMode != EncounterSpawnMode.INSTANT
+                || phase != EncounterPhase.REGULAR_WAVE
+                || initialPopulationAttempted) {
+            return false;
+        }
+        initialPopulationAttempted = true;
         return true;
     }
 
@@ -133,8 +187,14 @@ public final class BuildingEncounter {
         tag.putString("buildingId", buildingId.toString());
         tag.putBoolean("bossSelected", bossSelected);
         tag.putInt("targetKills", targetKills);
+        tag.putString("spawnMode", spawnMode.name());
         tag.putString("phase", phase.name());
         tag.putInt("regularDeaths", regularDeaths);
+        tag.putInt("regularSpawns", regularSpawns);
+        tag.putBoolean(
+                "initialPopulationAttempted",
+                initialPopulationAttempted
+        );
         if (bossUuid != null) {
             tag.putUUID("bossUuid", bossUuid);
         }
@@ -156,12 +216,25 @@ public final class BuildingEncounter {
                 ? tag.getUUID("bossUuid")
                 : null;
 
+        EncounterSpawnMode loadedSpawnMode;
+        try {
+            loadedSpawnMode = EncounterSpawnMode.valueOf(
+                    tag.getString("spawnMode")
+            );
+        } catch (IllegalArgumentException exception) {
+            // Version 1 encounters predate instant population mode.
+            loadedSpawnMode = EncounterSpawnMode.WAVE;
+        }
+
         return new BuildingEncounter(
                 ResourceLocation.parse(tag.getString("buildingId")),
                 tag.getBoolean("bossSelected"),
                 tag.getInt("targetKills"),
+                loadedSpawnMode,
                 loadedPhase,
                 tag.getInt("regularDeaths"),
+                tag.getInt("regularSpawns"),
+                tag.getBoolean("initialPopulationAttempted"),
                 loadedBossUuid,
                 tag.getLong("bossReadyGameTime")
         );

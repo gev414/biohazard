@@ -12,12 +12,12 @@
     {
       "type": "patchouli:text",
       "title": "Regular Sites",
-      "text": "A regular site chooses a persistent target of 8 to 15 zombie or husk kills. Up to 4 regular encounter mobs remain active at once, with replacements checked every 10s and placed roughly 8 to 16 blocks away.$(br2)Clearing requires both the kill target and no loaded regular encounter mobs remaining."
+      "text": "A regular site chooses a persistent target of 8 to 15 zombie or husk kills. By default, the full population is placed as you approach and is not replaced after a kill.$(br2)Server operators can instead select wave mode, which maintains up to 4 active enemies and checks replacements every 10s."
     },
     {
       "type": "patchouli:text",
       "title": "Boss Sites",
-      "text": "After an infected building is cleared, there is a chance that a Brute will emerge. A short warning precedes its arrival. Enemies already in the building may remain, but no new regular replacements are created."
+      "text": "After the regular kill target is reached, there is a chance that a Brute will emerge. A short warning precedes its arrival. Enemies already in the building may remain, but no new regular replacements are created."
     },
     {
       "type": "patchouli:text",

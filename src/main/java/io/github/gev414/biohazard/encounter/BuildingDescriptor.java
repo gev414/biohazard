@@ -56,4 +56,29 @@ public record BuildingDescriptor(
                 && pos.getZ() >= minZ
                 && pos.getZ() < maxZExclusive;
     }
+
+    public double distanceToSqr(BlockPos pos) {
+        AABB bounds = bounds();
+        double x = pos.getX() + 0.5D;
+        double y = pos.getY() + 0.5D;
+        double z = pos.getZ() + 0.5D;
+        double dx = axisDistance(x, bounds.minX, bounds.maxX);
+        double dy = axisDistance(y, bounds.minY, bounds.maxY);
+        double dz = axisDistance(z, bounds.minZ, bounds.maxZ);
+        return dx * dx + dy * dy + dz * dz;
+    }
+
+    private static double axisDistance(
+            double coordinate,
+            double minimum,
+            double maximum
+    ) {
+        if (coordinate < minimum) {
+            return minimum - coordinate;
+        }
+        if (coordinate > maximum) {
+            return coordinate - maximum;
+        }
+        return 0.0D;
+    }
 }

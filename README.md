@@ -30,6 +30,10 @@ Encounter System
 
 The encounter package implements persistent building encounters for Lost Cities.
 
+By default, the nearest building within 64 blocks is activated and receives a
+one-time persistent population before the player enters. Server configuration
+can switch newly discovered buildings back to capped, replenishing wave mode.
+
 Responsibilities include:
 
 encounter lifecycle management
