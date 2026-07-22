@@ -14,6 +14,7 @@ public record EncounterSelection(
             BuildingKey key,
             double hauntedChance,
             double bossChance,
+            boolean bossEligibleWhenSafe,
             int minimumKills,
             int maximumKills
     ) {
@@ -26,12 +27,12 @@ public record EncounterSelection(
         ));
 
         boolean haunted = unitDouble(seed) < hauntedChance;
-        if (!haunted) {
-            return new EncounterSelection(false, false, 0);
-        }
-
         long bossRoll = mix64(seed + GOLDEN_GAMMA);
-        boolean boss = unitDouble(bossRoll) < bossChance;
+        boolean boss = unitDouble(bossRoll) < bossChance
+                && (haunted || bossEligibleWhenSafe);
+        if (!haunted) {
+            return new EncounterSelection(false, boss, 0);
+        }
 
         int min = Math.min(minimumKills, maximumKills);
         int max = Math.max(minimumKills, maximumKills);

@@ -1,6 +1,6 @@
 # Authoring Survivor Network quests
 
-This guide is for creating new FTB Quests contracts for the four survivor
+This guide is for creating new FTB Quests contracts for the five survivor
 network contacts. It assumes the Biohazard courier system is installed and
 the player uses a calibrated Radio Transmitter to accept, transmit, and collect
 work.
@@ -37,6 +37,7 @@ network a readable progression rather than four interchangeable shops.
 | Elias Ward — Quartermaster | Ammunition and general resupply | Documents, supply recovery, city reconnaissance | `ammunition` or `supplies` |
 | Rook — Arms Broker | Guns and combat equipment | Encrypted Intel, Brute kills, hard city objectives | `firearm` or `equipment` |
 | Nadia Vale — Surveyor | Transport and route utility | Maps, compasses, research data, rails, travel materials | `equipment` or `supplies` |
+| Mason Reed — Builder | Bulk construction materials | Documents, research data, tools, and building supplies | `supplies` |
 
 The default delivery delays are 120 seconds for supplies/ammunition, 180 for
 medical, 240 for equipment, and 300 for firearms. Longer delays are useful for

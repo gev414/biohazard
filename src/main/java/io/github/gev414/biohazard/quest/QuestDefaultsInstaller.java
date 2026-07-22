@@ -22,6 +22,7 @@ public final class QuestDefaultsInstaller {
             "chapters/quartermaster.snbt",
             "chapters/arms_broker.snbt",
             "chapters/surveyor.snbt",
+            "chapters/builder.snbt",
             "lang/en_us.snbt"
     );
 

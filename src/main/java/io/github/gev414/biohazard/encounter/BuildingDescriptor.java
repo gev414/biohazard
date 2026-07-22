@@ -15,6 +15,8 @@ public record BuildingDescriptor(
         int maxYExclusive
 ) {
 
+    public static final int FLOOR_HEIGHT = 6;
+
     public BuildingDescriptor {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(buildingId, "buildingId");
@@ -55,6 +57,33 @@ public record BuildingDescriptor(
                 && pos.getY() < maxYExclusive
                 && pos.getZ() >= minZ
                 && pos.getZ() < maxZExclusive;
+    }
+
+    public int interiorFloorCount() {
+        return Math.max(
+                0,
+                (maxYExclusive - minY - FLOOR_HEIGHT) / FLOOR_HEIGHT
+        );
+    }
+
+    public boolean isMultiChunk() {
+        return widthChunks * depthChunks > 1;
+    }
+
+    public int interiorFloorMinY(int floorIndex) {
+        if (floorIndex < 0 || floorIndex >= interiorFloorCount()) {
+            throw new IndexOutOfBoundsException("Invalid interior floor index");
+        }
+        return minY + floorIndex * FLOOR_HEIGHT;
+    }
+
+    public int interiorFloorMaxYExclusive(int floorIndex) {
+        return interiorFloorMinY(floorIndex) + FLOOR_HEIGHT;
+    }
+
+    public boolean containsInterior(BlockPos pos) {
+        return contains(pos)
+                && pos.getY() < minY + interiorFloorCount() * FLOOR_HEIGHT;
     }
 
     public double distanceToSqr(BlockPos pos) {

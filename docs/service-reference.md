@@ -110,7 +110,8 @@ call. Detailed defaults and operational implications are in
 Source: [`EncounterConfig.java`](../src/main/java/io/github/gev414/biohazard/config/EncounterConfig.java)
 
 Defines the server-side `biohazard-encounters.toml` contract: master switch,
-selection probabilities, snapshotted spawn mode, activation radius/scan
+selection probabilities (including a separate multi-chunk boss chance),
+snapshotted spawn mode, activation radius/scan
 interval, kill range, active-mob cap, update interval, spawn distances and
 attempts, boss warning, container lock/message toggles, regular mob IDs, and
 excluded Lost Cities building IDs.
@@ -268,8 +269,11 @@ empty vertical ranges.
 
 `bounds()` creates the full AABB used for loaded-entity searches.
 `contains(BlockPos)` performs half-open integer bound checks used for players,
-containers, and spawn positions. `distanceToSqr(BlockPos)` supports proximity
-selection against the building volume rather than its chunk center.
+containers, and spawn positions. `isMultiChunk()` identifies footprints larger
+than 1x1 for boss probability selection. Interior-floor helpers split Lost Cities'
+six-block floor bands and exclude the final roof band. `distanceToSqr(BlockPos)`
+supports proximity selection against the building volume rather than its chunk
+center.
 
 This object is reconstructed from external metadata and is not itself saved.
 
@@ -285,7 +289,9 @@ Separate mixed values drive haunted, boss, and inclusive target rolls.
 Properties:
 
 - identical seed/key/config yields identical output;
-- safe selection always has no boss and zero target;
+- a non-haunted selection always has zero target, but can carry a boss when
+  the caller marks that building as eligible;
+- non-haunted, non-eligible selection always has no boss;
 - reversed min/max inputs are normalized;
 - the target range includes both endpoints.
 
@@ -300,9 +306,9 @@ State-machine enum:
 
 | Phase | Meaning | Locks containers | Normal outgoing transition |
 |---|---|---:|---|
-| `SAFE` | Selection was not haunted | no | none |
+| `SAFE` | Selection was neither haunted nor boss-only | no | none |
 | `REGULAR_WAVE` | Kill target is in progress | yes | `BOSS_PENDING` or `CLEARED` |
-| `BOSS_PENDING` | Warning delay before Brute spawn | yes | `BOSS_ACTIVE` |
+| `BOSS_PENDING` | Warning delay, or initial boss-only Brute placement | yes | `BOSS_ACTIVE` |
 | `BOSS_ACTIVE` | Encounter Brute has been activated | yes | `CLEARED` |
 | `CLEARED` | Encounter completed | no | none |
 
@@ -312,8 +318,10 @@ The enum name is serialized. Renaming a constant is a save-format change.
 
 Source: [`BuildingEncounter.java`](../src/main/java/io/github/gev414/biohazard/encounter/BuildingEncounter.java)
 
-Mutable aggregate containing one building's durable encounter state. Immutable
-decisions are building ID, boss selection, kill target, and spawn mode; mutable
+Mutable aggregate containing one building's durable encounter state. A
+non-haunted boss selection materializes directly as `BOSS_PENDING` with a zero
+regular-kill target. Immutable decisions are building ID, boss selection, kill
+target, and spawn mode; mutable
 progress is phase, regular deaths, successful initial regular spawns, initial
 population-attempt state, boss UUID, and boss-ready game time.
 
@@ -384,7 +392,6 @@ Tick responsibilities:
 - filter dead/spectator players;
 - resolve each player's nearest building in range and group by `BuildingKey`;
 - honor building exclusions;
-- announce newly haunted buildings;
 - create one-time instant populations or maintain wave populations;
 - transition to warning/clear at the target;
 - find/adopt or spawn the Brute after the warning.
@@ -425,12 +432,15 @@ not in `MobCategory.MONSTER`; each invalid string warns only once per process.
 
 Wave search first samples a distance and angle around a random nearby player.
 If that cannot reach the building, and for instant population directly, search
-samples the full building volume. Both paths try vertical offsets
-`0, +1, -1, +2, -2, +3, -3`. A candidate must be inside the building, at least
-the minimum distance from every nearby player, loaded, inside the world border,
-dry, supported by a sturdy upper face, fully within the building AABB,
-collision-free, and unobstructed according to the mob. The near-player path
-also requires the configured maximum distance from at least one player.
+samples the building's interior six-block floor bands. Initial instant-spawn
+attempts rotate across those bands to distribute mobs vertically. The final
+roof band is excluded, and each candidate must have a sturdy interior ceiling.
+Both paths try vertical offsets `0, +1, -1, +2, -2, +3, -3` while keeping
+building-wide candidates within their selected floor. Candidates must also be
+at least the minimum distance from every nearby player, loaded, inside the
+world border, dry, supported by a sturdy upper face, fully within the building
+AABB, collision-free, and unobstructed according to the mob. The near-player
+path also requires the configured maximum distance from at least one player.
 
 The helper positions the temporary mob during validation. Regular mobs then run
 normal event-spawn initialization before insertion. Wave zombies receive an
@@ -583,7 +593,7 @@ increasing the upper bound or calling it from a tick loop.
 
 Source: [`QuestDefaultsInstaller.java`](../src/main/java/io/github/gev414/biohazard/quest/QuestDefaultsInstaller.java)
 
-Installs eight packaged files from `/biohazard/ftbquests_defaults/` into
+Installs nine packaged files from `/biohazard/ftbquests_defaults/` into
 `config/ftbquests/quests` during mod construction. If the destination directory
 exists and has any entry, it logs and preserves it. An absent or empty directory
 receives the complete default set, creating parents and replacing individual

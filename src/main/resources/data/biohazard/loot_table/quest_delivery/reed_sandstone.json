@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:sandstone", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:cut_sandstone", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:smooth_sandstone", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/reed_sandstone"
+}

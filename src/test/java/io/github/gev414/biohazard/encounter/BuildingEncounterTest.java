@@ -52,6 +52,22 @@ class BuildingEncounterTest {
     }
 
     @Test
+    void nonHauntedBossBuildingSkipsRegularWave() {
+        BuildingEncounter encounter = BuildingEncounter.materialize(
+                ResourceLocation.parse("lostcities:test_multibuilding"),
+                new EncounterSelection(false, true, 0),
+                EncounterSpawnMode.INSTANT
+        );
+
+        assertEquals(EncounterPhase.BOSS_PENDING, encounter.phase());
+        assertTrue(encounter.phase().locksContainers());
+        assertTrue(encounter.bossSelected());
+        assertEquals(0, encounter.targetKills());
+        assertFalse(encounter.beginInitialPopulation());
+        assertFalse(encounter.recordRegularDeath());
+    }
+
+    @Test
     void instantPopulationProgressSurvivesSerialization() {
         BuildingEncounter encounter = BuildingEncounter.materialize(
                 ResourceLocation.parse("lostcities:test_instant"),

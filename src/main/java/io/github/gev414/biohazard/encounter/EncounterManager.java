@@ -56,7 +56,10 @@ public final class EncounterManager {
                     level.getSeed(),
                     building.key(),
                     EncounterConfig.HAUNTED_CHANCE.get(),
-                    EncounterConfig.BOSS_CHANCE.get(),
+                    building.isMultiChunk()
+                            ? EncounterConfig.LARGE_BUILDING_BOSS_CHANCE.get()
+                            : EncounterConfig.BOSS_CHANCE.get(),
+                    building.isMultiChunk(),
                     EncounterConfig.minimumKills(),
                     EncounterConfig.maximumKills()
             );
@@ -149,14 +152,6 @@ public final class EncounterManager {
                 materialize(level, building);
         BuildingEncounter encounter = materialized.encounter();
 
-        if (materialized.created()
-                && encounter.phase() == EncounterPhase.REGULAR_WAVE) {
-            announce(
-                    activated.nearbyPlayers(),
-                    "message.biohazard.encounter.haunted"
-            );
-        }
-
         switch (encounter.phase()) {
             case SAFE, CLEARED -> {
             }
@@ -175,7 +170,7 @@ public final class EncounterManager {
                 }
             }
             case BOSS_PENDING -> {
-                if (scheduledUpdate) {
+                if (materialized.created() || scheduledUpdate) {
                     updateBossPending(
                             activated,
                             data,

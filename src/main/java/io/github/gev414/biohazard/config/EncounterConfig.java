@@ -16,6 +16,7 @@ public final class EncounterConfig {
     public static ModConfigSpec.BooleanValue ENABLED;
     public static ModConfigSpec.DoubleValue HAUNTED_CHANCE;
     public static ModConfigSpec.DoubleValue BOSS_CHANCE;
+    public static ModConfigSpec.DoubleValue LARGE_BUILDING_BOSS_CHANCE;
     public static ModConfigSpec.EnumValue<EncounterSpawnMode> SPAWN_MODE;
     public static ModConfigSpec.DoubleValue ACTIVATION_RADIUS;
     public static ModConfigSpec.IntValue ACTIVATION_SCAN_INTERVAL_TICKS;
@@ -50,8 +51,22 @@ public final class EncounterConfig {
                 .comment("Chance that a newly discovered real building is haunted.")
                 .defineInRange("hauntedChance", 0.70D, 0.0D, 1.0D);
         BOSS_CHANCE = BUILDER
-                .comment("Chance that a haunted building has a Brute finale.")
+                .comment(
+                        "Chance that a haunted 1x1-chunk building has a Brute finale."
+                )
                 .defineInRange("bossChance", 0.20D, 0.0D, 1.0D);
+        LARGE_BUILDING_BOSS_CHANCE = BUILDER
+                .comment(
+                        "Chance that a multi-chunk building contains a Brute.",
+                        "This roll applies whether or not the building is haunted.",
+                        "A building is large when its footprint covers more than one chunk."
+                )
+                .defineInRange(
+                        "largeBuildingBossChance",
+                        0.50D,
+                        0.0D,
+                        1.0D
+                );
         SPAWN_MODE = BUILDER
                 .comment(
                         "How newly discovered haunted buildings populate regular mobs.",
@@ -99,7 +114,7 @@ public final class EncounterConfig {
                 )
                 .define("lockRandomizableContainers", true);
         ANNOUNCE_STATE_CHANGES = BUILDER
-                .comment("Send occupants haunted, boss-warning, and cleared messages.")
+                .comment("Send occupants boss-warning and cleared messages.")
                 .define("announceStateChanges", true);
         REGULAR_MOBS = BUILDER
                 .comment(

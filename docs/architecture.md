@@ -254,9 +254,13 @@ sequenceDiagram
     EM->>SD: get or create by BuildingKey
     alt first discovery
         EM->>EM: deterministic EncounterSelection
-        EM->>SD: persist SAFE or REGULAR_WAVE
+        EM->>SD: persist SAFE, REGULAR_WAVE, or boss-only BOSS_PENDING
     end
-    alt instant population below target
+    alt non-haunted large building selected for boss
+        EM->>SP: spawn Brute on initial proximity activation
+        SP->>Mob: attach building/BOSS marker
+        EM->>SD: BOSS_ACTIVE + boss UUID
+    else instant population below target
         EM->>SP: place all missing initial regulars
         SP->>Mob: normal spawn initialization + persistence
         SP->>Mob: attach building/REGULAR marker
@@ -283,24 +287,32 @@ Detailed rules:
 2. Excluded building IDs are ignored before materialization. If a building was
    already persisted, its persisted ID is used for the exclusion check.
 3. First materialization deterministically chooses safe/haunted, optional boss,
-   and inclusive kill target, and snapshots the configured spawn mode.
+   and inclusive kill target, and snapshots the configured spawn mode. The
+   large-building boss chance applies independently of the haunted roll when
+   the footprint spans multiple chunks. A selected non-haunted large building
+   starts directly in `BOSS_PENDING`; a 1x1 building can select a boss only
+   when haunted.
 4. `INSTANT` attempts the entire target population once, persists successful
    spawn progress, retries only missing placements, and never replaces a
    successfully spawned member. These mobs require persistence.
 5. `WAVE` maintains at most `maxActiveRegularMobs` loaded marked mobs and
    replaces them until the kill target.
 6. Near-player spawn search uses the configured distance annulus. Proximity
-   activation and instant population can instead sample the full building,
-   while still enforcing minimum player distance, loaded area, world border,
-   solid support, empty fluid, collision-free bounds, and obstruction rules.
+   activation and instant population can instead sample interior floor bands,
+   rotating the initial population across them. The roof band is excluded and
+   every candidate requires an interior ceiling, plus minimum player distance,
+   loaded area, world border, solid support, empty fluid, collision-free
+   bounds, and obstruction rules.
 7. A regular death increments progress only when the dead entity carries the
    correct marker.
-8. At the target, boss buildings enter `BOSS_PENDING` immediately even if
-   surviving regular mobs remain. Non-boss buildings wait for all loaded
-   marked regulars to be gone before clearing.
-9. A pending boss is spawned after the warning time. If a correctly marked
-   Brute already exists, it is adopted. A missing boss during `BOSS_ACTIVE` is
-   treated as unloaded, not as permission to duplicate it.
+8. At the target, infected boss buildings enter `BOSS_PENDING` immediately
+   even if surviving regular mobs remain. Non-boss buildings wait for all
+   loaded marked regulars to be gone before clearing.
+9. An infected pending boss is spawned after the warning time. A boss-only
+   non-haunted building instead attempts its Brute immediately on first
+   proximity activation. If a correctly marked Brute already exists, it is
+   adopted. A missing boss during `BOSS_ACTIVE` is treated as unloaded, not as
+   permission to duplicate it.
 10. A marked boss death clears the encounter. Cleared and safe states are
    terminal in the current implementation.
 

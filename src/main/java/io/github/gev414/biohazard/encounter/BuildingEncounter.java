@@ -61,9 +61,14 @@ public final class BuildingEncounter {
             EncounterSelection selection,
             EncounterSpawnMode spawnMode
     ) {
-        EncounterPhase initialPhase = selection.haunted()
-                ? EncounterPhase.REGULAR_WAVE
-                : EncounterPhase.SAFE;
+        EncounterPhase initialPhase;
+        if (selection.haunted()) {
+            initialPhase = EncounterPhase.REGULAR_WAVE;
+        } else if (selection.bossSelected()) {
+            initialPhase = EncounterPhase.BOSS_PENDING;
+        } else {
+            initialPhase = EncounterPhase.SAFE;
+        }
         return new BuildingEncounter(
                 buildingId,
                 selection.bossSelected(),

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:scaffolding",
+          "functions": [{ "function": "minecraft:set_count", "count": 64 }]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/reed_scaffolding"
+}

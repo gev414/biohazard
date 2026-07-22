@@ -26,6 +26,7 @@ class EncounterSelectionTest {
                 key,
                 0.70D,
                 0.20D,
+                false,
                 8,
                 15
         );
@@ -34,6 +35,7 @@ class EncounterSelectionTest {
                 key,
                 0.70D,
                 0.20D,
+                false,
                 8,
                 15
         );
@@ -55,6 +57,7 @@ class EncounterSelectionTest {
                     key,
                     1.0D,
                     0.20D,
+                    false,
                     8,
                     15
             );
@@ -68,7 +71,7 @@ class EncounterSelectionTest {
     }
 
     @Test
-    void safeSelectionNeverCarriesBossOrKills() {
+    void ineligibleSafeSelectionNeverCarriesBossOrKills() {
         BuildingKey key = new BuildingKey(
                 ResourceLocation.parse("minecraft:overworld"),
                 0,
@@ -80,6 +83,7 @@ class EncounterSelectionTest {
                 key,
                 0.0D,
                 1.0D,
+                false,
                 8,
                 15
         );
@@ -87,6 +91,54 @@ class EncounterSelectionTest {
         assertFalse(selection.haunted());
         assertFalse(selection.bossSelected());
         assertEquals(0, selection.targetKills());
+    }
+
+    @Test
+    void eligibleSafeBuildingCanSelectBossWithoutRegularKills() {
+        BuildingKey key = new BuildingKey(
+                ResourceLocation.parse("minecraft:overworld"),
+                0,
+                0
+        );
+
+        EncounterSelection selection = EncounterSelection.select(
+                99L,
+                key,
+                0.0D,
+                1.0D,
+                true,
+                8,
+                15
+        );
+
+        assertFalse(selection.haunted());
+        assertTrue(selection.bossSelected());
+        assertEquals(0, selection.targetKills());
+    }
+
+    @Test
+    void eligibleSafeBuildingBossChanceUsesBothOutcomes() {
+        Set<Boolean> observedBossSelections = new HashSet<>();
+        for (int chunkX = -100; chunkX <= 100; chunkX++) {
+            EncounterSelection selection = EncounterSelection.select(
+                    123L,
+                    new BuildingKey(
+                            ResourceLocation.parse("minecraft:overworld"),
+                            chunkX,
+                            chunkX * 17
+                    ),
+                    0.0D,
+                    0.50D,
+                    true,
+                    8,
+                    15
+            );
+            assertFalse(selection.haunted());
+            assertEquals(0, selection.targetKills());
+            observedBossSelections.add(selection.bossSelected());
+        }
+
+        assertEquals(Set.of(false, true), observedBossSelections);
     }
 
     @Test
@@ -115,6 +167,7 @@ class EncounterSelectionTest {
                     ),
                     1.0D,
                     0.5D,
+                    false,
                     coordinate,
                     coordinate
             ));

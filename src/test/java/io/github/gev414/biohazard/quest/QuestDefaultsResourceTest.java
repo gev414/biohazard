@@ -16,6 +16,7 @@ class QuestDefaultsResourceTest {
             "chapters/quartermaster.snbt",
             "chapters/arms_broker.snbt",
             "chapters/surveyor.snbt",
+            "chapters/builder.snbt",
             "lang/en_us.snbt"
     );
 
@@ -30,7 +31,15 @@ class QuestDefaultsResourceTest {
             "rail_setup",
             "attachments_random",
             "weapons_choice",
-            "weapons_random"
+            "weapons_random",
+            "reed_scaffolding",
+            "reed_timber",
+            "reed_stone_masonry",
+            "reed_deepslate_masonry",
+            "reed_sandstone",
+            "reed_brickworks",
+            "reed_blackstone",
+            "reed_copper"
     );
 
     @Test

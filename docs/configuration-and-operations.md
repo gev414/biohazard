@@ -33,7 +33,8 @@ Section: `[encounters]`
 |---|---|---:|---|---|
 | `enabled` | boolean | `true` | manager and container event | Immediately stops new encounter scans/spawns and locking when false; does not delete progress or mobs |
 | `hauntedChance` | 0.0 to 1.0 | `0.70` | materialization | Newly materialized buildings only |
-| `bossChance` | 0.0 to 1.0 | `0.20` | materialization | Newly materialized haunted buildings only |
+| `bossChance` | 0.0 to 1.0 | `0.20` | materialization | Newly materialized haunted 1x1-chunk buildings only |
+| `largeBuildingBossChance` | 0.0 to 1.0 | `0.50` | materialization | Newly materialized multi-chunk buildings, whether haunted or safe; boss-only safe buildings skip regular mobs |
 | `spawnMode` | `INSTANT` or `WAVE` | `INSTANT` | materialization | Newly materialized buildings only; version-1 saved encounters load as `WAVE` |
 | `activationRadius` | 0 to 256 blocks | `64.0` | proximity scan | Live for future scans |
 | `activationScanIntervalTicks` | 1 to 1,200 | `40` | manager throttle | Live after the current scan delay; 40 ticks is about 2 seconds |
@@ -46,7 +47,7 @@ Section: `[encounters]`
 | `spawnPositionAttempts` | 1 to 128 | `16` | spawn search | Live; more attempts increase success and cost |
 | `bossWarningTicks` | 1 to 1,200 | `200` | transition to pending | Applied when warning begins; already-saved `bossReadyGameTime` is unchanged |
 | `lockRandomizableContainers` | boolean | `true` | interaction event | Live for future interactions |
-| `announceStateChanges` | boolean | `true` | manager | Live for future announcements |
+| `announceStateChanges` | boolean | `true` | manager | Live for future boss-warning and cleared announcements |
 | `regularMobs` | list of entity ID strings | zombie, husk | spawn pool | Resolved live on each regular spawn attempt |
 | `excludedBuildings` | list of Lost Cities IDs | empty | manager/lock event | Live; persisted building ID is used when encounter already exists |
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:bricks", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:mud_bricks", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:nether_bricks", "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    }
+  ],
+  "random_sequence": "biohazard:quest_delivery/reed_brickworks"
+}

@@ -83,7 +83,8 @@ public final class EncounterSpawner {
                 building,
                 occupants,
                 regularMobPool(),
-                RegularSpawnBehavior.WAVE
+                RegularSpawnBehavior.WAVE,
+                -1
         );
     }
 
@@ -102,15 +103,27 @@ public final class EncounterSpawner {
             return 0;
         }
 
+        int floorCount = building.interiorFloorCount();
+        if (floorCount == 0) {
+            return 0;
+        }
+
         int spawned = 0;
         int consecutiveFailures = 0;
-        while (spawned < requestedCount && consecutiveFailures < 3) {
+        int floorOffset = level.getRandom().nextInt(floorCount);
+        int attempts = 0;
+        int maximumConsecutiveFailures = Math.max(3, floorCount);
+        while (spawned < requestedCount
+                && consecutiveFailures < maximumConsecutiveFailures) {
+            int preferredFloor = (floorOffset + attempts) % floorCount;
+            attempts++;
             if (spawnRegular(
                     level,
                     building,
                     nearbyPlayers,
                     pool,
-                    RegularSpawnBehavior.INSTANT
+                    RegularSpawnBehavior.INSTANT,
+                    preferredFloor
             )) {
                 spawned++;
                 consecutiveFailures = 0;
@@ -126,7 +139,8 @@ public final class EncounterSpawner {
             BuildingDescriptor building,
             List<ServerPlayer> nearbyPlayers,
             List<EntityType<?>> pool,
-            RegularSpawnBehavior behavior
+            RegularSpawnBehavior behavior,
+            int preferredInteriorFloor
     ) {
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
@@ -155,7 +169,8 @@ public final class EncounterSpawner {
                 nearbyPlayers,
                 mob,
                 random,
-                behavior == RegularSpawnBehavior.WAVE
+                behavior == RegularSpawnBehavior.WAVE,
+                preferredInteriorFloor
         );
         if (spawnPosition == null) {
             mob.discard();
@@ -220,7 +235,8 @@ public final class EncounterSpawner {
                 occupants,
                 brute,
                 level.getRandom(),
-                true
+                true,
+                -1
         );
         if (spawnPosition == null) {
             brute.discard();
@@ -249,7 +265,8 @@ public final class EncounterSpawner {
             List<ServerPlayer> occupants,
             Mob mob,
             RandomSource random,
-            boolean preferNearOccupant
+            boolean preferNearOccupant,
+            int preferredInteriorFloor
     ) {
         if (preferNearOccupant) {
             BlockPos nearOccupant = findNearOccupantSpawnPosition(
@@ -269,7 +286,8 @@ public final class EncounterSpawner {
                 building,
                 occupants,
                 mob,
-                random
+                random,
+                preferredInteriorFloor
         );
     }
 
@@ -322,7 +340,7 @@ public final class EncounterSpawner {
                 )
                         || !canSpawnAt(
                         level,
-                        building.bounds(),
+                        building,
                         candidate,
                         mob
                 )) {
@@ -348,21 +366,32 @@ public final class EncounterSpawner {
             BuildingDescriptor building,
             List<ServerPlayer> nearbyPlayers,
             Mob mob,
-            RandomSource random
+            RandomSource random,
+            int preferredInteriorFloor
     ) {
         int minimumX = building.key().rootChunkX() * 16;
         int minimumZ = building.key().rootChunkZ() * 16;
         int width = building.widthChunks() * 16;
         int depth = building.depthChunks() * 16;
-        int height = building.maxYExclusive() - building.minY();
+        int floorCount = building.interiorFloorCount();
+        if (floorCount == 0) {
+            return null;
+        }
         double minimumDistance =
                 EncounterConfig.minimumSpawnDistance();
 
         for (int attempt = 0;
-             attempt < EncounterConfig.SPAWN_POSITION_ATTEMPTS.get();
+            attempt < EncounterConfig.SPAWN_POSITION_ATTEMPTS.get();
              attempt++) {
+            int floorIndex = preferredInteriorFloor >= 0
+                    ? preferredInteriorFloor
+                    : random.nextInt(floorCount);
+            int floorMinY = building.interiorFloorMinY(floorIndex);
+            int floorMaxYExclusive =
+                    building.interiorFloorMaxYExclusive(floorIndex);
             int x = minimumX + random.nextInt(width);
-            int y = building.minY() + random.nextInt(height);
+            int y = floorMinY
+                    + random.nextInt(BuildingDescriptor.FLOOR_HEIGHT);
             int z = minimumZ + random.nextInt(depth);
 
             for (int verticalOffset : VERTICAL_OFFSETS) {
@@ -371,7 +400,8 @@ public final class EncounterSpawner {
                         y + verticalOffset,
                         z
                 );
-                if (!building.contains(candidate)
+                if (candidate.getY() < floorMinY
+                        || candidate.getY() >= floorMaxYExclusive
                         || !isMinimumDistanceValid(
                         candidate,
                         nearbyPlayers,
@@ -379,7 +409,7 @@ public final class EncounterSpawner {
                 )
                         || !canSpawnAt(
                         level,
-                        building.bounds(),
+                        building,
                         candidate,
                         mob
                 )) {
@@ -445,15 +475,17 @@ public final class EncounterSpawner {
 
     private static boolean canSpawnAt(
             ServerLevel level,
-            AABB buildingBounds,
+            BuildingDescriptor building,
             BlockPos position,
             Mob mob
     ) {
-        if (!level.isAreaLoaded(position, 0)
+        if (!building.containsInterior(position)
+                || !level.isAreaLoaded(position, 0)
                 || !level.getWorldBorder().isWithinBounds(position)
                 || !level.getFluidState(position).isEmpty()
                 || !level.getBlockState(position.below())
-                .isFaceSturdy(level, position.below(), Direction.UP)) {
+                .isFaceSturdy(level, position.below(), Direction.UP)
+                || !hasInteriorCeiling(level, building, position)) {
             return false;
         }
 
@@ -464,6 +496,7 @@ public final class EncounterSpawner {
                 0.0F,
                 0.0F
         );
+        AABB buildingBounds = building.bounds();
         AABB mobBounds = mob.getBoundingBox();
         if (mobBounds.minX < buildingBounds.minX
                 || mobBounds.maxX > buildingBounds.maxX
@@ -476,6 +509,26 @@ public final class EncounterSpawner {
 
         return level.noCollision(mob)
                 && mob.checkSpawnObstruction(level);
+    }
+
+    private static boolean hasInteriorCeiling(
+            ServerLevel level,
+            BuildingDescriptor building,
+            BlockPos position
+    ) {
+        for (int offset = 2;
+             offset <= BuildingDescriptor.FLOOR_HEIGHT;
+             offset++) {
+            BlockPos ceiling = position.above(offset);
+            if (!building.contains(ceiling)) {
+                return false;
+            }
+            if (level.getBlockState(ceiling)
+                    .isFaceSturdy(level, ceiling, Direction.DOWN)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<EntityType<?>> regularMobPool() {

@@ -206,6 +206,7 @@ src/main/resources/biohazard/ftbquests_defaults/
 |   |-- quartermaster.snbt
 |   |-- arms_broker.snbt
 |   |-- surveyor.snbt
+|   |-- builder.snbt
 |   `-- backup/arms_broker.snbt   not installed
 `-- lang/en_us.snbt
 ```
@@ -454,4 +455,3 @@ three-level validation model:
 3. **Acceptance:** launch the complete pinned modpack, inspect logs after data
    reload, generate fresh Lost Cities chunks, use recipes, open Patchouli/FTB
    content, and exercise reward/loot paths.
-
