@@ -79,7 +79,6 @@ property of Feed The Beast Ltd. and are not bundled in the Biohazard JAR. They
 remain subject to Feed The Beast's applicable terms and policies:
 https://feed-the-beast.com/policies/modpacks-mods-policy
 
-
 ## External Dependencies
 
 Biohazard depends on external mods and libraries that are not bundled in the Biohazard JAR. Those projects remain subject to their respective licenses and copyright notices.
