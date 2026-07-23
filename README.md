@@ -71,6 +71,20 @@ infected's maximum health without weakening them when they later leave the
 city. See [City operations](docs/city-operations.md) for the gameplay loop,
 status drawer, progression defaults, and server tuning.
 
+## Stealth, attention, and encumbrance
+
+Carried equipment now forms a second survival constraint: inventory, armor,
+offhand items, and Traveler's Backpack contents contribute to weight tiers and
+movement penalties. A compact lower-right HUD reports current load and stealth
+state, while the player inventory adds a weight bar whose tooltip lists the
+server's live tier thresholds and penalties. Light crouched players can avoid
+automatic infected targeting, but sight builds progressive suspicion and
+firing, attacking, or mining a durable block creates a radius-bounded
+investigation event. Horde mobs ignore the stealth window and Brutes detect
+faster. The radio quest interface also reports horde-day state and a 24-hour
+world clock without changing the existing pre-horde fog. See
+[Stealth, attention, and encumbrance](docs/stealth-attention-and-encumbrance.md).
+
 Entity System
 
 Custom entities are isolated inside the entity package.
@@ -153,6 +167,8 @@ Tough As Nails	Survival systems
 Patchouli	In-game documentation
 The Hordes	Horde scheduling and infection
 FTB Quests	Survivor Network contacts, contracts, and quest journal
+Traveler's Backpack	Optional carried-weight integration
+ZombieTactics	Optional loud-gun investigation marker
 
 Development dependencies are resolved through Modrinth Maven and are not bundled into the final artifact.
 

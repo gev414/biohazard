@@ -1,0 +1,33 @@
+{
+  "name": "Stealth and Load",
+  "category": "biohazard:survival",
+  "icon": "minecraft:leather_boots",
+  "sortnum": 30,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Travel Light",
+      "text": "Every carried stack has weight, including armor, offhand gear, and the contents and fluid tanks of an equipped Traveler's Backpack. Burdened, Heavy, and Overloaded survivors move progressively slower."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Read the Scale",
+      "text": "The lower-right HUD shows current load and tier. Open your inventory to find the weight indicator beside the recipe-book button; hover it for live thresholds. Defaults are Light through 16, Burdened through 25, Heavy through 40, then Overloaded."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Quiet Movement",
+      "text": "Crouching while LIGHT makes you quiet. Infected will not instantly choose you as a target, but staying in their view builds suspicion. EXPOSED means quiet conditions are not met, not that you are already detected. Break sight and move behind them; Brutes notice much faster."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Noise Discipline",
+      "text": "Suppressed fire can be heard within 12 blocks. Unsuppressed fire carries roughly 96. Attacking infected and mining durable blocks also draw nearby infected toward the sound. These actions briefly prevent you from becoming quiet."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Horde Exception",
+      "text": "Horde-spawned infected always know their assigned survivor and have no suspicion window. A Radio Transmitter's Survivor Network screen shows HORDE DAY, active-horde state, and the current 24-hour world time. The warning fog still follows its normal schedule."
+    }
+  ]
+}

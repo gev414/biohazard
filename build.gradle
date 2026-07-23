@@ -168,6 +168,14 @@ dependencies {
     // Biohazard reads The Hordes' authoritative per-player event state, while
     // keeping the mod as a non-transitive runtime dependency for consumers.
     compileOnly "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
+    // Required at runtime by the modpack. Biohazard listens to PointBlank's
+    // resolved firing sound and inspects active attachment groups to classify
+    // suppressed shots without modifying firearm behavior.
+    compileOnly "maven.modrinth:RghT3FYJ:${pointblank_modrinth_version}"
+    // Optional encumbrance integration. The dependency remains non-transitive
+    // for Biohazard consumers and is loaded only when Traveler's Backpack is
+    // present.
+    compileOnly "maven.modrinth:rlloIFEV:${travelersbackpack_modrinth_version}"
     // The Hordes' cure synchronization packet implements Atlas Lib's network
     // interface. Atlas remains runtime-supplied by The Hordes.
     compileOnly "maven.modrinth:G6VHtQr4:${atlaslib_modrinth_version}"
@@ -181,6 +189,7 @@ dependencies {
     localRuntime "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
     localRuntime "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
     localRuntime "maven.modrinth:LOpKHB2A:${waystones_modrinth_version}"
+    localRuntime "maven.modrinth:rlloIFEV:${travelersbackpack_modrinth_version}"
 
     localRuntime "maven.modrinth:8BmcQJ2H:${geckolib_modrinth_version}"
     localRuntime "maven.modrinth:zg2tT2Vu:${gml_modrinth_version}"
@@ -235,6 +244,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             hordes_version         : hordes_version,
             waystones_version      : waystones_version,
             ftb_quests_version     : ftb_quests_version,
+            travelersbackpack_version: travelersbackpack_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

@@ -7,11 +7,13 @@ import io.github.gev414.biohazard.config.CityOperationsConfig;
 import io.github.gev414.biohazard.config.EncounterConfig;
 import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
 import io.github.gev414.biohazard.config.RadioQuestConfig;
+import io.github.gev414.biohazard.config.SurvivalSystemsConfig;
 import io.github.gev414.biohazard.entity.ModEntities;
 import io.github.gev414.biohazard.event.EncounterEvents;
 import io.github.gev414.biohazard.event.HordeAtmosphereSyncEvents;
 import io.github.gev414.biohazard.event.ModEntityEvents;
 import io.github.gev414.biohazard.event.ModCreativeTabEvents;
+import io.github.gev414.biohazard.event.SurvivalSystemsEvents;
 import io.github.gev414.biohazard.item.ModItems;
 import io.github.gev414.biohazard.lostcities.LostCitiesIntegration;
 import io.github.gev414.biohazard.loot.HandcraftedStorageLoot;
@@ -67,6 +69,12 @@ public final class Biohazard {
                 RadioQuestConfig.SPEC,
                 "biohazard-radio-quests.toml"
         );
+        SurvivalSystemsConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                SurvivalSystemsConfig.SPEC,
+                "biohazard-survival.toml"
+        );
 
         QuestDefaultsInstaller.installIfMissing();
         FTBQuestsIntegration.initialize();
@@ -98,5 +106,34 @@ public final class Biohazard {
         );
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerStopped);
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onServerTick
+        );
+        NeoForge.EVENT_BUS.addListener(
+                EventPriority.HIGHEST,
+                SurvivalSystemsEvents::onLivingChangeTarget
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onIncomingDamage
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onBlockBreak
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onSoundAtPosition
+        );
+        NeoForge.EVENT_BUS.addListener(
+                EventPriority.HIGHEST,
+                SurvivalSystemsEvents::onEntityJoinLevel
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onPlayerLoggedIn
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onPlayerLoggedOut
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onServerStopped
+        );
     }
 }

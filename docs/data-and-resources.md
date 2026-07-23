@@ -34,6 +34,7 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | `biohazard` | Lost Cities | 46 | Handcrafted palettes and decorated LCMT tower floors |
 | `biohazard` | Patchouli book definition | 1 | field manual book-level data |
 | `biohazard` | recipe | 1 | Radio Transmitter crafting recipe |
+| `biohazard` | tags | 6 | city scaling, stealth targeting, and encumbrance weight overrides |
 | `lcmt` | Lost Cities | 19 | targeted optional LCMT part/building overrides |
 | `lostcities` | Lost Cities | 42 | base Lost Cities palette/variant/condition overrides |
 | `minecraft` | tags | 3 | mining/tool and damage behavior integration |
@@ -41,7 +42,7 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | `waystones` | advancements | 4 | recipe unlock alignment for overridden recipes |
 | `waystones` | recipes | 4 | portable travel recipe overrides |
 
-Counts describe the 1.1.0 repository and should be updated when families are
+Counts describe the 1.1.3 repository and should be updated when families are
 added or removed.
 
 ### Client asset inventory
@@ -51,7 +52,7 @@ added or removed.
 | `biohazard` | blockstates | 1 | transmitter facing variants |
 | `biohazard` | language | 1 | item, block, entity, message, tooltip, and screen strings |
 | `biohazard` | models | 7 | one block and six item models |
-| `biohazard` | Patchouli content | 20 | categories, entries, and guide images |
+| `biohazard` | Patchouli content | 21 | categories, entries, and guide images |
 | `biohazard` | textures | 10 | block layers, items, Brute, and guide images |
 | `ftbquests` | language/theme | 2 | Survivor Network quest-book presentation |
 
@@ -364,9 +365,9 @@ Recipe and advancement IDs must move together. Test crafting and unlock state
 after upgrades because a valid JSON file can still point to a removed item or
 changed criterion.
 
-## 9. Minecraft tags
+## 9. Tags
 
-Three tag resources integrate Biohazard with standard mechanics:
+Three Minecraft-namespace tags integrate Biohazard with standard mechanics:
 
 | Tag | Purpose |
 |---|---|
@@ -377,6 +378,21 @@ Three tag resources integrate Biohazard with standard mechanics:
 Check each file's `replace` field before editing. A mistaken `replace: true`
 under the Minecraft namespace could erase contributions from vanilla or other
 mods.
+
+Six Biohazard-namespace tags expose gameplay classification:
+
+| Tag | Registry | Purpose |
+|---|---|---|
+| `biohazard:city_scaled_infected` | entity type | entities eligible for persistent city-danger health scaling |
+| `biohazard:stealth_affected_infected` | entity type | infected governed by quiet-target suppression, suspicion, and bounded investigation |
+| `biohazard:encumbrance/weightless` | item | forces a carried stack to contribute no weight |
+| `biohazard:encumbrance/light` | item | overrides automatic classification with the light-stack weight |
+| `biohazard:encumbrance/heavy` | item | overrides automatic classification with the heavy-stack weight |
+| `biohazard:encumbrance/very_heavy` | item | overrides automatic classification with the very-heavy-stack weight |
+
+Weight tags take precedence over firearm, armor, block, and default automatic
+classification. Keep the entity tags distinct: an entity may participate in
+city scaling, stealth awareness, both, or neither.
 
 ## 10. Localization contracts
 
@@ -390,6 +406,9 @@ mods.
 - `message.biohazard.delivery.*`;
 - `message.biohazard.infection.*`;
 - `screen.biohazard.courier_choice.*`;
+- `screen.biohazard.radio_horde.*`;
+- `hud.biohazard.encumbrance.*` and `hud.biohazard.stealth.*`;
+- `tooltip.biohazard.encumbrance.*`;
 - damage/death-message keys required by the damage type.
 
 Java should emit translation keys and parameters, not assembled English

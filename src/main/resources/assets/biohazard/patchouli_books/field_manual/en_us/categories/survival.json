@@ -1,6 +1,6 @@
 {
   "name": "Survival",
-  "description": "Hydration, temperature, and the equipment that keeps both under control.",
+  "description": "Hydration, temperature, carried load, stealth, and the equipment that keeps them under control.",
   "icon": "toughasnails:empty_leather_canteen",
   "sortnum": 20
 }
