@@ -19,7 +19,7 @@ services together but not contain gameplay rules.
 
 **Owns.** `MOD_ID`, the shared SLF4J logger, and initialization order.
 
-**Direct collaborators.** All deferred registry holders, the three config
+**Direct collaborators.** All deferred registry holders, the five config
 classes, FTB defaults/integration, Lost Cities adapter, payload registration,
 event adapters, `HandcraftedStorageLoot`, and `DeliveryManager`.
 
@@ -139,6 +139,15 @@ Defines server-side `biohazard-radio-quests.toml`: transmitter range,
 calibration duration, and per-category courier delays. It is consumed by radio
 block entities, radio proximity search, and `DeliveryCategory.delayTicks()`.
 
+### `SurvivalSystemsConfig`
+
+Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/biohazard/config/SurvivalSystemsConfig.java)
+
+Defines `biohazard-survival.toml`: weight categories and tier thresholds,
+movement penalties, progressive visual-awareness tuning, alert memory, loud
+action grace, attention radii, and ZombieTactics marker replacement. All
+values are read live and the specification is initialized idempotently.
+
 ## 4. Event adapters
 
 Event adapters translate framework events into domain calls. They own event
@@ -197,6 +206,16 @@ Source: [`ModEntityEvents.java`](../src/main/java/io/github/gev414/biohazard/eve
 Binds the Brute entity type to the attributes produced by
 `BruteEntity.createAttributes()`. Missing this binding normally produces an
 entity registration/runtime failure.
+
+### `SurvivalSystemsEvents` and `SurvivalStatusSync`
+
+Sources: [`SurvivalSystemsEvents.java`](../src/main/java/io/github/gev414/biohazard/event/SurvivalSystemsEvents.java),
+[`SurvivalStatusSync.java`](../src/main/java/io/github/gev414/biohazard/event/SurvivalStatusSync.java)
+
+The event facade routes server ticks, target changes, incoming damage, block
+breaks, PointBlank sounds, marker joins, login/logout, and server stop to the
+encumbrance and stealth services. `SurvivalStatusSync` sends changed weight,
+tier, quiet state, and maximum nearby suspicion at most every five ticks.
 
 ## 5. Lost Cities adapter
 
@@ -745,12 +764,13 @@ normal collection already ran before status is requested.
 
 Source: [`ModPayloads.java`](../src/main/java/io/github/gev414/biohazard/network/ModPayloads.java)
 
-Registers protocol version string `1` and four play-phase payloads:
+Registers protocol version string `3` and five play-phase payloads:
 
 | Payload ID | Direction | Handler |
 |---|---|---|
 | `biohazard:horde_atmosphere` | server to client | update transient fog state |
 | `biohazard:city_status` | server to client | update the radio-linked QuestScreen panel |
+| `biohazard:survival_status` | server to client | update load and stealth HUD state |
 | `biohazard:courier_choice_open` | server to client | open choice screen |
 | `biohazard:courier_choice_select` | client to server | validate and apply choice |
 
@@ -787,6 +807,16 @@ drawer on the right edge of the FTB Quests `QuestScreen`; it is cleared when
 that screen closes. An unmapped radio uses the same payload with `mapped=false`,
 so city status no longer occupies Minecraft chat.
 
+### `SurvivalStatusPayload`
+
+Source: [`SurvivalStatusPayload.java`](../src/main/java/io/github/gev414/biohazard/network/SurvivalStatusPayload.java)
+
+Server-to-client transient HUD snapshot containing tenths of weight, tier
+ordinal, enabled state, quiet state, clamped suspicion percentage, all three
+server tier boundaries, and all three non-Light speed penalties. Including
+configuration values keeps the inventory tooltip authoritative on dedicated
+servers.
+
 ### `CourierChoiceSelectPayload`
 
 Source: [`CourierChoiceSelectPayload.java`](../src/main/java/io/github/gev414/biohazard/network/CourierChoiceSelectPayload.java)
@@ -806,7 +836,9 @@ Client-only automatic event subscriber. It:
 - attaches fog rendering and logout cleanup at client setup;
 - registers `BruteRenderer`;
 - registers a small `ThrownItemRenderer` for the Brute rock;
-- tints the suppressant's base model layer regeneration pink (`0xCD5CAB`).
+- tints the suppressant's base model layer regeneration pink (`0xCD5CAB`);
+- renders the survival HUD and radio Horde Watch panel and clears their
+  transient state at logout/screen close.
 
 Its `Dist.CLIENT` restriction prevents dedicated-server classloading failures.
 
@@ -866,7 +898,59 @@ are not transmitted, so enchantments/custom data would not be visible before
 choice even though the server would deliver them. Expanding choice manifests to
 component-rich stacks should be accompanied by a protocol/UI design change.
 
-## 13. Item behavior
+### Survival and radio HUD clients
+
+Sources: [`SurvivalStatusClient.java`](../src/main/java/io/github/gev414/biohazard/client/SurvivalStatusClient.java),
+[`InventoryEncumbranceClient.java`](../src/main/java/io/github/gev414/biohazard/client/InventoryEncumbranceClient.java),
+[`RadioHordeStatusClient.java`](../src/main/java/io/github/gev414/biohazard/client/RadioHordeStatusClient.java),
+[`RadioClock.java`](../src/main/java/io/github/gev414/biohazard/client/RadioClock.java)
+
+`SurvivalStatusClient` renders the load tier, quiet/exposed state, and
+suspicion bar from the latest server payload. `InventoryEncumbranceClient`
+anchors a compact weight glyph, numeric load, and segmented tier bar to the
+vanilla player inventory; its hover tooltip lists the live server thresholds
+and penalties. It follows recipe-book layout shifts and hides behind the
+full-width narrow-screen recipe book. `RadioHordeStatusClient` renders
+only while a radio-opened FTB Quests session owns a city-status snapshot. It
+uses the existing authoritative horde snapshot and `RadioClock`'s pure
+Minecraft-tick-to-24-hour conversion; it does not calculate a countdown.
+
+## 13. Survival gameplay domain
+
+### Encumbrance services
+
+Sources: [`EncumbranceManager.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceManager.java),
+[`TravelersBackpackIntegration.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/TravelersBackpackIntegration.java),
+[`EncumbranceMath.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceMath.java),
+[`EncumbranceTier.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceTier.java),
+[`EncumbranceSnapshot.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceSnapshot.java),
+[`ModItemTags.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/ModItemTags.java)
+
+The manager periodically totals inventory, armor, offhand, and optional
+Traveler's Backpack state and owns one replaceable transient movement modifier.
+The optional integration is class-isolated so its types are never loaded when
+the mod is absent. Backpack reads include storage, tools, upgrades, and both
+fluid tanks. Item tags override automatic firearm, armor, block, and default
+classification.
+
+### Awareness and attention services
+
+Sources: [`AwarenessManager.java`](../src/main/java/io/github/gev414/biohazard/stealth/AwarenessManager.java),
+[`AwarenessMath.java`](../src/main/java/io/github/gev414/biohazard/stealth/AwarenessMath.java),
+[`AttentionManager.java`](../src/main/java/io/github/gev414/biohazard/stealth/AttentionManager.java),
+[`PointBlankAttention.java`](../src/main/java/io/github/gev414/biohazard/stealth/PointBlankAttention.java)
+
+Awareness owns transient mob/player suspicion, alert memory, and player
+loud-action grace. It suppresses only automatic targets against quiet players,
+then promotes them after view-cone/line-of-sight suspicion completes. Horde
+capability mobs bypass suppression and Brutes multiply suspicion gain.
+Attention sends affected infected toward bounded sound positions.
+PointBlank integration matches the resolved server fire sound to the shooter
+and classifies active suppressor attachments; only unsuppressed fire creates an
+approved ZombieTactics marker, and only when its configured marker range does
+not exceed the Biohazard event radius.
+
+## 14. Item behavior
 
 ### `InfectionMedicineItem`
 
@@ -893,7 +977,7 @@ Suppressant path:
 Both variants always have enchantment glint, return a stable description ID,
 and append two translated tooltip lines. Static duration math is unit-tested.
 
-## 14. Loot integration
+## 15. Loot integration
 
 ### `HandcraftedStorageLoot`
 
@@ -913,7 +997,7 @@ it. The caller uses that return to stop encounter lock processing. Adding a
 Handcrafted storage ID requires confirming that its block entity implements
 `Container`; otherwise it will be recognized but not filled.
 
-## 15. Dependency-by-service summary
+## 16. Dependency-by-service summary
 
 | Service family | Minecraft/NeoForge | Lost Cities | FTB Quests/Architectury | The Hordes/Atlas | Handcrafted | Biohazard data |
 |---|---:|---:|---:|---:|---:|---:|
@@ -924,5 +1008,6 @@ Handcrafted storage ID requires confirming that its block entity implements
 | Quest submission | yes | no | direct API | no | no | bundled SNBT |
 | Courier delivery | yes | via neither | direct reward hook | no | no | manifests/translations |
 | Horde atmosphere | yes | no | no | direct API | no | translations not required |
+| Stealth/encumbrance | targets, attributes, sound/block/damage events | no | radio screen context | horde capability bypass | no | entity/item tags, HUD translations |
 | Infection medicine | yes | no | no | direct API/packet | no | models, translations, loot |
 | Handcrafted storage loot | yes | generated placement context | no | no | block IDs/entities | chest loot table |

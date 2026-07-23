@@ -17,6 +17,15 @@ public final class ModEntityTypeTags {
                     )
             );
 
+    public static final TagKey<EntityType<?>> STEALTH_AFFECTED_INFECTED =
+            TagKey.create(
+                    Registries.ENTITY_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Biohazard.MOD_ID,
+                            "stealth_affected_infected"
+                    )
+            );
+
     private ModEntityTypeTags() {
     }
 }

@@ -161,6 +161,22 @@ Adds custom hostile entities and survival gameplay content for the Biohazard mod
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="travelersbackpack"
+    type="optional"
+    reason="Biohazard includes equipped backpack contents in encumbrance when Traveler's Backpack is installed"
+    versionRange="[${travelersbackpack_version},10.2)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="zombie_tactics"
+    type="optional"
+    reason="Biohazard can use ZombieTactics investigation markers for loud attention events"
+    versionRange="[1.3.3,1.4)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="lostsouls"
     type="incompatible"
     reason="Lost Souls and Biohazard both manage Lost Cities building encounters"

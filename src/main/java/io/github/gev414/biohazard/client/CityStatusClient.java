@@ -29,6 +29,10 @@ public final class CityStatusClient {
         expanded = false;
     }
 
+    public static boolean hasRadioSnapshot() {
+        return status != null;
+    }
+
     public static void render(
             Screen screen,
             GuiGraphics graphics,

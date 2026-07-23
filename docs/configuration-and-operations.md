@@ -6,13 +6,14 @@ the persistent files that must be protected during upgrades or recovery.
 
 ## 1. Configuration file ownership
 
-Biohazard registers four NeoForge configuration files:
+Biohazard registers five NeoForge configuration files:
 
 | File | NeoForge type | Effective location | Authority |
 |---|---|---|---|
 | `biohazard-encounters.toml` | server | a world's `serverconfig` directory | logical server |
 | `biohazard-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
 | `biohazard-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
+| `biohazard-survival.toml` | server | a world's `serverconfig` directory | logical server |
 | `biohazard-client.toml` | client | instance `config` directory | each client |
 
 For a local development world, server config is typically under
@@ -23,6 +24,9 @@ different fog presentation without changing server gameplay.
 NeoForge creates files from defaults when missing. Stop the server before
 editing world server config unless a supported config reload path is known;
 otherwise in-memory values or a later save can surprise the operator.
+Changing a Java default does not replace a value already assigned in a
+generated TOML. Delete the file to regenerate every key, or edit only the
+intended assignments while the game or server is stopped.
 
 ## 2. Encounter config
 
@@ -158,7 +162,54 @@ until both are complete. City state is shared by mapped radios and stored in
 Read [City operations](city-operations.md) before changing progression values
 on an established world.
 
-## 5. Client horde-atmosphere config
+## 5. Survival systems config
+
+File: `biohazard-survival.toml`
+
+Root section: `[survivalSystems]`
+
+| Key | Default | Meaning |
+|---|---:|---|
+| `enabled` | `true` | Master switch for weight, stealth, attention, and its HUD |
+| `updateIntervalTicks` | `10` | Inventory/backpack weight recalculation interval |
+| `encumbrance.lightMaxWeight` | `16.0` | Highest weight that permits crouched quiet movement |
+| `encumbrance.burdenedMaxWeight` | `25.0` | Upper Burdened boundary |
+| `encumbrance.heavyMaxWeight` | `40.0` | Upper Heavy boundary |
+| `encumbrance.burdenedSpeedPenalty` | `0.10` | Burdened movement reduction |
+| `encumbrance.heavySpeedPenalty` | `0.20` | Heavy movement reduction |
+| `encumbrance.overloadedSpeedPenalty` | `0.35` | Overloaded movement reduction |
+| `stealth.scanIntervalTicks` | `5` | Visual suspicion scan interval |
+| `stealth.detectionRange` | `24.0` | Maximum progressive sight range |
+| `stealth.closeDetectionRange` | `2.5` | Visible range that detects immediately |
+| `stealth.fieldOfViewDegrees` | `140.0` | Infected visual cone |
+| `stealth.suspicionPerSecond` | `35.0` | Base suspicion gain before distance scaling |
+| `stealth.suspicionDecayPerSecond` | `20.0` | Suspicion decay without favorable sight |
+| `stealth.bruteDetectionMultiplier` | `2.5` | Brute suspicion multiplier |
+| `stealth.alertMemoryTicks` | `400` | Acquired-target memory; default 20 seconds |
+| `stealth.loudActionGraceTicks` | `40` | Delay before crouching can become quiet again |
+| `attention.suppressedFireRange` | `12.0` | Suppressed PointBlank shot radius |
+| `attention.unsuppressedFireRange` | `96.0` | Unsuppressed PointBlank shot radius |
+| `attention.meleeRange` | `16.0` | Melee investigation radius |
+| `attention.blockBreakRange` | `20.0` | Non-instant block-break radius |
+| `attention.replaceZombieTacticsMarkers` | `true` | Replace automatic markers with Biohazard-approved loud-gun markers |
+
+The `[survivalSystems.encumbrance.weights]` section controls category weights:
+`defaultStack = 1.0`, `lightStack = 0.5`, `heavyStack = 2.0`,
+`veryHeavyStack = 4.0`, `armorStack = 2.0`, `firearmStack = 2.5`,
+`blockStack = 1.5`, `backpackBase = 2.0`, and
+`backpackFluidPerBucket = 1.0`.
+
+All state is transient. Changing thresholds or category weights takes effect on
+the next recalculation; movement modifiers are replaced rather than stacked.
+Disabling the system removes Biohazard's movement modifier and hides its HUD.
+The HUD and inventory weight tooltip receive their thresholds and penalties
+from the logical server. They show the same active values used for tier
+selection and movement modifiers, including TOML overrides; there is no
+separate client balance table.
+Read [Stealth, attention, and encumbrance](stealth-attention-and-encumbrance.md)
+before changing noise radii or ZombieTactics marker ownership.
+
+## 6. Client horde-atmosphere config
 
 File: `biohazard-client.toml`
 
@@ -179,7 +230,7 @@ This config does not change The Hordes schedule. Server payloads use The Hordes'
 `dayLength`, `hordeStartTime`, enabled state, command-only mode, and per-player
 horde state.
 
-## 6. Persistent files
+## 7. Persistent files
 
 Back up the world before changing or recovering these files.
 
@@ -238,7 +289,7 @@ It is installed from the JAR only when absent/empty. Back it up separately from
 the world when it contains server-authored changes. Team/player quest progress
 is owned by FTB Quests and follows that mod's own persistence rules.
 
-## 7. Backup and upgrade procedure
+## 8. Backup and upgrade procedure
 
 Before a Biohazard or required-mod upgrade:
 
@@ -256,7 +307,7 @@ Before a Biohazard or required-mod upgrade:
 Do not test world-generation compatibility only in old chunks. Generate fresh
 Lost Cities terrain in staging.
 
-## 8. Operational smoke test
+## 9. Operational smoke test
 
 After installation or upgrade, verify at least:
 
@@ -283,7 +334,7 @@ After installation or upgrade, verify at least:
     drawer, preserves a previously cleared building, and raises danger after
     the configured number of unique encounter clears.
 
-## 9. Diagnostics and recovery
+## 10. Diagnostics and recovery
 
 ### Encounter does not start
 
@@ -413,7 +464,7 @@ excluded. Confirm the block entity implements `Container`, lacks the
 player-placed and stocked flags, and that
 `biohazard:chests/handcrafted_storage` produces loot for the context.
 
-## 10. Recovery principles
+## 11. Recovery principles
 
 - Work on a backup or cloned world first.
 - Prefer correcting config/resources and restoring a clean backup over editing

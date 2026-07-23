@@ -1,12 +1,12 @@
 # Biohazard engineering documentation
 
-This directory is the technical handbook for maintaining Biohazard after its
-1.1.0 release. It documents the implementation that is present in this
+This directory is the technical handbook for maintaining Biohazard. It
+documents the implementation that is present in this
 repository, not an aspirational architecture. When code and documentation
 disagree, the code is authoritative and the documentation should be corrected
 in the same change.
 
-Documented baseline: Biohazard `1.1.1`.
+Documented baseline: Biohazard `1.1.3`.
 
 Biohazard is a Minecraft 1.21.1 NeoForge integration mod. Its main job is to
 turn a curated collection of third-party mods and data resources into one
@@ -27,6 +27,7 @@ Choose the path that matches the work you are doing:
 | Add or balance content | [Data and resources](data-and-resources.md) | [Quest authoring](authoring-survivor-network-quests.md) |
 | Add a radio contract | [Quest authoring](authoring-survivor-network-quests.md) | [Radio quest protocol](radio-quests.md) |
 | Understand or tune city progression | [City operations](city-operations.md) | [Configuration and operations](configuration-and-operations.md#4-city-operations-config) |
+| Tune stealth, noise, or carried weight | [Stealth and encumbrance](stealth-attention-and-encumbrance.md) | [Configuration and operations](configuration-and-operations.md#5-survival-systems-config) |
 | Build, test, release, or upgrade | [Development and maintenance](development-and-maintenance.md) | [Dependency matrix](architecture.md#external-dependency-map) |
 | Investigate a broken save or delivery | [Configuration and operations](configuration-and-operations.md#diagnostics-and-recovery) | [State ownership](architecture.md#state-ownership-and-persistence) |
 
@@ -54,13 +55,18 @@ Choose the path that matches the work you are doing:
   workflow for building new Survivor Network contracts.
 - [City operations](city-operations.md) explains the player-facing radio,
   building-clear, danger, and infected-scaling loop.
+- [Stealth, attention, and encumbrance](stealth-attention-and-encumbrance.md)
+  explains quiet movement, progressive suspicion, noise radii, backpack weight,
+  movement penalties, and the radio Horde Watch panel.
+- [Modrinth gameplay descriptions](modrinth-gameplay-mechanics.md) contains
+  short standalone paragraphs for presenting each new survival loop.
 
 ## Project at a glance
 
 | Property | Current value |
 |---|---|
 | Mod id | `biohazard` |
-| Released version represented here | `1.1.0` |
+| Released version represented here | `1.1.3` |
 | Minecraft | `1.21.1` |
 | NeoForge | `21.1.235` |
 | Java | `21` |
@@ -81,12 +87,14 @@ biohazard/
 |   |-- config/                      NeoForge config specifications
 |   |-- damage/                      Data-backed damage-type keys
 |   |-- encounter/                   Persistent Lost Cities encounters
+|   |-- encumbrance/                 Carried weight and backpack integration
 |   |-- entity/                      Brute, projectile, and AI
 |   |-- event/                       NeoForge event adapters
 |   |-- item/                        Item registration and infection medicine
 |   |-- loot/                        Handcrafted storage stocking
 |   |-- lostcities/                  Lost Cities API adapter
 |   |-- network/                     Custom payload protocol
+|   |-- stealth/                     Awareness and noise investigation
 |   `-- quest/                       FTB Quests and courier deliveries
 |-- src/main/resources/
 |   |-- assets/                      Client assets and Patchouli content

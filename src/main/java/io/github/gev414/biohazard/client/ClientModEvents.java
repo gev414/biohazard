@@ -10,8 +10,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
 @EventBusSubscriber(
@@ -30,6 +33,9 @@ public final class ClientModEvents {
             );
             NeoForge.EVENT_BUS.addListener(
                     HordeAtmosphereClientEvents::onLoggingOut
+            );
+            NeoForge.EVENT_BUS.addListener(
+                    ClientModEvents::onLoggingOut
             );
         });
     }
@@ -69,6 +75,30 @@ public final class ClientModEvents {
                 event.getMouseX(),
                 event.getMouseY()
         );
+        RadioHordeStatusClient.render(
+                event.getScreen(),
+                event.getGuiGraphics()
+        );
+        if (event.getScreen() instanceof InventoryScreen inventory) {
+            InventoryEncumbranceClient.render(
+                    inventory,
+                    event.getGuiGraphics(),
+                    event.getMouseX(),
+                    event.getMouseY()
+            );
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderSurvivalStatus(RenderGuiEvent.Post event) {
+        SurvivalStatusClient.render(event.getGuiGraphics());
+    }
+
+    private static void onLoggingOut(
+            ClientPlayerNetworkEvent.LoggingOut event
+    ) {
+        SurvivalStatusClient.reset();
+        CityStatusClient.clear();
     }
 
     @SubscribeEvent

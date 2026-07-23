@@ -16,6 +16,9 @@ Biohazard owns:
 - the Radio Transmitter block and its calibration state;
 - infection cure/suppressant items integrated with The Hordes;
 - pre-horde client fog derived from The Hordes' authoritative server state;
+- carried-weight tiers, movement penalties, infected stealth awareness, and
+  noise-driven investigation;
+- radio Horde Watch presentation derived from the same horde snapshot;
 - one-time stocking of selected world-generated Handcrafted storage blocks;
 - packaged quest defaults, loot, world-generation data, recipes, and in-game
   Patchouli documentation.
@@ -79,8 +82,8 @@ with `@Mod("biohazard")`. Its constructor wires the system in this order:
    bus.
 2. Attach creative-tab population, entity attributes, and network payload
    registration to the mod event bus.
-3. Build and register the encounter server config, horde-atmosphere client
-   config, and radio-quest server config.
+3. Build and register the encounter, radio, city-operations, and survival
+   server configs plus the horde-atmosphere client config.
 4. Install the bundled FTB Quests defaults if the target quest directory is
    absent or empty.
 5. Register FTB Quests custom task and reward callbacks.
@@ -88,7 +91,8 @@ with `@Mod("biohazard")`. Its constructor wires the system in this order:
    communication.
 7. Attach gameplay listeners to the NeoForge event bus: encounter ticks and
    deaths, container interactions, Handcrafted placement, horde state sync,
-   delivery ticks, and server-stop cleanup.
+   delivery ticks, stealth/attention signals, encumbrance updates, and
+   server-stop cleanup.
 
 ### The two event buses
 
@@ -105,13 +109,17 @@ Server classes must not directly initialize client-only Minecraft classes.
 
 ### Static lifecycle state
 
-Three static fields are lifecycle-sensitive:
+The following transient static families are lifecycle-sensitive:
 
 - `EncounterManager.ticksUntilUpdate` throttles encounter scans.
 - `DeliveryManager.ticksUntilUpdate` throttles courier notifications and is
   reset on server stop.
 - `HordeAtmosphereSyncEvents.LAST_SENT` and `ticksUntilSync` are a transient
   packet deduplication cache and are cleared on logout/server stop.
+- `EncumbranceManager`, `AwarenessManager`, `AttentionManager`, and
+  `SurvivalStatusSync` keep only recalculation caches, suspicion/alert timers,
+  short-lived investigation targets, and packet deduplication state. All are
+  cleared on logout or server stop as appropriate.
 
 Static state must never become the only copy of gameplay progress. The durable
 copies are described below.
@@ -132,6 +140,8 @@ remain separate authority domains.
 | Courier choice | Server validates delivery, ownership, readiness, index, and radio range | Sends requested index |
 | Infection medicine | Server | Plays ordinary item/effect presentation |
 | Horde schedule | The Hordes on server | Receives compact atmospheric snapshot |
+| Weight, quiet state, suspicion, attention radii | Server survival services | Renders the latest compact HUD snapshot |
+| Radio horde-day/active state | The Hordes on server | Renders existing horde snapshot only during a radio quest session |
 | Fog distance | Client config and renderer | Computes and applies presentation only |
 
 The courier choice path is the clearest security example. The client receives a
@@ -259,6 +269,14 @@ durable and authoritative source.
 shown only while the FTB Quests screen is open, starts collapsed as a compact
 right-edge drawer, and is cleared when that screen closes. City progress itself
 remains server-authoritative in `CityZoneSavedData`.
+
+`SurvivalStatusClient` holds only the latest server HUD snapshot, including
+the server's tier thresholds and movement penalties used by the inventory
+indicator tooltip.
+`AwarenessManager` suspicion and alert memory, `AttentionManager`
+investigations, and `EncumbranceManager` weight snapshots are intentionally
+transient and are recalculated from loaded entities, inventory, and external
+mod state. No new world-persistent format is introduced.
 
 ## 6. Runtime flows
 
@@ -498,6 +516,37 @@ Direct imports from The Hordes and Atlas Lib make this a compile-time
 compatibility hotspot even though those artifacts are not published
 transitively by Biohazard.
 
+### 6.8 Encumbrance, stealth, and attention
+
+```mermaid
+flowchart LR
+    I["Inventory, armor, offhand"] --> W["EncumbranceManager"]
+    TB["Traveler's Backpack attachment/components"] --> W
+    W --> M["Movement-speed modifier"]
+    W --> Q["Light + crouched + no recent loud action"]
+    Q --> A["Progressive view-cone suspicion"]
+    H["The Hordes capability"] --> B["Bypass target suppression"]
+    G["PointBlank resolved fire sound"] --> N["Attention radius"]
+    D["Melee / durable block break"] --> N
+    N --> Z["Bounded investigation"]
+    N --> T["Approved ZombieTactics marker for loud gunfire only"]
+    A --> P["Survival status payload"]
+    W --> P
+```
+
+The server recalculates weight and owns the movement modifier. A quiet player
+is protected only from automatic target promotion; line of sight inside an
+infected's view cone accumulates suspicion, and close sight detects
+immediately. Existing targets receive configured memory. Horde-spawned mobs
+bypass this filter and remain controlled by The Hordes' native tracking goal.
+
+PointBlank shots are recognized from the resolved server sound and active
+attachment set. Suppressed fire uses a 12-block direct investigation and never
+creates a global marker. Unsuppressed fire defaults to 96 blocks and creates
+the only Biohazard-approved ZombieTactics marker. Melee and durable block
+breaks use their own bounded ranges. Biohazard skips marker creation when
+ZombieTactics' configured marker range would exceed the current event radius.
+
 ## 7. External dependency map
 
 ### 7.1 Required runtime mods
@@ -509,7 +558,7 @@ transitively by Biohazard.
 | Lost Cities 1.21-8.3.10+ | required, load after | compiled API + IMC | `lostcities`, `lcmt`, and `biohazard` Lost Cities JSON | building resolution, encounters, furnished generation |
 | Handcrafted 4.0.3 to <4.1 | required, load after | registry lookup by string only | palette block IDs and selected storage IDs | generated furniture and storage loot |
 | Patchouli 1.21.1-93+ | required, load after | no direct Java API | `assets/biohazard/patchouli_books` and a starter book stack | Survivor's Field Manual |
-| PointBlank 2.2.0+ | required, load after | no direct Java API | recipes, quest icons/objectives, loot, manual | firearms progression |
+| PointBlank 2.2.0+ | required, load after | direct gun, sound-feature, and attachment API | recipes, quest icons/objectives, loot, manual | firearms progression and shot attention |
 | Tough As Nails 10.1.0.13+ | required, load after | no direct Java API | starter loot, delivery loot, manual | survival progression |
 | The Hordes 1.6.3c to <1.7 | required, load after | direct config, saved-data, capability, effect, packet imports | manual and loot context | horde fog and infection medicine |
 | Waystones 21.1.36+ | required, load after | no direct Java API | recipe overrides, advancement overrides, loot, manual | travel progression |
@@ -520,6 +569,8 @@ transitively by Biohazard.
 | Dependency | Relationship | Effect |
 |---|---|---|
 | Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Biohazard supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
+| Traveler's Backpack 10.1.36 to <10.2 | optional, load after | Equipped and stored backpack contents, tools, upgrades, and fluids contribute to weight. The integration class is loaded only when present. |
+| ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Biohazard emits an approved marker for unsuppressed fire only. |
 | Lost Souls | incompatible, any version | Both mods manage Lost Cities building encounters, so metadata prevents a conflicting installation. |
 
 ### 7.3 Runtime libraries supplied by dependencies
@@ -534,7 +585,7 @@ Hordes' cure packet type implements its networking interface.
 | Scope | Meaning here |
 |---|---|
 | `implementation` | Biohazard compiles directly against the API and exposes the dependency on its compile/runtime classpath: Lost Cities and FTB Quests. |
-| `compileOnly` | Needed to compile direct imports but expected from the modpack at runtime: The Hordes and Atlas Lib. |
+| `compileOnly` | Needed to compile direct imports but expected from the modpack at runtime: The Hordes, Atlas Lib, PointBlank, and Traveler's Backpack. |
 | `localRuntime` | Present in development/tests without becoming a transitive published dependency. |
 | `testImplementation` | JUnit Jupiter test API and engine support. |
 
