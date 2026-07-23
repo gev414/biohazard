@@ -6,7 +6,7 @@ repository, not an aspirational architecture. When code and documentation
 disagree, the code is authoritative and the documentation should be corrected
 in the same change.
 
-Documented baseline: Biohazard `1.1.0`, repository commit `91c0159`.
+Documented baseline: Biohazard `1.1.1`.
 
 Biohazard is a Minecraft 1.21.1 NeoForge integration mod. Its main job is to
 turn a curated collection of third-party mods and data resources into one
@@ -26,6 +26,7 @@ Choose the path that matches the work you are doing:
 | Change config or operate a server | [Configuration and operations](configuration-and-operations.md) | [Persistence](architecture.md#state-ownership-and-persistence) |
 | Add or balance content | [Data and resources](data-and-resources.md) | [Quest authoring](authoring-survivor-network-quests.md) |
 | Add a radio contract | [Quest authoring](authoring-survivor-network-quests.md) | [Radio quest protocol](radio-quests.md) |
+| Understand or tune city progression | [City operations](city-operations.md) | [Configuration and operations](configuration-and-operations.md#4-city-operations-config) |
 | Build, test, release, or upgrade | [Development and maintenance](development-and-maintenance.md) | [Dependency matrix](architecture.md#external-dependency-map) |
 | Investigate a broken save or delivery | [Configuration and operations](configuration-and-operations.md#diagnostics-and-recovery) | [State ownership](architecture.md#state-ownership-and-persistence) |
 
@@ -51,6 +52,8 @@ Choose the path that matches the work you are doing:
   choice rewards.
 - [Quest authoring](authoring-survivor-network-quests.md) is the content-author
   workflow for building new Survivor Network contracts.
+- [City operations](city-operations.md) explains the player-facing radio,
+  building-clear, danger, and infected-scaling loop.
 
 ## Project at a glance
 

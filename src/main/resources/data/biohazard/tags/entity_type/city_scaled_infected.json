@@ -1,0 +1,53 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:zombie",
+    "minecraft:zombie_villager",
+    "minecraft:husk",
+    "minecraft:drowned",
+    "minecraft:zombified_piglin",
+    "minecraft:zoglin",
+    "minecraft:zombie_horse",
+    "biohazard:brute",
+    {
+      "id": "hordes:zombie_player",
+      "required": false
+    },
+    {
+      "id": "hordes:drowned_player",
+      "required": false
+    },
+    {
+      "id": "hordes:husk_player",
+      "required": false
+    },
+    {
+      "id": "hordes:zombified_piglin_brute",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_wandering_trader",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_pillager",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_vindicator",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_evoker",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_illusioner",
+      "required": false
+    },
+    {
+      "id": "hordes:zombie_witch",
+      "required": false
+    }
+  ]
+}

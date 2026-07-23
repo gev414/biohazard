@@ -176,7 +176,7 @@ public final class BuildingEncounter {
         return true;
     }
 
-    public boolean clear() {
+    boolean clear() {
         if (phase == EncounterPhase.SAFE
                 || phase == EncounterPhase.CLEARED) {
             return false;

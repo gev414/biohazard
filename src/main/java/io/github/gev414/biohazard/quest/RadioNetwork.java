@@ -2,6 +2,7 @@ package io.github.gev414.biohazard.quest;
 
 import io.github.gev414.biohazard.block.ModBlocks;
 import io.github.gev414.biohazard.block.entity.RadioTransmitterBlockEntity;
+import io.github.gev414.biohazard.city.CityZoneKey;
 import io.github.gev414.biohazard.config.RadioQuestConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,6 +55,37 @@ public final class RadioNetwork {
                     / 20L;
         }
         return (RadioQuestConfig.CALIBRATION_TICKS.get() + 19L) / 20L;
+    }
+
+    public static boolean isSurveying(Level level, BlockPos position) {
+        return level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter
+                && transmitter.isSurveying();
+    }
+
+    public static int surveyedChunks(Level level, BlockPos position) {
+        return level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter
+                ? transmitter.surveyedChunks()
+                : 0;
+    }
+
+    public static int maximumSurveyChunks(Level level, BlockPos position) {
+        return level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter
+                ? transmitter.maximumSurveyChunks()
+                : 0;
+    }
+
+    public static Optional<CityZoneKey> cityZone(
+            Level level,
+            BlockPos position
+    ) {
+        if (level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter) {
+            return Optional.ofNullable(transmitter.cityZone());
+        }
+        return Optional.empty();
     }
 
     private RadioNetwork() {

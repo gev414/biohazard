@@ -68,6 +68,23 @@ class BuildingEncounterTest {
     }
 
     @Test
+    void bruteFinishClearsMixedEncounterWithRegularsRemaining() {
+        BuildingEncounter encounter = BuildingEncounter.materialize(
+                ResourceLocation.parse("lostcities:test_mixed_boss"),
+                new EncounterSelection(true, true, 3),
+                EncounterSpawnMode.INSTANT
+        );
+
+        assertTrue(encounter.beginBossWarning(200L));
+        assertTrue(encounter.activateBoss(UUID.randomUUID()));
+        assertEquals(0, encounter.regularDeaths());
+
+        assertTrue(encounter.clear());
+        assertEquals(EncounterPhase.CLEARED, encounter.phase());
+        assertFalse(encounter.clear());
+    }
+
+    @Test
     void instantPopulationProgressSurvivesSerialization() {
         BuildingEncounter encounter = BuildingEncounter.materialize(
                 ResourceLocation.parse("lostcities:test_instant"),

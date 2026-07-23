@@ -62,6 +62,15 @@ from the radio, but server-side task checks prevent remote acceptance or final
 submission. See [the radio quest authoring guide](docs/radio-quests.md) for the
 tag contract, delays, persistence rules, and extension notes.
 
+## City operations
+
+Radio Transmitters also map local Lost Cities zones and report shared city
+progress through a compact drawer in the Survivor Network screen. Fully
+cleared encounter buildings raise city danger, which increases tagged
+infected's maximum health without weakening them when they later leave the
+city. See [City operations](docs/city-operations.md) for the gameplay loop,
+status drawer, progression defaults, and server tuning.
+
 Entity System
 
 Custom entities are isolated inside the entity package.
@@ -148,7 +157,8 @@ FTB Quests	Survivor Network contacts, contracts, and quest journal
 Development dependencies are resolved through Modrinth Maven and are not bundled into the final artifact.
 
 ## Testing
-The project contains unit tests covering encounter selection and encounter state behaviour.
+The project contains unit tests covering encounter selection, encounter state
+behaviour, city danger progression, and bounded connected-city surveying.
 Resource-heavy changes (Patchouli, loot tables, integrations) should additionally be validated inside the complete development modpack.
 
 

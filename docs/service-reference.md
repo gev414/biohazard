@@ -745,11 +745,12 @@ normal collection already ran before status is requested.
 
 Source: [`ModPayloads.java`](../src/main/java/io/github/gev414/biohazard/network/ModPayloads.java)
 
-Registers protocol version string `1` and three play-phase payloads:
+Registers protocol version string `1` and four play-phase payloads:
 
 | Payload ID | Direction | Handler |
 |---|---|---|
 | `biohazard:horde_atmosphere` | server to client | update transient fog state |
+| `biohazard:city_status` | server to client | update the radio-linked QuestScreen panel |
 | `biohazard:courier_choice_open` | server to client | open choice screen |
 | `biohazard:courier_choice_select` | client to server | validate and apply choice |
 
@@ -775,6 +776,16 @@ does not impose a list-count bound; protocol evolution should add compatible
 defensive bounds if input trust requirements change.
 
 Handler delegates to `CourierChoiceClient`.
+
+### `CityStatusPayload`
+
+Source: [`CityStatusPayload.java`](../src/main/java/io/github/gev414/biohazard/network/CityStatusPayload.java)
+
+Server-to-client snapshot sent when a calibrated transmitter opens the Survivor
+Network. The client renders it as a compact, collapsed-by-default city-status
+drawer on the right edge of the FTB Quests `QuestScreen`; it is cleared when
+that screen closes. An unmapped radio uses the same payload with `mapped=false`,
+so city status no longer occupies Minecraft chat.
 
 ### `CourierChoiceSelectPayload`
 

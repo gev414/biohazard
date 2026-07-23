@@ -15,6 +15,11 @@ public final class ModPayloads {
                 HordeAtmospherePayload::handle
         );
         registrar.playToClient(
+                CityStatusPayload.TYPE,
+                CityStatusPayload.STREAM_CODEC,
+                CityStatusPayload::handle
+        );
+        registrar.playToClient(
                 CourierChoiceOpenPayload.TYPE,
                 CourierChoiceOpenPayload.STREAM_CODEC,
                 CourierChoiceOpenPayload::handle

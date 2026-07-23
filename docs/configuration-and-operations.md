@@ -6,12 +6,13 @@ the persistent files that must be protected during upgrades or recovery.
 
 ## 1. Configuration file ownership
 
-Biohazard registers three NeoForge configuration files:
+Biohazard registers four NeoForge configuration files:
 
 | File | NeoForge type | Effective location | Authority |
 |---|---|---|---|
 | `biohazard-encounters.toml` | server | a world's `serverconfig` directory | logical server |
 | `biohazard-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
+| `biohazard-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
 | `biohazard-client.toml` | client | instance `config` directory | each client |
 
 For a local development world, server config is typically under
@@ -131,7 +132,33 @@ sphere-like radius. The maximum range can scan hundreds of thousands of block
 positions per accept/turn-in/choice action. It is not called every tick, but a
 large value should still be load-tested.
 
-## 4. Client horde-atmosphere config
+## 4. City operations config
+
+File: `biohazard-city-operations.toml`
+
+Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]` and
+`[cityOperations.danger]`.
+
+| Key | Type/range | Default | Existing-state effect |
+|---|---|---:|---|
+| `enabled` | boolean | `true` | Stops new city surveys/progress/scaling when false; saved zones remain intact |
+| `survey.chunksPerTick` | 1 to 256 | `16` | Live for loaded, incomplete surveys; higher values finish sooner at greater tick cost |
+| `survey.maxChunks` | 64 to 262,144 | `16,384` | Live cap for incomplete surveys; capped surveys use a stable fallback sector |
+| `survey.diagonalConnectivity` | boolean | `false` | Live for incomplete surveys; determines whether diagonal city chunks join one zone |
+| `survey.fallbackSectorSizeChunks` | 8 to 256 | `32` | Used only for surveys that hit the cap; does not rewrite existing zones |
+| `danger.influencePerimeterChunks` | 0 to 32 | `5` | Live for future infected danger lookups; 5 chunks is 80 blocks |
+| `danger.clearedBuildingsPerLevel` | 1 to 1,000 | `5` | Live progression calculation from the persisted unique-clear set |
+| `danger.maxLevel` | 0 to 100 | `12` | Live cap; lowering it does not remove an infected's already remembered higher level |
+| `danger.healthPerLevel` | 0.0 to 10.0 | `0.10` | Live for future normal-infected upgrades; `0.10` is +10% base maximum health per level |
+| `danger.bruteHealthPerLevel` | 0.0 to 10.0 | `0.10` | Live for future Brute upgrades; separate because Brutes have much higher base health |
+
+Surveying starts alongside transmitter calibration. A radio does not connect
+until both are complete. City state is shared by mapped radios and stored in
+`biohazard_city_zones`; deleting config values does not reset that world data.
+Read [City operations](city-operations.md) before changing progression values
+on an established world.
+
+## 5. Client horde-atmosphere config
 
 File: `biohazard-client.toml`
 
@@ -152,7 +179,7 @@ This config does not change The Hordes schedule. Server payloads use The Hordes'
 `dayLength`, `hordeStartTime`, enabled state, command-only mode, and per-player
 horde state.
 
-## 5. Persistent files
+## 6. Persistent files
 
 Back up the world before changing or recovering these files.
 
@@ -179,6 +206,17 @@ Contains every pending/ready shipment and choice for all players. Removing it
 permanently deletes uncollected deliveries. Do not use removal as routine
 troubleshooting.
 
+### City operations data
+
+Logical name: `biohazard_city_zones`
+
+Typical file: `<world>/data/biohazard_city_zones.dat`
+
+Contains mapped city footprints or capped fallback sectors, unique cleared
+building keys, and active FTB city-operation bindings. Removing it forgets
+city progress and can cause existing operations to lose their recorded city
+baseline. Back it up with the encounter repository.
+
 ### Radio block entity data
 
 `ready_at` lives inside the chunk's block entity NBT, not in a standalone
@@ -200,7 +238,7 @@ It is installed from the JAR only when absent/empty. Back it up separately from
 the world when it contains server-authored changes. Team/player quest progress
 is owned by FTB Quests and follows that mod's own persistence rules.
 
-## 6. Backup and upgrade procedure
+## 7. Backup and upgrade procedure
 
 Before a Biohazard or required-mod upgrade:
 
@@ -218,7 +256,7 @@ Before a Biohazard or required-mod upgrade:
 Do not test world-generation compatibility only in old chunks. Generate fresh
 Lost Cities terrain in staging.
 
-## 7. Operational smoke test
+## 8. Operational smoke test
 
 After installation or upgrade, verify at least:
 
@@ -241,8 +279,11 @@ After installation or upgrade, verify at least:
 14. Generated Handcrafted storage stocks once while player-placed storage does
     not receive free loot.
 15. Patchouli categories/entries and FTB quest strings/icons render correctly.
+16. A radio in a Lost Cities city finishes its survey, reports a city status
+    drawer, preserves a previously cleared building, and raises danger after
+    the configured number of unique encounter clears.
 
-## 8. Diagnostics and recovery
+## 9. Diagnostics and recovery
 
 ### Encounter does not start
 
@@ -305,6 +346,18 @@ changes.
 - The quest book can be viewed remotely, but tagged accept/complete buttons are
   server-gated.
 
+### Radio never connects to city operations
+
+- Confirm `cityOperations.enabled` is true in the world's
+  `biohazard-city-operations.toml`.
+- Wait for both the calibration deadline and the city-grid survey to finish;
+  the radio reports either remaining seconds or scanned candidate chunks while
+  incomplete.
+- Confirm the radio is in a dimension where Lost Cities exposes city chunks.
+  An ordinary radio outside a mapped zone is expected to show no city status.
+- Breaking and replacing the transmitter restarts both calibration and the
+  paced survey.
+
 ### Turn-in consumed nothing
 
 This is normal on any failed atomic validation. Check required non-optional
@@ -360,7 +413,7 @@ excluded. Confirm the block entity implements `Container`, lacks the
 player-placed and stocked flags, and that
 `biohazard:chests/handcrafted_storage` produces loot for the context.
 
-## 9. Recovery principles
+## 10. Recovery principles
 
 - Work on a backup or cloned world first.
 - Prefer correcting config/resources and restoring a clean backup over editing
