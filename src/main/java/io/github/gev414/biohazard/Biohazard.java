@@ -2,6 +2,8 @@ package io.github.gev414.biohazard;
 
 import io.github.gev414.biohazard.block.ModBlocks;
 import io.github.gev414.biohazard.block.entity.ModBlockEntities;
+import io.github.gev414.biohazard.city.InfectedCityScaling;
+import io.github.gev414.biohazard.config.CityOperationsConfig;
 import io.github.gev414.biohazard.config.EncounterConfig;
 import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
 import io.github.gev414.biohazard.config.RadioQuestConfig;
@@ -47,6 +49,12 @@ public final class Biohazard {
                 EncounterConfig.SPEC,
                 "biohazard-encounters.toml"
         );
+        CityOperationsConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                CityOperationsConfig.SPEC,
+                "biohazard-city-operations.toml"
+        );
         HordeAtmosphereConfig.initialize();
         modContainer.registerConfig(
                 ModConfig.Type.CLIENT,
@@ -70,6 +78,9 @@ public final class Biohazard {
                 EncounterEvents::onLivingDeath
         );
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onRightClickBlock);
+        NeoForge.EVENT_BUS.addListener(
+                InfectedCityScaling::onEntityJoinLevel
+        );
         NeoForge.EVENT_BUS.addListener(
                 HandcraftedStorageLoot::onBlockPlaced
         );

@@ -1,5 +1,6 @@
 package io.github.gev414.biohazard.encounter;
 
+import io.github.gev414.biohazard.city.CityZoneManager;
 import io.github.gev414.biohazard.config.EncounterConfig;
 import io.github.gev414.biohazard.entity.BruteEntity;
 import io.github.gev414.biohazard.lostcities.LostCitiesBuildingResolver;
@@ -82,11 +83,17 @@ public final class EncounterManager {
         }
 
         BuildingEncounter encounter = existing.get();
-        boolean changed = switch (marker.role()) {
-            case REGULAR -> encounter.recordRegularDeath();
-            case BOSS -> encounter.clear();
-        };
-        if (changed) {
+        if (marker.role() == EncounterEntityData.Role.BOSS) {
+            finishEncounter(
+                    server,
+                    data,
+                    marker.key(),
+                    encounter,
+                    List.of()
+            );
+            return;
+        }
+        if (encounter.recordRegularDeath()) {
             data.setDirty();
         }
     }
@@ -220,13 +227,13 @@ public final class EncounterManager {
                 return;
             }
 
-            if (encounter.clear()) {
-                data.setDirty();
-                announce(
-                        activated.nearbyPlayers(),
-                        "message.biohazard.encounter.cleared"
-                );
-            }
+            finishEncounter(
+                    activated.level().getServer(),
+                    data,
+                    activated.building().key(),
+                    encounter,
+                    activated.nearbyPlayers()
+            );
 
             return;
         }
@@ -303,6 +310,26 @@ public final class EncounterManager {
         for (ServerPlayer player : players) {
             player.sendSystemMessage(message);
         }
+    }
+
+    private static boolean finishEncounter(
+            MinecraftServer server,
+            EncounterSavedData data,
+            BuildingKey key,
+            BuildingEncounter encounter,
+            List<ServerPlayer> nearbyPlayers
+    ) {
+        if (!encounter.clear()) {
+            return false;
+        }
+
+        data.setDirty();
+        CityZoneManager.recordClearedBuilding(server, key);
+        announce(
+                nearbyPlayers,
+                "message.biohazard.encounter.cleared"
+        );
+        return true;
     }
 
     private record ActivatedBuilding(

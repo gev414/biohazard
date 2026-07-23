@@ -127,6 +127,7 @@ remain separate authority domains.
 | Encounter spawns and death credit | Server | Renders entities |
 | Radio calibration | Server block entity | Renders block; interaction response is server-driven |
 | Quest accept/turn-in | Server FTB callback | Displays FTB book/button |
+| City status snapshot | Server city-zone service | Renders the radio-linked compact drawer in the FTB Quests screen |
 | Courier contents, timer, mailbox | Server `SavedData` | Shows messages and choice screen |
 | Courier choice | Server validates delivery, ownership, readiness, index, and radio range | Sends requested index |
 | Infection medicine | Server | Plays ordinary item/effect presentation |
@@ -217,23 +218,47 @@ therefore need save-compatibility consideration.
 
 ### 5.4 Radio block state
 
-Each Radio Transmitter owns a `RadioTransmitterBlockEntity`. It persists one
-`ready_at` game-time value. Placement or first load without state starts
-calibration at `current game time + configured calibration ticks`. Moving the
-block creates a new block entity and therefore recalibrates it.
+Each Radio Transmitter owns a `RadioTransmitterBlockEntity`. It persists its
+`ready_at` game-time value, whether its city survey completed, and its optional
+`CityZoneKey`. Placement or first load without state starts calibration at
+`current game time + configured calibration ticks` and starts a paced city
+survey. The radio connects only when both are complete. Moving the block
+creates a new block entity and therefore recalibrates and surveys again.
 
-### 5.5 Brute and normal entity state
+### 5.5 City-zone world state
+
+`CityZoneSavedData` is stored server-wide under `biohazard_city_zones`. It
+persists connected Lost Cities footprints (or stable capped fallback sectors),
+unique cleared `BuildingKey` sets, FTB city-operation bindings, and clears that
+occurred before a radio mapped their city.
+
+When a survey registers, existing `CLEARED` records in
+`EncounterSavedData` are imported as a save-compatible migration path. This
+lets pre-city-operation worlds retain legitimate encounter progress.
+
+Danger derives from the cleared-key set rather than a mutable counter. The
+default progression is one level per five clears up to level 12. An entity's
+highest applied danger is also stored in its persistent data, while a named
+permanent maximum-health modifier makes the upgrade survive unloading and
+prevents leaving a city from weakening it.
+
+### 5.6 Brute and normal entity state
 
 The Brute relies on ordinary Minecraft entity persistence for health, target,
 position, and the encounter marker. Its boss-bar participant sets and tracking
 sets are in-memory presentation state; they are rebuilt from interaction and
 tracking and cleared on death/removal.
 
-### 5.6 Transient client state
+### 5.7 Transient client state
 
 `HordeAtmosphereState` contains only the most recent payload snapshot. It is
 reset when the client logs out and is never saved. The Hordes remains the
 durable and authoritative source.
+
+`CityStatusClient` likewise holds only the latest radio status snapshot. It is
+shown only while the FTB Quests screen is open, starts collapsed as a compact
+right-edge drawer, and is cleared when that screen closes. City progress itself
+remains server-authoritative in `CityZoneSavedData`.
 
 ## 6. Runtime flows
 
@@ -313,8 +338,10 @@ Detailed rules:
    proximity activation. If a correctly marked Brute already exists, it is
    adopted. A missing boss during `BOSS_ACTIVE` is treated as unloaded, not as
    permission to duplicate it.
-10. A marked boss death clears the encounter. Cleared and safe states are
-   terminal in the current implementation.
+10. A marked boss death uses the same centralized finished transition as a
+   regular encounter. It clears the building even if a marked regular remains,
+   then offers that unique building key to its mapped city zone. Cleared and
+   safe states are terminal.
 
 Container locking is interaction-driven rather than a separate tick:
 
@@ -325,7 +352,27 @@ Container locking is interaction-driven rather than a separate tick:
 - `REGULAR_WAVE`, `BOSS_PENDING`, and `BOSS_ACTIVE` cancel the interaction;
 - `SAFE` and `CLEARED` allow it.
 
-### 6.2 Radio quest acceptance and atomic turn-in
+### 6.2 City survey, progression, and infected scaling
+
+During calibration, each loaded radio inspects a bounded number of candidate
+chunks per tick. Cardinally connected city chunks form the persisted exact
+footprint by default. A configurable hard cap switches extremely large city
+profiles to a stable sector key.
+
+When the centralized encounter-finished transition records a new building:
+
+1. the matching zone adds its `BuildingKey` once;
+2. danger is recomputed from the unique cleared count;
+3. a level increase reapplies the highest applicable danger to loaded tagged
+   infected in the footprint plus its influence perimeter;
+4. unloaded infected receive the same check through the entity-load event;
+5. the stored entity danger is never reduced when it leaves the zone.
+
+Overlapping influence uses the highest level. The
+`biohazard:city_scaled_infected` entity-type tag includes the Brute and is the
+data-pack extension point for other infected.
+
+### 6.3 Radio quest acceptance and atomic turn-in
 
 ```mermaid
 sequenceDiagram
@@ -366,7 +413,7 @@ without mutation. Only if every requirement can be satisfied does it shrink
 real stacks and update FTB team progress. This prevents partial loss on a
 failed turn-in.
 
-### 6.3 Reward claim, courier wait, and collection
+### 6.4 Reward claim, courier wait, and collection
 
 1. FTB Quests fires `CustomRewardEvent` for a tagged custom reward.
 2. `FTBQuestsIntegration` extracts the manifest suffix, category, delivery kind,
@@ -390,7 +437,7 @@ failed turn-in.
 10. If no choice screen opens, the transmitter reports mailbox status and
     opens the standard FTB quest book.
 
-### 6.4 Horde atmosphere synchronization
+### 6.5 Horde atmosphere synchronization
 
 ```mermaid
 flowchart LR
@@ -413,7 +460,7 @@ closer; it never expands fog distance imposed by Minecraft, another mod, or the
 environment. The handler applies only to terrain fog with no fluid fog in the
 Overworld.
 
-### 6.5 Handcrafted storage stocking
+### 6.6 Handcrafted storage stocking
 
 Selected Handcrafted containers do not carry vanilla loot-table metadata, so
 Biohazard fills them lazily on first server-side interaction:
@@ -433,7 +480,7 @@ Biohazard fills them lazily on first server-side interaction:
 This ordering is deliberate and should be revisited explicitly if handcrafted
 storage is ever intended to respect haunted-building locks.
 
-### 6.6 Infection medicine
+### 6.7 Infection medicine
 
 Both medicines subclass `PotionItem`, so Minecraft owns consumption animation,
 stack use, and the returned bottle behavior.

@@ -48,6 +48,11 @@ firearm = 300
 Times are server game time. Leaving the world does not advance a delivery
 countdown, and deliveries survive server restarts.
 
+When city operations are enabled, calibration also starts a paced Lost Cities
+survey. The transmitter is connected only after both calibration and surveying
+finish. The city-specific behavior, status drawer, and progression rules are
+documented in [City operations](city-operations.md).
+
 ## FTB Quests tagging contract
 
 Tags are ordinary FTB Quests tags, so use lowercase letters, digits, and

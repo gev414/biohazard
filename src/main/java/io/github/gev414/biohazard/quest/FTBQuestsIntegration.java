@@ -5,8 +5,11 @@ import dev.ftb.mods.ftbquests.events.CustomRewardEvent;
 import dev.ftb.mods.ftbquests.events.CustomTaskEvent;
 import dev.ftb.mods.ftbquests.quest.reward.CustomReward;
 import dev.ftb.mods.ftbquests.quest.task.CustomTask;
+import io.github.gev414.biohazard.city.CityZoneKey;
+import io.github.gev414.biohazard.city.CityZoneManager;
 import io.github.gev414.biohazard.quest.delivery.DeliveryCategory;
 import io.github.gev414.biohazard.quest.delivery.DeliveryManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -17,6 +20,10 @@ public final class FTBQuestsIntegration {
 
     public static final String ACCEPT_TAG = "biohazard_radio_accept";
     public static final String COMPLETE_TAG = "biohazard_radio_complete";
+    public static final String CITY_OPERATION_TAG =
+            "biohazard_city_operation";
+    public static final String CITY_BUILDING_COUNT_PREFIX =
+            "biohazard_city_buildings_";
     public static final String DELIVERY_TAG = "biohazard_radio_delivery";
     public static final String CHOICE_DELIVERY_TAG =
             "biohazard_radio_choice_delivery";
@@ -44,6 +51,8 @@ public final class FTBQuestsIntegration {
             configureButton(task, FTBQuestsIntegration::acceptContract);
         } else if (task.hasTag(COMPLETE_TAG)) {
             configureButton(task, FTBQuestsIntegration::completeContract);
+        } else if (task.hasTag(CITY_OPERATION_TAG)) {
+            configureCityOperation(task);
         }
         return EventResult.pass();
     }
@@ -62,9 +71,48 @@ public final class FTBQuestsIntegration {
             CustomTask.Data task,
             ServerPlayer player
     ) {
-        if (!requireConnectedRadio(player)) {
+        Optional<BlockPos> transmitter = requireConnectedRadio(player);
+        if (transmitter.isEmpty()) {
             return;
         }
+
+        var cityTasks = task.task()
+                .getQuest()
+                .getTasksAsList()
+                .stream()
+                .filter(CustomTask.class::isInstance)
+                .map(CustomTask.class::cast)
+                .filter(candidate -> candidate.hasTag(
+                        CITY_OPERATION_TAG
+                ))
+                .toList();
+        if (!cityTasks.isEmpty()) {
+            Optional<CityZoneKey> zone = RadioNetwork.cityZone(
+                    player.level(),
+                    transmitter.get()
+            );
+            if (zone.isEmpty()) {
+                player.sendSystemMessage(Component.translatable(
+                        "message.biohazard.city.operation_requires_zone"
+                ));
+                return;
+            }
+
+            for (CustomTask cityTask : cityTasks) {
+                if (!CityZoneManager.bindOperation(
+                        player.serverLevel().getServer(),
+                        task.teamData().getTeamId(),
+                        cityTask.getId(),
+                        zone.get()
+                )) {
+                    player.sendSystemMessage(Component.translatable(
+                            "message.biohazard.city.operation_requires_zone"
+                    ));
+                    return;
+                }
+            }
+        }
+
         task.setProgress(task.task().getMaxProgress());
         player.sendSystemMessage(Component.translatable(
                 "message.biohazard.radio.contract_accepted"
@@ -75,7 +123,7 @@ public final class FTBQuestsIntegration {
             CustomTask.Data task,
             ServerPlayer player
     ) {
-        if (!requireConnectedRadio(player)) {
+        if (requireConnectedRadio(player).isEmpty()) {
             return;
         }
         if (RadioSubmission.completeTurnIn(task, player)) {
@@ -85,14 +133,66 @@ public final class FTBQuestsIntegration {
         }
     }
 
-    private static boolean requireConnectedRadio(ServerPlayer player) {
-        if (RadioNetwork.findConnectedTransmitter(player).isPresent()) {
-            return true;
+    private static void configureCityOperation(CustomTask task) {
+        long requiredBuildings = suffix(
+                task.getTags(),
+                CITY_BUILDING_COUNT_PREFIX
+        ).flatMap(value -> {
+            try {
+                return Optional.of(Long.parseLong(value));
+            } catch (NumberFormatException exception) {
+                return Optional.empty();
+            }
+        }).filter(value -> value > 0L && value <= 1_000L).orElse(5L);
+
+        task.setMaxProgress(requiredBuildings);
+        task.setCheckTimer(20);
+        task.setEnableButton(false);
+        task.setCheck(FTBQuestsIntegration::checkCityOperation);
+    }
+
+    private static void checkCityOperation(
+            CustomTask.Data task,
+            ServerPlayer player
+    ) {
+        boolean accepted = task.task()
+                .getQuest()
+                .getTasksAsList()
+                .stream()
+                .filter(CustomTask.class::isInstance)
+                .map(CustomTask.class::cast)
+                .filter(candidate -> candidate.hasTag(ACCEPT_TAG))
+                .anyMatch(candidate -> task.teamData().getProgress(
+                        candidate
+                ) >= candidate.getMaxProgress());
+        if (!accepted) {
+            task.setProgress(0L);
+            return;
+        }
+
+        long progress = CityZoneManager.operationProgress(
+                player.serverLevel().getServer(),
+                task.teamData().getTeamId(),
+                task.task().getId()
+        );
+        task.setProgress(Math.min(
+                task.task().getMaxProgress(),
+                progress
+        ));
+    }
+
+    private static Optional<BlockPos> requireConnectedRadio(
+            ServerPlayer player
+    ) {
+        Optional<BlockPos> transmitter =
+                RadioNetwork.findConnectedTransmitter(player);
+        if (transmitter.isPresent()) {
+            return transmitter;
         }
         player.sendSystemMessage(Component.translatable(
                 "message.biohazard.radio.out_of_range"
         ));
-        return false;
+        return Optional.empty();
     }
 
     private static EventResult claimReward(CustomRewardEvent event) {

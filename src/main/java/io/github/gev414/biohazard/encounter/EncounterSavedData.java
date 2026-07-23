@@ -9,8 +9,10 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public final class EncounterSavedData extends SavedData {
@@ -35,6 +37,17 @@ public final class EncounterSavedData extends SavedData {
 
     public Optional<BuildingEncounter> find(BuildingKey key) {
         return Optional.ofNullable(encounters.get(key));
+    }
+
+    public Set<BuildingKey> clearedBuildingKeys() {
+        Set<BuildingKey> cleared = new LinkedHashSet<>();
+        for (Map.Entry<BuildingKey, BuildingEncounter> entry
+                : encounters.entrySet()) {
+            if (entry.getValue().phase() == EncounterPhase.CLEARED) {
+                cleared.add(entry.getKey());
+            }
+        }
+        return Set.copyOf(cleared);
     }
 
     public MaterializedEncounter getOrCreate(

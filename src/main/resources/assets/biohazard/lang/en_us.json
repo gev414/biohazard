@@ -16,7 +16,9 @@
   "message.biohazard.encounter.cleared": "The building is clear.",
   "message.biohazard.encounter.container_locked": "The infected building is not safe enough to loot yet.",
   "message.biohazard.radio.calibrating": "Radio calibrating... %s seconds remaining.",
+  "message.biohazard.radio.surveying": "Radio surveying city grid... %s/%s candidate chunks mapped.",
   "message.biohazard.radio.out_of_range": "No calibrated Radio Transmitter is in range.",
+  "message.biohazard.city.operation_requires_zone": "This operation must be accepted through a Radio Transmitter mapped to a city.",
   "message.biohazard.radio.contract_accepted": "Contract accepted over the Survivor Network.",
   "message.biohazard.radio.contract_transmitted": "Completion report transmitted. Courier request authorized.",
   "message.biohazard.radio.objectives_incomplete": "The contact is still waiting for the remaining objectives.",
@@ -34,5 +36,17 @@
   "message.biohazard.infection.not_infected": "No active infection was detected.",
   "message.biohazard.infection.cured": "The infection has been completely cleared.",
   "message.biohazard.infection.suppressed": "Infection progression suppressed. Current stage delayed.",
-  "message.biohazard.infection.immunity": "Temporary infection immunity established."
+  "message.biohazard.infection.immunity": "Temporary infection immunity established.",
+  "screen.biohazard.city_status.title": "CITY OPERATIONS // STATUS",
+  "screen.biohazard.city_status.compact_title": "CITY STATUS",
+  "screen.biohazard.city_status.tab.open": "< CITY",
+  "screen.biohazard.city_status.tab.close": "CITY >",
+  "screen.biohazard.city_status.none": "No Lost Cities zone mapped to this radio.",
+  "screen.biohazard.city_status.none.line1": "No Lost Cities zone",
+  "screen.biohazard.city_status.none.line2": "mapped to this radio.",
+  "screen.biohazard.city_status.cleared": "Buildings cleared: %s",
+  "screen.biohazard.city_status.danger": "Danger level: %s / %s",
+  "screen.biohazard.city_status.health": "Infected health: +%s%%",
+  "screen.biohazard.city_status.next": "Clears to next level: %s",
+  "screen.biohazard.city_status.source": "TRANSMITTER LINK // LIVE REPORT"
 }

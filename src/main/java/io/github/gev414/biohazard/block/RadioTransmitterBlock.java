@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import dev.architectury.networking.NetworkManager;
 import dev.ftb.mods.ftbquests.net.OpenQuestBookMessage;
 import io.github.gev414.biohazard.block.entity.RadioTransmitterBlockEntity;
+import io.github.gev414.biohazard.block.entity.ModBlockEntities;
+import io.github.gev414.biohazard.city.CityZoneManager;
 import io.github.gev414.biohazard.quest.RadioNetwork;
 import io.github.gev414.biohazard.quest.delivery.DeliveryManager;
 import net.minecraft.core.BlockPos;
@@ -25,6 +27,8 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -115,6 +119,14 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
         }
 
         if (!RadioNetwork.isConnected(level, position)) {
+            if (RadioNetwork.isSurveying(level, position)) {
+                serverPlayer.sendSystemMessage(Component.translatable(
+                        "message.biohazard.radio.surveying",
+                        RadioNetwork.surveyedChunks(level, position),
+                        RadioNetwork.maximumSurveyChunks(level, position)
+                ));
+                return InteractionResult.CONSUME;
+            }
             long seconds = RadioNetwork.calibrationSecondsRemaining(
                     level,
                     position
@@ -131,6 +143,14 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
             return InteractionResult.CONSUME;
         }
         DeliveryManager.sendStatus(serverPlayer);
+        RadioNetwork.cityZone(level, position)
+                .ifPresentOrElse(
+                        zone -> CityZoneManager.sendStatus(
+                                serverPlayer,
+                                zone
+                        ),
+                        () -> CityZoneManager.sendNoStatus(serverPlayer)
+                );
         NetworkManager.sendToPlayer(
                 serverPlayer,
                 new OpenQuestBookMessage(0L)
@@ -144,6 +164,28 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
             BlockState state
     ) {
         return new RadioTransmitterBlockEntity(position, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(
+            Level level,
+            BlockState state,
+            BlockEntityType<T> blockEntityType
+    ) {
+        if (level.isClientSide()
+                || blockEntityType != ModBlockEntities
+                .RADIO_TRANSMITTER
+                .get()) {
+            return null;
+        }
+        return (currentLevel, position, currentState, blockEntity) -> {
+            if (currentLevel instanceof net.minecraft.server.level.ServerLevel
+                    serverLevel
+                    && blockEntity
+                    instanceof RadioTransmitterBlockEntity transmitter) {
+                transmitter.serverTick(serverLevel);
+            }
+        };
     }
 
     @Override

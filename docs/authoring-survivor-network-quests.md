@@ -97,6 +97,26 @@ Every physical item that belongs in the radio turn-in needs the submit tag.
 An untagged FTB item task is a normal FTB task and uses its normal completion
 behavior, which is rarely what a courier contract intends.
 
+### Add a city-operation objective
+
+Use a **Custom** task with these tags when a contract should require new
+encounter-building clears in one city:
+
+```text
+biohazard_city_operation
+biohazard_city_buildings_5
+```
+
+The count tag is optional; without it the target is five. The accept task binds
+this objective to the mapped city of the transmitter used to accept the
+contract and snapshots its current cleared count. Only later, unique
+`CLEARED` encounter buildings in that same city advance the task. `SAFE`
+buildings and clears in another city do not count.
+
+The radio must finish both calibration and its city survey before the contract
+can be accepted. The city-operation task itself is automatic and should not be
+configured as a button.
+
 ## Add the courier reward
 
 Create a **Custom** reward and set `auto: "enabled"`. Give it an icon that

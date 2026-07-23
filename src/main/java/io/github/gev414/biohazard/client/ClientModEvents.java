@@ -11,6 +11,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
 @EventBusSubscriber(
@@ -58,6 +59,37 @@ public final class ClientModEvents {
                 (stack, tintIndex) -> tintIndex == 0 ? REGENERATION_PINK : 0xFFFFFFFF,
                 ModItems.ANTIVIRAL_SUPPRESSANT.get()
         );
+    }
+
+    @SubscribeEvent
+    public static void renderCityStatus(ScreenEvent.Render.Post event) {
+        CityStatusClient.render(
+                event.getScreen(),
+                event.getGuiGraphics(),
+                event.getMouseX(),
+                event.getMouseY()
+        );
+    }
+
+    @SubscribeEvent
+    public static void toggleCityStatus(
+            ScreenEvent.MouseButtonPressed.Pre event
+    ) {
+        if (CityStatusClient.handleMouseClick(
+                event.getScreen(),
+                event.getMouseX(),
+                event.getMouseY(),
+                event.getButton()
+        )) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void closeCityStatus(ScreenEvent.Closing event) {
+        if (CityStatusClient.isQuestScreen(event.getScreen())) {
+            CityStatusClient.clear();
+        }
     }
 
     private ClientModEvents() {
