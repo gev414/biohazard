@@ -6,9 +6,8 @@ The project emphasizes modular Java design, clear separation of responsibilities
 
 ## Maintainer documentation
 
-The professional engineering handbook starts at
-[`docs/README.md`](docs/README.md). It covers the system architecture, every
-production Java service and its dependencies, persistent state, network and
+The architecture handbook starts at
+[`docs/README.md`](docs/README.md). It covers the system structure, every Java service and its dependencies, persistent state, network and
 runtime flows, the complete configuration surface, data/resource ownership,
 testing, upgrades, operations, and release maintenance.
 
