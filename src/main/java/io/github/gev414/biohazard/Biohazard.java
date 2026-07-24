@@ -9,6 +9,7 @@ import io.github.gev414.biohazard.config.HordeAtmosphereConfig;
 import io.github.gev414.biohazard.config.RadioQuestConfig;
 import io.github.gev414.biohazard.config.SurvivalSystemsConfig;
 import io.github.gev414.biohazard.entity.ModEntities;
+import io.github.gev414.biohazard.effect.ModEffects;
 import io.github.gev414.biohazard.event.EncounterEvents;
 import io.github.gev414.biohazard.event.HordeAtmosphereSyncEvents;
 import io.github.gev414.biohazard.event.ModEntityEvents;
@@ -41,6 +42,7 @@ public final class Biohazard {
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
+        ModEffects.MOB_EFFECTS.register(modEventBus);
         modEventBus.addListener(ModCreativeTabEvents::buildContents);
         modEventBus.addListener(ModEntityEvents::registerAttributes);
         modEventBus.addListener(ModPayloads::register);
@@ -131,6 +133,16 @@ public final class Biohazard {
         );
         NeoForge.EVENT_BUS.addListener(
                 SurvivalSystemsEvents::onPlayerLoggedOut
+        );
+        NeoForge.EVENT_BUS.addListener(
+                EventPriority.LOWEST,
+                SurvivalSystemsEvents::onCanPlayerSleep
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onSleepFinished
+        );
+        NeoForge.EVENT_BUS.addListener(
+                SurvivalSystemsEvents::onPlayerWakeUp
         );
         NeoForge.EVENT_BUS.addListener(
                 SurvivalSystemsEvents::onServerStopped

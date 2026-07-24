@@ -176,6 +176,9 @@ dependencies {
     // for Biohazard consumers and is loaded only when Traveler's Backpack is
     // present.
     compileOnly "maven.modrinth:rlloIFEV:${travelersbackpack_modrinth_version}"
+    // Required survival integration. Biohazard's sleep effects update Tough As
+    // Nails thirst through its public API.
+    compileOnly "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
     // The Hordes' cure synchronization packet implements Atlas Lib's network
     // interface. Atlas remains runtime-supplied by The Hordes.
     compileOnly "maven.modrinth:G6VHtQr4:${atlaslib_modrinth_version}"

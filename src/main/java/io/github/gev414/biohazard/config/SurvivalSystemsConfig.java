@@ -44,17 +44,25 @@ public final class SurvivalSystemsConfig {
     public static ModConfigSpec.DoubleValue BLOCK_BREAK_ATTENTION_RANGE;
     public static ModConfigSpec.BooleanValue REPLACE_ZOMBIE_TACTICS_MARKERS;
 
+    public static ModConfigSpec.BooleanValue SLEEP_SURVIVAL_ENABLED;
+    public static ModConfigSpec.IntValue SLEEP_EFFECT_DURATION_TICKS;
+    public static ModConfigSpec.IntValue SLEEP_EFFECT_PULSE_INTERVAL_TICKS;
+    public static ModConfigSpec.IntValue SLEEP_METER_POINTS_PER_PULSE;
+
     public static void initialize() {
         if (SPEC != null) {
             return;
         }
 
         BUILDER.comment(
-                "Encumbrance, stealth awareness, and noise-driven attention."
+                "Encumbrance, stealth, attention, and sleep survival."
         ).push("survivalSystems");
 
         ENABLED = BUILDER
-                .comment("Enable encumbrance, stealth, and attention systems.")
+                .comment(
+                        "Enable encumbrance, stealth, attention, and sleep",
+                        "survival systems."
+                )
                 .define("enabled", true);
         UPDATE_INTERVAL_TICKS = BUILDER
                 .comment("Ticks between player weight recalculations.")
@@ -181,6 +189,34 @@ public final class SurvivalSystemsConfig {
                         "Biohazard create markers only for configured loud events."
                 )
                 .define("replaceZombieTacticsMarkers", true);
+        BUILDER.pop();
+
+        BUILDER.push("sleepSurvival");
+        SLEEP_SURVIVAL_ENABLED = BUILDER
+                .comment(
+                        "Enable Restless Sleep for skipped nights in a",
+                        "Traveler's sleeping bag and New Dawn for enduring",
+                        "an entire night awake."
+                )
+                .define("enabled", true);
+        SLEEP_EFFECT_DURATION_TICKS = BUILDER
+                .comment(
+                        "Duration of Restless Sleep and New Dawn.",
+                        "1000 ticks is 50 seconds."
+                )
+                .defineInRange("effectDurationTicks", 1000, 20, 72_000);
+        SLEEP_EFFECT_PULSE_INTERVAL_TICKS = BUILDER
+                .comment(
+                        "Ticks between hunger and thirst changes.",
+                        "100 ticks is 5 seconds."
+                )
+                .defineInRange("pulseIntervalTicks", 100, 1, 1_200);
+        SLEEP_METER_POINTS_PER_PULSE = BUILDER
+                .comment(
+                        "Hunger and thirst points changed per pulse.",
+                        "Two internal points equal one full HUD icon."
+                )
+                .defineInRange("meterPointsPerPulse", 2, 1, 20);
         BUILDER.pop();
 
         BUILDER.pop();
