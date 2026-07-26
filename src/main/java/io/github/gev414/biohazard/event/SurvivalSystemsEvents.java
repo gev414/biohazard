@@ -5,6 +5,7 @@ import io.github.gev414.biohazard.encumbrance.EncumbranceManager;
 import io.github.gev414.biohazard.stealth.AttentionManager;
 import io.github.gev414.biohazard.stealth.AwarenessManager;
 import io.github.gev414.biohazard.stealth.PointBlankAttention;
+import io.github.gev414.biohazard.sleep.SleepSurvivalManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -16,6 +17,9 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
+import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -27,6 +31,7 @@ public final class SurvivalSystemsEvents {
         AwarenessManager.onServerTick(event);
         AttentionManager.onServerTick(event);
         SurvivalStatusSync.onServerTick(event);
+        SleepSurvivalManager.onServerTick(event);
     }
 
     public static void onLivingChangeTarget(
@@ -110,6 +115,19 @@ public final class SurvivalSystemsEvents {
         EncumbranceManager.onPlayerLoggedOut(event);
         AwarenessManager.onPlayerLoggedOut(event);
         SurvivalStatusSync.onPlayerLoggedOut(event);
+        SleepSurvivalManager.onPlayerLoggedOut(event);
+    }
+
+    public static void onCanPlayerSleep(CanPlayerSleepEvent event) {
+        SleepSurvivalManager.onCanPlayerSleep(event);
+    }
+
+    public static void onSleepFinished(SleepFinishedTimeEvent event) {
+        SleepSurvivalManager.onSleepFinished(event);
+    }
+
+    public static void onPlayerWakeUp(PlayerWakeUpEvent event) {
+        SleepSurvivalManager.onPlayerWakeUp(event);
     }
 
     public static void onServerStopped(ServerStoppedEvent event) {
@@ -118,6 +136,7 @@ public final class SurvivalSystemsEvents {
         AttentionManager.onServerStopped(event);
         SurvivalStatusSync.onServerStopped(event);
         PointBlankAttention.clear();
+        SleepSurvivalManager.onServerStopped(event);
     }
 
     private SurvivalSystemsEvents() {
