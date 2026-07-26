@@ -5,7 +5,11 @@ description.
 
 ## Encumbrance and carried weight
 
-Everything you carry now matters: inventory stacks, armor, offhand equipment, and the contents, tools, upgrades, and fluids of an equipped Traveler's Backpack all contribute to your load. Four weight tiers apply increasingly serious movement penalties, while a compact survival HUD and an inventory weight bar show your current burden; hover the inventory indicator to see the live tier thresholds and penalties used by the server.
+Everything you carry now matters: stackable supplies contribute linearly by per-item weight category, while firearms, armor, blocks, other equipment, and the contents, tools, upgrades, and fluids of an equipped Traveler's Backpack all contribute through suitable fallbacks. Four weight tiers apply increasingly serious movement penalties, while a compact survival HUD and an inventory weight bar show your current burden; hover the inventory indicator to see the live tier thresholds and penalties used by the server.
+
+## Sleep survival
+
+A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
 
 ## Stealth and progressive detection
 

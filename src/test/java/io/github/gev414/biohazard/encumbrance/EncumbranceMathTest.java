@@ -7,20 +7,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EncumbranceMathTest {
 
     @Test
-    void stackWeightUsesQuarterMinimumAndFullStackMaximum() {
+    void itemWeightScalesLinearlyFromTheFirstItem() {
         assertEquals(
-                0.5D,
-                EncumbranceMath.scaledStackWeight(2.0D, 1, 64),
+                0.12D,
+                EncumbranceMath.itemCountWeight(0.12D, 1),
                 0.0001D
         );
         assertEquals(
-                1.0D,
-                EncumbranceMath.scaledStackWeight(2.0D, 32, 64),
+                1.92D,
+                EncumbranceMath.itemCountWeight(0.12D, 16),
                 0.0001D
         );
         assertEquals(
-                2.0D,
-                EncumbranceMath.scaledStackWeight(2.0D, 64, 64),
+                7.68D,
+                EncumbranceMath.itemCountWeight(0.12D, 64),
+                0.0001D
+        );
+        assertEquals(
+                0.0D,
+                EncumbranceMath.itemCountWeight(0.12D, 0),
                 0.0001D
         );
     }

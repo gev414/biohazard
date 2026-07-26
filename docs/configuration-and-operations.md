@@ -170,7 +170,7 @@ Root section: `[survivalSystems]`
 
 | Key | Default | Meaning |
 |---|---:|---|
-| `enabled` | `true` | Master switch for weight, stealth, attention, and its HUD |
+| `enabled` | `true` | Master switch for encumbrance, stealth, attention, sleep survival, and the survival HUD |
 | `updateIntervalTicks` | `10` | Inventory/backpack weight recalculation interval |
 | `encumbrance.lightMaxWeight` | `16.0` | Highest weight that permits crouched quiet movement |
 | `encumbrance.burdenedMaxWeight` | `25.0` | Upper Burdened boundary |
@@ -192,12 +192,23 @@ Root section: `[survivalSystems]`
 | `attention.meleeRange` | `16.0` | Melee investigation radius |
 | `attention.blockBreakRange` | `20.0` | Non-instant block-break radius |
 | `attention.replaceZombieTacticsMarkers` | `true` | Replace automatic markers with Biohazard-approved loud-gun markers |
+| `sleepSurvival.enabled` | `true` | Enable Restless Sleep and New Dawn |
+| `sleepSurvival.effectDurationTicks` | `1000` | Both effects last 50 seconds |
+| `sleepSurvival.pulseIntervalTicks` | `200` | Change hunger and thirst every 10 seconds |
+| `sleepSurvival.meterPointsPerPulse` | `2` | Change one full HUD icon per pulse |
 
-The `[survivalSystems.encumbrance.weights]` section controls category weights:
-`defaultStack = 1.0`, `lightStack = 0.5`, `heavyStack = 2.0`,
-`veryHeavyStack = 4.0`, `armorStack = 2.0`, `firearmStack = 2.5`,
-`blockStack = 1.5`, `backpackBase = 2.0`, and
-`backpackFluidPerBucket = 1.0`.
+The `[survivalSystems.encumbrance.weights]` section controls per-item category
+weights. Stackable categories are `tinyItem = 0.02`, `lightItem = 0.04`,
+`defaultItem = 0.06`, `denseItem = 0.08`, `veryDenseItem = 0.12`, and
+`blockItem = 0.10`. Equipment fallbacks are `unstackableItem = 0.75`,
+`lightEquipment = 1.25`, `armorItem = 2.0`, `firearmItem = 2.5`, and
+`heavyEquipment = 4.0`. A backpack adds `backpackBase = 2.0`, plus its
+contents and `backpackFluidPerBucket = 1.0`.
+
+Stackable weight is the configured per-item value multiplied by count. There
+is no partial-stack minimum and maximum stack size is not part of the formula.
+Tags can classify whole item families, while firearm, armor, block, unstackable,
+and default fallbacks keep unmapped vanilla and modded items functional.
 
 All state is transient. Changing thresholds or category weights takes effect on
 the next recalculation; movement modifiers are replaced rather than stacked.
@@ -208,6 +219,8 @@ selection and movement modifiers, including TOML overrides; there is no
 separate client balance table.
 Read [Stealth, attention, and encumbrance](stealth-attention-and-encumbrance.md)
 before changing noise radii or ZombieTactics marker ownership.
+Read [Sleep survival](sleep-survival.md) for the sleeping-bag trigger, complete
+night-awake requirements, and shared meter-pulse behavior.
 
 ## 6. Client horde-atmosphere config
 

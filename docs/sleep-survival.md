@@ -7,7 +7,7 @@ way to remove the night from survival gameplay.
 
 When a Traveler's Backpack sleeping bag successfully skips the night, the
 player receives the harmful `biohazard:restless_sleep` effect for 50 seconds.
-Every five seconds it removes one full hunger icon and one full thirst icon.
+Every ten seconds it removes one full hunger icon and one full thirst icon.
 The meters are clamped at their normal minimum, so the effect cannot create an
 invalid value.
 
@@ -19,7 +19,7 @@ trigger the penalty.
 
 A player who remains awake for the complete natural night receives the
 beneficial `biohazard:new_dawn` effect at dawn. It lasts 50 seconds and restores
-one full hunger icon and one full thirst icon every five seconds.
+one full hunger icon and one full thirst icon every ten seconds.
 
 New Dawn is forfeited if the player sleeps, dies, changes dimensions, logs in
 after the night has begun, or another player skips the night. The player must
@@ -33,10 +33,14 @@ The settings are generated in `biohazard-survival.toml` under
 - `enabled`: enables the sleep-survival system.
 - `effectDurationTicks`: effect duration; the default `1000` ticks is 50
   seconds.
-- `pulseIntervalTicks`: time between meter changes; the default `100` ticks is
-  5 seconds.
+- `pulseIntervalTicks`: time between meter changes; the default `200` ticks is
+  10 seconds.
 - `meterPointsPerPulse`: internal hunger/thirst points changed per pulse; the
   default `2` points equals one full HUD icon.
+
+The pulse interval and points-per-pulse settings are shared by New Dawn and
+Restless Sleep. At the defaults, either effect changes each meter by five full
+HUD icons over its 50-second duration.
 
 ## Testing commands
 

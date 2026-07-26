@@ -18,13 +18,17 @@ public final class SurvivalSystemsConfig {
     public static ModConfigSpec.DoubleValue BURDENED_SPEED_PENALTY;
     public static ModConfigSpec.DoubleValue HEAVY_SPEED_PENALTY;
     public static ModConfigSpec.DoubleValue OVERLOADED_SPEED_PENALTY;
-    public static ModConfigSpec.DoubleValue DEFAULT_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue LIGHT_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue HEAVY_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue VERY_HEAVY_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue ARMOR_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue FIREARM_STACK_WEIGHT;
-    public static ModConfigSpec.DoubleValue BLOCK_STACK_WEIGHT;
+    public static ModConfigSpec.DoubleValue TINY_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue LIGHT_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue DEFAULT_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue DENSE_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue VERY_DENSE_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue BLOCK_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue UNSTACKABLE_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue LIGHT_EQUIPMENT_WEIGHT;
+    public static ModConfigSpec.DoubleValue ARMOR_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue FIREARM_ITEM_WEIGHT;
+    public static ModConfigSpec.DoubleValue HEAVY_EQUIPMENT_WEIGHT;
     public static ModConfigSpec.DoubleValue BACKPACK_BASE_WEIGHT;
     public static ModConfigSpec.DoubleValue BACKPACK_FLUID_WEIGHT_PER_BUCKET;
 
@@ -95,42 +99,59 @@ public final class SurvivalSystemsConfig {
         );
 
         BUILDER.comment(
-                "A stack's count scales its category weight from 25% for a",
-                "nearly empty stack to 100% for a full stack."
+                "Stackable item weights are per individual item and scale",
+                "linearly with count. Equipment categories are also per item",
+                "but normally apply to unstackable items."
         ).push("weights");
-        DEFAULT_STACK_WEIGHT = stackWeight(
-                "defaultStack",
-                1.0D
+        TINY_ITEM_WEIGHT = itemWeight(
+                "tinyItem",
+                0.02D
         );
-        LIGHT_STACK_WEIGHT = stackWeight(
-                "lightStack",
-                0.5D
+        LIGHT_ITEM_WEIGHT = itemWeight(
+                "lightItem",
+                0.04D
         );
-        HEAVY_STACK_WEIGHT = stackWeight(
-                "heavyStack",
+        DEFAULT_ITEM_WEIGHT = itemWeight(
+                "defaultItem",
+                0.06D
+        );
+        DENSE_ITEM_WEIGHT = itemWeight(
+                "denseItem",
+                0.08D
+        );
+        VERY_DENSE_ITEM_WEIGHT = itemWeight(
+                "veryDenseItem",
+                0.12D
+        );
+        BLOCK_ITEM_WEIGHT = itemWeight(
+                "blockItem",
+                0.10D
+        );
+        UNSTACKABLE_ITEM_WEIGHT = itemWeight(
+                "unstackableItem",
+                0.75D
+        );
+        LIGHT_EQUIPMENT_WEIGHT = itemWeight(
+                "lightEquipment",
+                1.25D
+        );
+        ARMOR_ITEM_WEIGHT = itemWeight(
+                "armorItem",
                 2.0D
         );
-        VERY_HEAVY_STACK_WEIGHT = stackWeight(
-                "veryHeavyStack",
-                4.0D
-        );
-        ARMOR_STACK_WEIGHT = stackWeight(
-                "armorStack",
-                2.0D
-        );
-        FIREARM_STACK_WEIGHT = stackWeight(
-                "firearmStack",
+        FIREARM_ITEM_WEIGHT = itemWeight(
+                "firearmItem",
                 2.5D
         );
-        BLOCK_STACK_WEIGHT = stackWeight(
-                "blockStack",
-                1.5D
+        HEAVY_EQUIPMENT_WEIGHT = itemWeight(
+                "heavyEquipment",
+                4.0D
         );
-        BACKPACK_BASE_WEIGHT = stackWeight(
+        BACKPACK_BASE_WEIGHT = itemWeight(
                 "backpackBase",
                 2.0D
         );
-        BACKPACK_FLUID_WEIGHT_PER_BUCKET = stackWeight(
+        BACKPACK_FLUID_WEIGHT_PER_BUCKET = itemWeight(
                 "backpackFluidPerBucket",
                 1.0D
         );
@@ -208,9 +229,9 @@ public final class SurvivalSystemsConfig {
         SLEEP_EFFECT_PULSE_INTERVAL_TICKS = BUILDER
                 .comment(
                         "Ticks between hunger and thirst changes.",
-                        "100 ticks is 5 seconds."
+                        "200 ticks is 10 seconds."
                 )
-                .defineInRange("pulseIntervalTicks", 100, 1, 1_200);
+                .defineInRange("pulseIntervalTicks", 200, 1, 1_200);
         SLEEP_METER_POINTS_PER_PULSE = BUILDER
                 .comment(
                         "Hunger and thirst points changed per pulse.",
@@ -232,7 +253,7 @@ public final class SurvivalSystemsConfig {
                 .defineInRange(name, defaultValue, 0.0D, 0.95D);
     }
 
-    private static ModConfigSpec.DoubleValue stackWeight(
+    private static ModConfigSpec.DoubleValue itemWeight(
             String name,
             double defaultValue
     ) {

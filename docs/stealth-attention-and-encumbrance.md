@@ -59,15 +59,28 @@ Weight includes the main inventory, armor, offhand, and an equipped Traveler's
 Backpack. Stored Traveler's Backpack items also include their storage slots,
 tools, upgrades, and fluid tanks. Biohazard only reads backpack state.
 
-Stack count scales a category's configured weight from 25% for a nearly empty
-stack to 100% for a full stack. Tags take precedence over automatic categories:
+Stackable items contribute their category's per-item weight multiplied by the
+actual item count. There is no minimum-stack charge, and an item's maximum
+stack size does not affect its weight. Equipment uses larger per-item values
+that normally apply to a single unstackable item.
+
+Classification uses the first matching rule in this order: weightless,
+light/heavy equipment, firearm, armor, item-density tags, block, unstackable,
+then default. The available override tags are:
 
 - `biohazard:encumbrance/weightless`
+- `biohazard:encumbrance/tiny`
 - `biohazard:encumbrance/light`
-- `biohazard:encumbrance/heavy`
-- `biohazard:encumbrance/very_heavy`
+- `biohazard:encumbrance/dense`
+- `biohazard:encumbrance/very_dense`
+- `biohazard:encumbrance/equipment/light`
+- `biohazard:encumbrance/equipment/heavy`
 
-Items not covered by a tag are classified as firearm, armor, block, or default.
+For example, the defaults make 25 cobblestone weigh `3.0`, 30 sticks weigh
+`0.6`, and 16 coal weigh `1.28`. A light firearm weighs `1.25`, a normal
+firearm `2.5`, and a heavy firearm `4.0`; a full cobblestone stack weighs
+`7.68`. Unmapped modded items still receive an automatic fallback.
+
 The default tiers and movement penalties are:
 
 | Tier | Weight | Speed penalty | Quiet movement |

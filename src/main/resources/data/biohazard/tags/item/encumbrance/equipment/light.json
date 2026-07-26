@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "pointblank:deserteagle",
+    "pointblank:glock17",
+    "pointblank:glock18",
+    "pointblank:m1911a1",
+    "pointblank:m9",
+    "pointblank:m950",
+    "pointblank:mk23",
+    "pointblank:p30l",
+    "pointblank:rhino",
+    "pointblank:tti_viper"
+  ]
+}

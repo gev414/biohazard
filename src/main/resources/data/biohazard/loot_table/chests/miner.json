@@ -14,7 +14,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 12,
+                "min": 2,
                 "max": 32
               }
             }
@@ -28,8 +28,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 12,
-                "max": 36
+                "min": 2,
+                "max": 20
               }
             }
           ],
@@ -42,8 +42,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 8,
-                "max": 24
+                "min": 4,
+                "max": 14
               }
             }
           ],
@@ -56,8 +56,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 6,
-                "max": 16
+                "min": 1,
+                "max": 12
               }
             }
           ],
@@ -70,7 +70,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 4,
+                "min": 1,
                 "max": 12
               }
             }
@@ -84,7 +84,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
+                "min": 1,
                 "max": 8
               }
             }
@@ -98,7 +98,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 4,
+                "min": 1,
                 "max": 12
               }
             }
@@ -112,7 +112,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
+                "min": 1,
                 "max": 6
               }
             }
@@ -126,7 +126,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
+                "min": 1,
                 "max": 6
               }
             }
@@ -140,7 +140,7 @@
             {
               "function": "set_count",
               "count": {
-                "min": 5,
+                "min": 1,
                 "max": 25
               }
             }
