@@ -143,33 +143,44 @@ public final class EncumbranceManager {
             );
         }
 
-        double categoryWeight;
-        if (stack.is(ModItemTags.VERY_HEAVY)) {
-            categoryWeight =
-                    SurvivalSystemsConfig.VERY_HEAVY_STACK_WEIGHT.get();
-        } else if (stack.is(ModItemTags.HEAVY)) {
-            categoryWeight =
-                    SurvivalSystemsConfig.HEAVY_STACK_WEIGHT.get();
-        } else if (stack.is(ModItemTags.LIGHT)) {
-            categoryWeight =
-                    SurvivalSystemsConfig.LIGHT_STACK_WEIGHT.get();
+        double itemWeight;
+        if (stack.is(ModItemTags.LIGHT_EQUIPMENT)) {
+            itemWeight =
+                    SurvivalSystemsConfig.LIGHT_EQUIPMENT_WEIGHT.get();
+        } else if (stack.is(ModItemTags.HEAVY_EQUIPMENT)) {
+            itemWeight =
+                    SurvivalSystemsConfig.HEAVY_EQUIPMENT_WEIGHT.get();
         } else if (stack.getItem() instanceof GunItem) {
-            categoryWeight =
-                    SurvivalSystemsConfig.FIREARM_STACK_WEIGHT.get();
+            itemWeight =
+                    SurvivalSystemsConfig.FIREARM_ITEM_WEIGHT.get();
         } else if (stack.getItem() instanceof ArmorItem) {
-            categoryWeight =
-                    SurvivalSystemsConfig.ARMOR_STACK_WEIGHT.get();
+            itemWeight =
+                    SurvivalSystemsConfig.ARMOR_ITEM_WEIGHT.get();
+        } else if (stack.is(ModItemTags.VERY_DENSE)) {
+            itemWeight =
+                    SurvivalSystemsConfig.VERY_DENSE_ITEM_WEIGHT.get();
+        } else if (stack.is(ModItemTags.DENSE)) {
+            itemWeight =
+                    SurvivalSystemsConfig.DENSE_ITEM_WEIGHT.get();
+        } else if (stack.is(ModItemTags.LIGHT)) {
+            itemWeight =
+                    SurvivalSystemsConfig.LIGHT_ITEM_WEIGHT.get();
+        } else if (stack.is(ModItemTags.TINY)) {
+            itemWeight =
+                    SurvivalSystemsConfig.TINY_ITEM_WEIGHT.get();
         } else if (stack.getItem() instanceof BlockItem) {
-            categoryWeight =
-                    SurvivalSystemsConfig.BLOCK_STACK_WEIGHT.get();
+            itemWeight =
+                    SurvivalSystemsConfig.BLOCK_ITEM_WEIGHT.get();
+        } else if (stack.getMaxStackSize() == 1) {
+            itemWeight =
+                    SurvivalSystemsConfig.UNSTACKABLE_ITEM_WEIGHT.get();
         } else {
-            categoryWeight =
-                    SurvivalSystemsConfig.DEFAULT_STACK_WEIGHT.get();
+            itemWeight =
+                    SurvivalSystemsConfig.DEFAULT_ITEM_WEIGHT.get();
         }
-        return EncumbranceMath.scaledStackWeight(
-                categoryWeight,
-                stack.getCount(),
-                stack.getMaxStackSize()
+        return EncumbranceMath.itemCountWeight(
+                itemWeight,
+                stack.getCount()
         );
     }
 

@@ -930,8 +930,10 @@ The manager periodically totals inventory, armor, offhand, and optional
 Traveler's Backpack state and owns one replaceable transient movement modifier.
 The optional integration is class-isolated so its types are never loaded when
 the mod is absent. Backpack reads include storage, tools, upgrades, and both
-fluid tanks. Item tags override automatic firearm, armor, block, and default
-classification.
+fluid tanks. Stackable categories multiply a per-item value by the actual item
+count without a minimum-stack charge or maximum-stack-size scaling. Weightless
+and equipment tags override firearm and armor detection; density tags override
+block, unstackable, and default classification.
 
 ### Awareness and attention services
 

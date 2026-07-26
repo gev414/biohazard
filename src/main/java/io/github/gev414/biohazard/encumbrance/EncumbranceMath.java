@@ -2,25 +2,14 @@ package io.github.gev414.biohazard.encumbrance;
 
 public final class EncumbranceMath {
 
-    private static final double MINIMUM_STACK_FRACTION = 0.25D;
-
-    public static double scaledStackWeight(
-            double categoryWeight,
-            int count,
-            int maximumStackSize
+    public static double itemCountWeight(
+            double itemWeight,
+            int count
     ) {
-        if (categoryWeight <= 0.0D || count <= 0) {
+        if (itemWeight <= 0.0D || count <= 0) {
             return 0.0D;
         }
-        int safeMaximum = Math.max(1, maximumStackSize);
-        double fullness = Math.min(
-                1.0D,
-                (double) count / safeMaximum
-        );
-        return categoryWeight * Math.max(
-                MINIMUM_STACK_FRACTION,
-                fullness
-        );
+        return itemWeight * count;
     }
 
     public static int displayTenths(double weight) {

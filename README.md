@@ -73,16 +73,25 @@ status drawer, progression defaults, and server tuning.
 ## Stealth, attention, and encumbrance
 
 Carried equipment now forms a second survival constraint: inventory, armor,
-offhand items, and Traveler's Backpack contents contribute to weight tiers and
-movement penalties. A compact lower-right HUD reports current load and stealth
-state, while the player inventory adds a weight bar whose tooltip lists the
-server's live tier thresholds and penalties. Light crouched players can avoid
+offhand items, and Traveler's Backpack contents contribute linearly by
+per-item weight category, while firearms, armor, and other equipment use
+larger equipment values. A compact lower-right HUD reports current load and
+stealth state, while the player inventory adds a weight bar whose tooltip lists
+the server's live tier thresholds and penalties. Light crouched players can avoid
 automatic infected targeting, but sight builds progressive suspicion and
 firing, attacking, or mining a durable block creates a radius-bounded
 investigation event. Horde mobs ignore the stealth window and Brutes detect
 faster. The radio quest interface also reports horde-day state and a 24-hour
 world clock without changing the existing pre-horde fog. See
 [Stealth, attention, and encumbrance](docs/stealth-attention-and-encumbrance.md).
+
+## Sleep survival
+
+Skipping the night in a Traveler's Backpack sleeping bag applies Restless
+Sleep, while remaining awake through a complete natural night grants New Dawn.
+For 50 seconds, either effect changes one full hunger icon and one full thirst
+icon every ten seconds in the harmful or beneficial direction. See
+[Sleep survival](docs/sleep-survival.md).
 
 Entity System
 

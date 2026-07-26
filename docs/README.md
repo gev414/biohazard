@@ -28,6 +28,7 @@ Choose the path that matches the work you are doing:
 | Add a radio contract | [Quest authoring](authoring-survivor-network-quests.md) | [Radio quest protocol](radio-quests.md) |
 | Understand or tune city progression | [City operations](city-operations.md) | [Configuration and operations](configuration-and-operations.md#4-city-operations-config) |
 | Tune stealth, noise, or carried weight | [Stealth and encumbrance](stealth-attention-and-encumbrance.md) | [Configuration and operations](configuration-and-operations.md#5-survival-systems-config) |
+| Tune portable sleep or New Dawn | [Sleep survival](sleep-survival.md) | [Configuration and operations](configuration-and-operations.md#5-survival-systems-config) |
 | Build, test, release, or upgrade | [Development and maintenance](development-and-maintenance.md) | [Dependency matrix](architecture.md#external-dependency-map) |
 | Investigate a broken save or delivery | [Configuration and operations](configuration-and-operations.md#diagnostics-and-recovery) | [State ownership](architecture.md#state-ownership-and-persistence) |
 
@@ -58,6 +59,8 @@ Choose the path that matches the work you are doing:
 - [Stealth, attention, and encumbrance](stealth-attention-and-encumbrance.md)
   explains quiet movement, progressive suspicion, noise radii, backpack weight,
   movement penalties, and the radio Horde Watch panel.
+- [Sleep survival](sleep-survival.md) explains the sleeping-bag penalty,
+  full-night-awake reward, shared pulse balance, and testing commands.
 - [Modrinth gameplay descriptions](modrinth-gameplay-mechanics.md) contains
   short standalone paragraphs for presenting each new survival loop.
 

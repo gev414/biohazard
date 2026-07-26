@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil",
+    "minecraft:lava_bucket",
+    "minecraft:water_bucket",
+    "minecraft:powder_snow_bucket",
+    "pointblank:gm6lynx",
+    "pointblank:lamg",
+    "pointblank:m134minigun",
+    "pointblank:m249",
+    "pointblank:m32mgl",
+    "pointblank:mk48",
+    "pointblank:xm29"
+  ]
+}

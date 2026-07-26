@@ -34,7 +34,7 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | `biohazard` | Lost Cities | 46 | Handcrafted palettes and decorated LCMT tower floors |
 | `biohazard` | Patchouli book definition | 1 | field manual book-level data |
 | `biohazard` | recipe | 1 | Radio Transmitter crafting recipe |
-| `biohazard` | tags | 6 | city scaling, stealth targeting, and encumbrance weight overrides |
+| `biohazard` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
 | `lcmt` | Lost Cities | 19 | targeted optional LCMT part/building overrides |
 | `lostcities` | Lost Cities | 42 | base Lost Cities palette/variant/condition overrides |
 | `minecraft` | tags | 3 | mining/tool and damage behavior integration |
@@ -379,20 +379,24 @@ Check each file's `replace` field before editing. A mistaken `replace: true`
 under the Minecraft namespace could erase contributions from vanilla or other
 mods.
 
-Six Biohazard-namespace tags expose gameplay classification:
+Nine Biohazard-namespace tags expose gameplay classification:
 
 | Tag | Registry | Purpose |
 |---|---|---|
 | `biohazard:city_scaled_infected` | entity type | entities eligible for persistent city-danger health scaling |
 | `biohazard:stealth_affected_infected` | entity type | infected governed by quiet-target suppression, suspicion, and bounded investigation |
 | `biohazard:encumbrance/weightless` | item | forces a carried stack to contribute no weight |
-| `biohazard:encumbrance/light` | item | overrides automatic classification with the light-stack weight |
-| `biohazard:encumbrance/heavy` | item | overrides automatic classification with the heavy-stack weight |
-| `biohazard:encumbrance/very_heavy` | item | overrides automatic classification with the very-heavy-stack weight |
+| `biohazard:encumbrance/tiny` | item | applies the tiny per-item weight |
+| `biohazard:encumbrance/light` | item | applies the light per-item weight |
+| `biohazard:encumbrance/dense` | item | applies the dense per-item weight |
+| `biohazard:encumbrance/very_dense` | item | applies the very-dense per-item weight |
+| `biohazard:encumbrance/equipment/light` | item | applies the flat light-equipment weight per item |
+| `biohazard:encumbrance/equipment/heavy` | item | applies the flat heavy-equipment weight per item |
 
-Weight tags take precedence over firearm, armor, block, and default automatic
-classification. Keep the entity tags distinct: an entity may participate in
-city scaling, stealth awareness, both, or neither.
+Weightless and equipment tags take precedence over firearm and armor detection.
+Density tags then take precedence over block, unstackable, and default
+automatic classification. Keep the entity tags distinct: an entity may
+participate in city scaling, stealth awareness, both, or neither.
 
 ## 10. Localization contracts
 
