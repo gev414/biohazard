@@ -14,7 +14,7 @@ PART_ROOT = (
     / "main"
     / "resources"
     / "data"
-    / "biohazard"
+    / "rotwire"
     / "lostcities"
     / "parts"
 )

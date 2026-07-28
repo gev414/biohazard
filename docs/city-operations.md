@@ -75,8 +75,8 @@ progress.
 ## City-operation contracts
 
 Quest authors can create a city objective with a Custom task tagged
-`biohazard_city_operation`. The optional
-`biohazard_city_buildings_<count>` tag sets the required number of new clears;
+`rotwire_city_operation`. The optional
+`rotwire_city_buildings_<count>` tag sets the required number of new clears;
 without it, the target is five. Accepting the contract through a mapped radio
 binds the task to that city and records its current clear total. Only later,
 unique clears in that same city advance the objective.
@@ -87,7 +87,7 @@ for the exact FTB Quests setup.
 ## Server tuning and persistence
 
 All city settings are in the world's
-`serverconfig/biohazard-city-operations.toml`. Operators can adjust survey
+`serverconfig/rotwire-city-operations.toml`. Operators can adjust survey
 budget/caps, city connectivity, influence perimeter, clears per level, maximum
 danger, and normal/Brute health scaling. See
 [Configuration and operations](configuration-and-operations.md#4-city-operations-config)

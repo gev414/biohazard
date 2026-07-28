@@ -11,51 +11,51 @@
   "parts": [
     {
       "floor": 0,
-      "part": "biohazard:stair_retrofits/building8_ground"
+      "part": "rotwire:stair_retrofits/building8_ground"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_1"
+      "part": "rotwire:building8/building8_1"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_2"
+      "part": "rotwire:building8/building8_2"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_3"
+      "part": "rotwire:building8/building8_3"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_4"
+      "part": "rotwire:building8/building8_4"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_5"
+      "part": "rotwire:building8/building8_5"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_6"
+      "part": "rotwire:building8/building8_6"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_7"
+      "part": "rotwire:building8/building8_7"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building8/building8_8"
+      "part": "rotwire:building8/building8_8"
     },
     {
       "top": true,
-      "part": "biohazard:stair_retrofits/building8_roof"
+      "part": "rotwire:stair_retrofits/building8_roof"
     }
   ]
 }

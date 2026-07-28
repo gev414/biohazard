@@ -1,4 +1,4 @@
-# Biohazard radio quests and courier deliveries
+# Rotwire radio quests and courier deliveries
 
 This document describes the current implementation of the Survivor Network:
 the FTB Quests pager, radio-gated contract flow, delayed courier rewards, and
@@ -6,8 +6,8 @@ the data files used to author new deliveries.
 
 ## Architecture at a glance
 
-Biohazard uses FTB Quests as the journal and user interface. It does not fork
-the FTB Quests screens. Biohazard listens to FTB Quests custom-task and
+Rotwire uses FTB Quests as the journal and user interface. It does not fork
+the FTB Quests screens. Rotwire listens to FTB Quests custom-task and
 custom-reward events and gives selected objects radio behavior through tags.
 
 The flow is:
@@ -18,7 +18,7 @@ The flow is:
 4. The player returns to a transmitter and presses the tagged transmit/turn-in
    button.
 5. Tagged item tasks are checked and consumed atomically.
-6. When the tagged custom reward is claimed, Biohazard rolls a loot table,
+6. When the tagged custom reward is claimed, Rotwire rolls a loot table,
    stores the resulting item stacks, and schedules a mailbox delivery.
 7. After the category delay, the package can be collected at a transmitter.
 
@@ -30,7 +30,7 @@ submission, completion, and collection are server-side radio checks.
 The transmitter calibrates after placement or relocation. The default
 calibration time is 1,200 server ticks (60 seconds). A player must be within
 six blocks of a calibrated transmitter for radio actions. These values are
-configurable in `config/biohazard-radio-quests.toml`:
+configurable in `config/rotwire-radio-quests.toml`:
 
 ```toml
 [radioQuests]
@@ -60,14 +60,14 @@ underscores only. The integration recognizes these tags:
 
 | Object | Tag | Purpose |
 |---|---|---|
-| First custom task | `biohazard_radio_accept` | Enables the accept button and checks transmitter range. |
-| Physical item task | `biohazard_radio_submit` | Marks an item requirement for atomic radio turn-in. |
-| Final custom task | `biohazard_radio_complete` | Enables transmit/turn-in and performs submission checks. |
-| Custom reward | `biohazard_radio_delivery` | Sends the reward through the courier system. |
-| Custom reward | `biohazard_radio_choice_delivery` | Sends a delayed, player-selectable courier delivery. |
-| Delivery reward | `biohazard_manifest_<name>` | Selects `quest_delivery/<name>.json`. |
-| Delivery reward | `biohazard_category_<category>` | Selects the delay category. |
-| Choice delivery reward | `biohazard_choice_count_<1-9>` | Number of distinct options to generate; defaults to 3. |
+| First custom task | `rotwire_radio_accept` | Enables the accept button and checks transmitter range. |
+| Physical item task | `rotwire_radio_submit` | Marks an item requirement for atomic radio turn-in. |
+| Final custom task | `rotwire_radio_complete` | Enables transmit/turn-in and performs submission checks. |
+| Custom reward | `rotwire_radio_delivery` | Sends the reward through the courier system. |
+| Custom reward | `rotwire_radio_choice_delivery` | Sends a delayed, player-selectable courier delivery. |
+| Delivery reward | `rotwire_manifest_<name>` | Selects `quest_delivery/<name>.json`. |
+| Delivery reward | `rotwire_category_<category>` | Selects the delay category. |
+| Choice delivery reward | `rotwire_choice_count_<1-9>` | Number of distinct options to generate; defaults to 3. |
 
 Supported categories are `supplies`, `ammunition`, `medical`, `equipment`,
 and `firearm`. If no category tag is present, the implementation falls back
@@ -90,10 +90,10 @@ files. The reward's manifest name must exactly match the loot-table filename.
 Create a standard Minecraft loot table at:
 
 ```text
-src/main/resources/data/biohazard/loot_table/quest_delivery/<name>.json
+src/main/resources/data/rotwire/loot_table/quest_delivery/<name>.json
 ```
 
-The resource ID is `biohazard:quest_delivery/<name>`. A minimal one-item
+The resource ID is `rotwire:quest_delivery/<name>`. A minimal one-item
 table is:
 
 ```json
@@ -110,7 +110,7 @@ table is:
       ]
     }
   ],
-  "random_sequence": "biohazard:quest_delivery/example"
+  "random_sequence": "rotwire:quest_delivery/example"
 }
 ```
 
@@ -129,7 +129,7 @@ weighted `weight` values and keep `rolls` at `1`:
       ]
     }
   ],
-  "random_sequence": "biohazard:quest_delivery/weapons_random"
+  "random_sequence": "rotwire:quest_delivery/weapons_random"
 }
 ```
 
@@ -139,7 +139,7 @@ loot-table manager. Ensure every item ID exists on the server and client.
 An empty or invalid table produces no package and logs an error.
 
 Choice tables normally roll one candidate per loot-table roll. For a choice
-delivery, Biohazard rerolls the table until it has the requested number of
+delivery, Rotwire rerolls the table until it has the requested number of
 distinct candidates (up to eight attempts per candidate), then saves those
 exact item stacks. Once the courier is ready, interacting with a calibrated
 transmitter opens a selection screen. The selection is validated by the server
@@ -151,9 +151,9 @@ chosen item remains in the mailbox until it can be collected.
 For a table named `attachments_random`, the custom reward needs tags like:
 
 ```text
-biohazard_radio_delivery
-biohazard_manifest_attachments_random
-biohazard_category_equipment
+rotwire_radio_delivery
+rotwire_manifest_attachments_random
+rotwire_category_equipment
 ```
 
 The manifest suffix is case-sensitive and must contain only the table name,
@@ -163,17 +163,17 @@ courier contents; use an appropriate representative icon or reward preview.
 For a three-weapon selection instead, use:
 
 ```text
-biohazard_radio_choice_delivery
-biohazard_manifest_weapons_choice
-biohazard_choice_count_3
-biohazard_category_firearm
+rotwire_radio_choice_delivery
+rotwire_manifest_weapons_choice
+rotwire_choice_count_3
+rotwire_category_firearm
 ```
 
 ## Delivery lifecycle and persistence
 
 Loot is rolled when the reward is claimed, not when the package is collected.
 The exact generated stacks are stored in world saved data under
-`biohazard_radio_deliveries`. This prevents a datapack reload or a changed loot
+`rotwire_radio_deliveries`. This prevents a datapack reload or a changed loot
 table from rerolling an already-earned reward.
 
 Each delivery belongs to the player who claimed the reward. It is not attached
@@ -187,18 +187,18 @@ later collection.
 Bundled defaults are under:
 
 ```text
-src/main/resources/biohazard/ftbquests_defaults/
+src/main/resources/rotwire/ftbquests_defaults/
 ```
 
-Biohazard copies them into `config/ftbquests/quests` only when the destination
+Rotwire copies them into `config/ftbquests/quests` only when the destination
 quest directory is absent or empty. Existing books are never merged or
 overwritten. Therefore:
 
 - Use the in-game FTB Quests editor for a live instance.
 - Use “Save on server now” before testing server-side changes.
 - To make an edited quest a mod default, copy the resulting SNBT back into the
-  matching `src/main/resources/biohazard/ftbquests_defaults` file.
-- Keep custom loot tables in `src/main/resources/data/biohazard/...` so they
+  matching `src/main/resources/rotwire/ftbquests_defaults` file.
+- Keep custom loot tables in `src/main/resources/data/rotwire/...` so they
   are packaged into the jar.
 
 When distributing a rebuilt mod, the resource files and Java implementation
@@ -218,12 +218,12 @@ mod's default data and will not be present in a fresh installation.
 
 ## Common mistakes
 
-- Using `biohazard_manifest_name` without the matching `name.json` file.
+- Using `rotwire_manifest_name` without the matching `name.json` file.
 - Putting the manifest tag on the quest instead of the custom reward.
 - Omitting the category tag and unintentionally receiving the supplies delay.
 - Expecting a normal FTB reward or FTB reward table to use the courier system.
 - Using an invalid item ID, which makes the table roll empty.
-- Marking a choice reward with `biohazard_radio_delivery` instead of
-  `biohazard_radio_choice_delivery`.
+- Marking a choice reward with `rotwire_radio_delivery` instead of
+  `rotwire_radio_choice_delivery`.
 - Editing the live config but forgetting to save on the server or copy the
   change into the source defaults.

@@ -1,12 +1,12 @@
 # Sleep survival
 
-Biohazard treats portable sleep as an emergency convenience rather than a free
+Rotwire treats portable sleep as an emergency convenience rather than a free
 way to remove the night from survival gameplay.
 
 ## Restless Sleep
 
 When a Traveler's Backpack sleeping bag successfully skips the night, the
-player receives the harmful `biohazard:restless_sleep` effect for 50 seconds.
+player receives the harmful `rotwire:restless_sleep` effect for 50 seconds.
 Every ten seconds it removes one full hunger icon and one full thirst icon.
 The meters are clamped at their normal minimum, so the effect cannot create an
 invalid value.
@@ -18,7 +18,7 @@ trigger the penalty.
 ## New Dawn
 
 A player who remains awake for the complete natural night receives the
-beneficial `biohazard:new_dawn` effect at dawn. It lasts 50 seconds and restores
+beneficial `rotwire:new_dawn` effect at dawn. It lasts 50 seconds and restores
 one full hunger icon and one full thirst icon every ten seconds.
 
 New Dawn is forfeited if the player sleeps, dies, changes dimensions, logs in
@@ -27,7 +27,7 @@ also remain in the same dimension for the full tracked night.
 
 ## Configuration
 
-The settings are generated in `biohazard-survival.toml` under
+The settings are generated in `rotwire-survival.toml` under
 `[survivalSystems.sleepSurvival]`:
 
 - `enabled`: enables the sleep-survival system.
@@ -47,8 +47,8 @@ HUD icons over its 50-second duration.
 Run these commands as the player who should receive the effect:
 
 ```mcfunction
-/effect give @s biohazard:restless_sleep 50 0 true
-/effect give @s biohazard:new_dawn 50 0 true
+/effect give @s rotwire:restless_sleep 50 0 true
+/effect give @s rotwire:new_dawn 50 0 true
 ```
 
 The final `true` hides particles while keeping the effect icon visible.

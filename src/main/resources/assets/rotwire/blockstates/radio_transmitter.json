@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "rotwire:block/radio_transmitter"
+    },
+    "facing=east": {
+      "model": "rotwire:block/radio_transmitter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "rotwire:block/radio_transmitter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "rotwire:block/radio_transmitter",
+      "y": 270
+    }
+  }
+}

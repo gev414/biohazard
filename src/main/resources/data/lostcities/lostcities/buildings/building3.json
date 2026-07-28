@@ -11,31 +11,31 @@
   "parts": [
     {
       "floor": 0,
-      "part": "biohazard:stair_retrofits/building3_ground"
+      "part": "rotwire:stair_retrofits/building3_ground"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building3/building3_1"
+      "part": "rotwire:building3/building3_1"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building3/building3_2"
+      "part": "rotwire:building3/building3_2"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building3/building3_3"
+      "part": "rotwire:building3/building3_3"
     },
     {
       "top": false,
       "range": "1,100",
-      "part": "biohazard:building3/building3_4"
+      "part": "rotwire:building3/building3_4"
     },
     {
       "top": true,
-      "part": "biohazard:stair_retrofits/building3_roof"
+      "part": "rotwire:stair_retrofits/building3_roof"
     }
   ]
 }

@@ -1,0 +1,29 @@
+{
+  "name": "Horde Events",
+  "category": "rotwire:threats",
+  "icon": "minecraft:zombie_head",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:zombie",
+      "name": "The Horde",
+      "text": "Every fifth day brings a horde night. The horde gathers at midnight, and fog begins building around noon as an early warning. Use that daylight to get inside, restock, and make sure every exit still works."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Hold the Line",
+      "text": "Sleeping will not carry you through a horde night. Keep a defended shelter, spare tools, water, and a route out before the fog thickens."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Prepare the Perimeter",
+      "text": "Expect the default horde spawn table. Ocean biomes switch the event toward drowned, except in frozen oceans. Keep escape lanes lit, stocked, and wide enough that one blocked doorway does not trap the whole group."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Infection",
+      "text": "Infection is a condition that worsens if ignored. Antiviral suppressants buy time and give brief immunity; a complete cure removes an active infection. Dr. Mara Voss, the Medic, can secure both kinds of treatment through the survivor network."
+    }
+  ]
+}

@@ -1,20 +1,20 @@
 # Configuration and operations
 
 This guide is for maintainers and server operators. It lists the complete
-Biohazard configuration surface, explains when values are read, and describes
+Rotwire configuration surface, explains when values are read, and describes
 the persistent files that must be protected during upgrades or recovery.
 
 ## 1. Configuration file ownership
 
-Biohazard registers five NeoForge configuration files:
+Rotwire registers five NeoForge configuration files:
 
 | File | NeoForge type | Effective location | Authority |
 |---|---|---|---|
-| `biohazard-encounters.toml` | server | a world's `serverconfig` directory | logical server |
-| `biohazard-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
-| `biohazard-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
-| `biohazard-survival.toml` | server | a world's `serverconfig` directory | logical server |
-| `biohazard-client.toml` | client | instance `config` directory | each client |
+| `rotwire-encounters.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-survival.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-client.toml` | client | instance `config` directory | each client |
 
 For a local development world, server config is typically under
 `run/saves/<world>/serverconfig`. On a dedicated server it is typically under
@@ -30,7 +30,7 @@ intended assignments while the game or server is stopped.
 
 ## 2. Encounter config
 
-File: `biohazard-encounters.toml`
+File: `rotwire-encounters.toml`
 
 Section: `[encounters]`
 
@@ -71,7 +71,7 @@ clear by writing them in normal ascending order.
 ### Regular mob validation
 
 Every `regularMobs` entry must resolve to a registered hostile entity whose
-category is `MONSTER`. `biohazard:brute` is explicitly rejected. Invalid IDs are
+category is `MONSTER`. `rotwire:brute` is explicitly rejected. Invalid IDs are
 ignored and logged once per server process. An entirely invalid/empty pool means
 regular encounters cannot populate and therefore cannot naturally reach their
 kill target.
@@ -109,7 +109,7 @@ palette ID. A multibuilding resolves to its multibuilding type.
 
 ## 3. Radio and courier config
 
-File: `biohazard-radio-quests.toml`
+File: `rotwire-radio-quests.toml`
 
 Section: `[radioQuests]`, with delays under
 `[radioQuests.deliverySeconds]`.
@@ -138,7 +138,7 @@ large value should still be load-tested.
 
 ## 4. City operations config
 
-File: `biohazard-city-operations.toml`
+File: `rotwire-city-operations.toml`
 
 Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]` and
 `[cityOperations.danger]`.
@@ -158,13 +158,13 @@ Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]` and
 
 Surveying starts alongside transmitter calibration. A radio does not connect
 until both are complete. City state is shared by mapped radios and stored in
-`biohazard_city_zones`; deleting config values does not reset that world data.
+`rotwire_city_zones`; deleting config values does not reset that world data.
 Read [City operations](city-operations.md) before changing progression values
 on an established world.
 
 ## 5. Survival systems config
 
-File: `biohazard-survival.toml`
+File: `rotwire-survival.toml`
 
 Root section: `[survivalSystems]`
 
@@ -191,7 +191,7 @@ Root section: `[survivalSystems]`
 | `attention.unsuppressedFireRange` | `96.0` | Unsuppressed PointBlank shot radius |
 | `attention.meleeRange` | `16.0` | Melee investigation radius |
 | `attention.blockBreakRange` | `20.0` | Non-instant block-break radius |
-| `attention.replaceZombieTacticsMarkers` | `true` | Replace automatic markers with Biohazard-approved loud-gun markers |
+| `attention.replaceZombieTacticsMarkers` | `true` | Replace automatic markers with Rotwire-approved loud-gun markers |
 | `sleepSurvival.enabled` | `true` | Enable Restless Sleep and New Dawn |
 | `sleepSurvival.effectDurationTicks` | `1000` | Both effects last 50 seconds |
 | `sleepSurvival.pulseIntervalTicks` | `200` | Change hunger and thirst every 10 seconds |
@@ -212,7 +212,7 @@ and default fallbacks keep unmapped vanilla and modded items functional.
 
 All state is transient. Changing thresholds or category weights takes effect on
 the next recalculation; movement modifiers are replaced rather than stacked.
-Disabling the system removes Biohazard's movement modifier and hides its HUD.
+Disabling the system removes Rotwire's movement modifier and hides its HUD.
 The HUD and inventory weight tooltip receive their thresholds and penalties
 from the logical server. They show the same active values used for tier
 selection and movement modifiers, including TOML overrides; there is no
@@ -224,7 +224,7 @@ night-awake requirements, and shared meter-pulse behavior.
 
 ## 6. Client horde-atmosphere config
 
-File: `biohazard-client.toml`
+File: `rotwire-client.toml`
 
 Section: `[hordeAtmosphere]`
 
@@ -249,9 +249,9 @@ Back up the world before changing or recovering these files.
 
 ### Building encounter data
 
-Logical name: `biohazard_building_encounters`
+Logical name: `rotwire_building_encounters`
 
-Typical file: `<world>/data/biohazard_building_encounters.dat`
+Typical file: `<world>/data/rotwire_building_encounters.dat`
 
 Contains selection and progress for all dimensions. Removing it forgets every
 building's safe/haunted roll, kill target, phase, and boss UUID. Buildings will
@@ -262,9 +262,9 @@ config or algorithm may not.
 
 ### Courier data
 
-Logical name: `biohazard_radio_deliveries`
+Logical name: `rotwire_radio_deliveries`
 
-Typical file: `<world>/data/biohazard_radio_deliveries.dat`
+Typical file: `<world>/data/rotwire_radio_deliveries.dat`
 
 Contains every pending/ready shipment and choice for all players. Removing it
 permanently deletes uncollected deliveries. Do not use removal as routine
@@ -272,9 +272,9 @@ troubleshooting.
 
 ### City operations data
 
-Logical name: `biohazard_city_zones`
+Logical name: `rotwire_city_zones`
 
-Typical file: `<world>/data/biohazard_city_zones.dat`
+Typical file: `<world>/data/rotwire_city_zones.dat`
 
 Contains mapped city footprints or capped fallback sectors, unique cleared
 building keys, and active FTB city-operation bindings. Removing it forgets
@@ -284,12 +284,12 @@ baseline. Back it up with the encounter repository.
 ### Radio block entity data
 
 `ready_at` lives inside the chunk's block entity NBT, not in a standalone
-Biohazard file. Normal chunk backups protect it. Breaking/replacing the block
+Rotwire file. Normal chunk backups protect it. Breaking/replacing the block
 creates a new calibration deadline.
 
 ### Encounter entity markers
 
-`biohazardEncounter` lives inside each spawned mob's entity data. Removing only
+`rotwireEncounter` lives inside each spawned mob's entity data. Removing only
 the saved encounter repository without also considering already-loaded/saved
 marked mobs can leave old mobs whose deaths no longer match a materialized
 record until the building is recreated.
@@ -304,12 +304,12 @@ is owned by FTB Quests and follows that mod's own persistence rules.
 
 ## 8. Backup and upgrade procedure
 
-Before a Biohazard or required-mod upgrade:
+Before a Rotwire or required-mod upgrade:
 
 1. Stop the server cleanly.
 2. Back up the entire world, especially `data/` and chunk/entity data.
-3. Back up `config/ftbquests/quests` and all Biohazard TOML files.
-4. Record current Biohazard and dependency versions from the mod list.
+3. Back up `config/ftbquests/quests` and all Rotwire TOML files.
+4. Record current Rotwire and dependency versions from the mod list.
 5. Keep a copy of the previous working mod JAR set.
 6. Upgrade in a cloned/staging instance first.
 7. Inspect startup and data-reload logs for missing registry IDs, malformed
@@ -370,10 +370,10 @@ safe selection remains safe even if `hauntedChance` later increases.
 
 ### Kill does not advance
 
-Only entities spawned/marked by Biohazard count. Naturally spawned zombies do
-not. Check that the entity has its `biohazardEncounter` persistent compound and
+Only entities spawned/marked by Rotwire count. Naturally spawned zombies do
+not. Check that the entity has its `rotwireEncounter` persistent compound and
 that its building key matches the saved encounter. Death events canceled or
-replaced by another mod before Biohazard's lowest-priority handler may also
+replaced by another mod before Rotwire's lowest-priority handler may also
 change behavior.
 
 ### Boss does not appear
@@ -413,7 +413,7 @@ changes.
 ### Radio never connects to city operations
 
 - Confirm `cityOperations.enabled` is true in the world's
-  `biohazard-city-operations.toml`.
+  `rotwire-city-operations.toml`.
 - Wait for both the calibration deadline and the city-grid survey to finish;
   the radio reports either remaining seconds or scanned candidate chunks while
   incomplete.
@@ -426,16 +426,16 @@ changes.
 
 This is normal on any failed atomic validation. Check required non-optional
 objectives and every tagged item task. Submission scans main inventory slots
-only. The FTB item task should be tagged `biohazard_radio_submit`, use the right
-count/matcher, and leave consumption to Biohazard.
+only. The FTB item task should be tagged `rotwire_radio_submit`, use the right
+count/matcher, and leave consumption to Rotwire.
 
 ### Reward claims but no delivery appears
 
 Check server log for `generated no items`, then verify:
 
 - custom reward has exactly the intended delivery tag;
-- a nonblank `biohazard_manifest_` tag exists;
-- matching table exists under `data/biohazard/loot_table/quest_delivery`;
+- a nonblank `rotwire_manifest_` tag exists;
+- matching table exists under `data/rotwire/loot_table/quest_delivery`;
 - all item IDs/conditions are valid in the full modpack;
 - table produces nonempty output in a chest context.
 
@@ -454,7 +454,7 @@ must be selected before it becomes collectible.
 ### Choice screen or selection fails
 
 Check both network directions are registered at protocol version `1`, client
-and server run compatible Biohazard builds, the item IDs exist on the client,
+and server run compatible Rotwire builds, the item IDs exist on the client,
 and the player remains within a calibrated radio's range when clicking. The
 server rejects stale screens, wrong owners, early deliveries, invalid UUIDs,
 and out-of-range indices without trusting the client.
@@ -467,7 +467,7 @@ and out-of-range indices without trusting the client.
 - The Hordes event must be enabled server-side.
 - The server's per-player state must report horde day or active event.
 - Current day time must fall inside the pre-event fade interval, unless active.
-- Another source may already impose closer fog; Biohazard never pushes it
+- Another source may already impose closer fog; Rotwire never pushes it
   farther away.
 
 ### Handcrafted storage is empty
@@ -475,7 +475,7 @@ and out-of-range indices without trusting the client.
 Only the explicit allowlist is handled. Player-placed blocks are intentionally
 excluded. Confirm the block entity implements `Container`, lacks the
 player-placed and stocked flags, and that
-`biohazard:chests/handcrafted_storage` produces loot for the context.
+`rotwire:chests/handcrafted_storage` produces loot for the context.
 
 ## 11. Recovery principles
 

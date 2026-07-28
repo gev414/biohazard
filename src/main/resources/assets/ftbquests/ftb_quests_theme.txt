@@ -1,5 +1,5 @@
 [*]
-// Biohazard's low-light pager/radio presentation. This resource is layered
+// Rotwire's low-light pager/radio presentation. This resource is layered
 // over FTB Quests' default theme, so unspecified properties remain upstream.
 background:          ftblibrary:textures/gui/background_squares.png; color=#F0121912; tile_size=32
 chapter_panel_background: hollow_rectangle:{{widget_border}}; round_edges + {{background}}; color=#E00A100A; padding=1

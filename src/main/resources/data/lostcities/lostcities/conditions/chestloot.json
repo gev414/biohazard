@@ -2,35 +2,35 @@
   "values": [
     {
       "factor": 20,
-      "value": "biohazard:chests/food"
+      "value": "rotwire:chests/food"
     },
     {
       "factor": 15,
-      "value": "biohazard:chests/builder"
+      "value": "rotwire:chests/builder"
     },
     {
       "factor": 15,
-      "value": "biohazard:chests/miner"
+      "value": "rotwire:chests/miner"
     },
     {
       "factor": 10,
-      "value": "biohazard:chests/farmer"
+      "value": "rotwire:chests/farmer"
     },
     {
       "factor": 15,
-      "value": "biohazard:chests/medical_cache"
+      "value": "rotwire:chests/medical_cache"
     },
     {
       "factor": 12,
-      "value": "biohazard:chests/records_cache"
+      "value": "rotwire:chests/records_cache"
     },
     {
       "factor": 10,
-      "value": "biohazard:chests/armory_cache"
+      "value": "rotwire:chests/armory_cache"
     },
     {
       "factor": 3,
-      "value": "biohazard:chests/rare_cache"
+      "value": "rotwire:chests/rare_cache"
     }
   ]
 }

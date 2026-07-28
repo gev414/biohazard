@@ -2,12 +2,12 @@
 
 ## 1. System purpose and boundary
 
-Biohazard is an integration and gameplay mod for a curated Minecraft 1.21.1
+Rotwire is an integration and gameplay mod for a curated Minecraft 1.21.1
 NeoForge modpack. It owns the behaviors that must coordinate several other
 mods, while leaving their native systems in charge of the domains they already
 model well.
 
-Biohazard owns:
+Rotwire owns:
 
 - deterministic, persistent Lost Cities building encounters;
 - the Brute boss, its AI, projectile, rendering, loot, and encounter role;
@@ -23,7 +23,7 @@ Biohazard owns:
 - packaged quest defaults, loot, world-generation data, recipes, and in-game
   Patchouli documentation.
 
-Biohazard deliberately does not own:
+Rotwire deliberately does not own:
 
 - Lost Cities terrain and building generation;
 - The Hordes' event calendar, infection model, or horde spawning;
@@ -34,7 +34,7 @@ Biohazard deliberately does not own:
 - Handcrafted block implementation;
 - Patchouli book rendering.
 
-That boundary is the core design decision: Biohazard is the orchestration
+That boundary is the core design decision: Rotwire is the orchestration
 layer, not a replacement for the modpack.
 
 ## 2. Layer model
@@ -75,8 +75,8 @@ The layers are conventions rather than separate build modules:
 
 ## 3. Bootstrap and lifecycle
 
-`Biohazard` is the composition root. NeoForge creates it because it is annotated
-with `@Mod("biohazard")`. Its constructor wires the system in this order:
+`Rotwire` is the composition root. NeoForge creates it because it is annotated
+with `@Mod("rotwire")`. Its constructor wires the system in this order:
 
 1. Register blocks, block entity types, items, and entity types on the mod event
    bus.
@@ -98,7 +98,7 @@ with `@Mod("biohazard")`. Its constructor wires the system in this order:
 
 Confusing the buses is a common NeoForge maintenance error.
 
-| Bus | Used for | Biohazard examples |
+| Bus | Used for | Rotwire examples |
 |---|---|---|
 | Mod event bus | Registration and lifecycle tied to mod loading | deferred registries, entity attributes, payload handlers, common/client setup |
 | NeoForge event bus | Runtime game events | server ticks, living deaths, block interaction/placement, login/logout, fog rendering |
@@ -154,7 +154,7 @@ index bounds, and proximity to a calibrated transmitter before mutating state.
 ### 5.1 Encounter world state
 
 `EncounterSavedData` is stored in the Overworld data storage under
-`biohazard_building_encounters`. Using the Overworld store provides one
+`rotwire_building_encounters`. Using the Overworld store provides one
 server-wide map even though keys include their dimension.
 
 The map key is `BuildingKey`:
@@ -191,7 +191,7 @@ their original behavior.
 ### 5.2 Encounter entity markers
 
 Spawned encounter mobs receive an entity persistent-data compound named
-`biohazardEncounter`. It contains the serialized building key and a role of
+`rotwireEncounter`. It contains the serialized building key and a role of
 `regular` or `boss`. This marker:
 
 - lets loaded-entity queries count only mobs belonging to this building;
@@ -205,7 +205,7 @@ building's durable phase and progress?"
 ### 5.3 Courier world state
 
 `DeliverySavedData` is stored in the Overworld data storage under
-`biohazard_radio_deliveries`. It contains a server-wide list of per-player
+`rotwire_radio_deliveries`. It contains a server-wide list of per-player
 `RadioDelivery` records. Each record persists:
 
 - unique delivery UUID;
@@ -237,7 +237,7 @@ creates a new block entity and therefore recalibrates and surveys again.
 
 ### 5.5 City-zone world state
 
-`CityZoneSavedData` is stored server-wide under `biohazard_city_zones`. It
+`CityZoneSavedData` is stored server-wide under `rotwire_city_zones`. It
 persists connected Lost Cities footprints (or stable capped fallback sectors),
 unique cleared `BuildingKey` sets, FTB city-operation bindings, and clears that
 occurred before a radio mapped their city.
@@ -387,7 +387,7 @@ When the centralized encounter-finished transition records a new building:
 5. the stored entity danger is never reduced when it leaves the zone.
 
 Overlapping influence uses the highest level. The
-`biohazard:city_scaled_infected` entity-type tag includes the Brute and is the
+`rotwire:city_scaled_infected` entity-type tag includes the Brute and is the
 data-pack extension point for other infected.
 
 ### 6.3 Radio quest acceptance and atomic turn-in
@@ -436,7 +436,7 @@ failed turn-in.
 1. FTB Quests fires `CustomRewardEvent` for a tagged custom reward.
 2. `FTBQuestsIntegration` extracts the manifest suffix, category, delivery kind,
    and optional choice count.
-3. `DeliveryManager` rolls `biohazard:quest_delivery/<manifest>` using a chest
+3. `DeliveryManager` rolls `rotwire:quest_delivery/<manifest>` using a chest
    loot context at the player, including player luck.
 4. Standard deliveries save all generated stacks. Choice deliveries reroll the
    manifest up to `optionCount * 8` times to collect distinct item/component
@@ -481,17 +481,17 @@ Overworld.
 ### 6.6 Handcrafted storage stocking
 
 Selected Handcrafted containers do not carry vanilla loot-table metadata, so
-Biohazard fills them lazily on first server-side interaction:
+Rotwire fills them lazily on first server-side interaction:
 
 1. A player-placed selected storage block is marked
-   `biohazard_handcrafted_storage_player_placed` on its block entity.
+   `rotwire_handcrafted_storage_player_placed` on its block entity.
 2. On right-click, selected storage IDs are intercepted before encounter
    container locking.
 3. Player-placed or already-stocked containers are left unchanged.
 4. Other selected containers are filled from
-   `biohazard:chests/handcrafted_storage`, the vanilla loot criterion is
+   `rotwire:chests/handcrafted_storage`, the vanilla loot criterion is
    triggered, and the block entity is marked
-   `biohazard_handcrafted_storage_stocked`.
+   `rotwire_handcrafted_storage_stocked`.
 5. The event is then considered handled by this service; encounter locking does
    not apply to these Handcrafted containers.
 
@@ -514,7 +514,7 @@ stack use, and the returned bottle behavior.
 
 Direct imports from The Hordes and Atlas Lib make this a compile-time
 compatibility hotspot even though those artifacts are not published
-transitively by Biohazard.
+transitively by Rotwire.
 
 ### 6.8 Encumbrance, stealth, and attention
 
@@ -543,21 +543,21 @@ bypass this filter and remain controlled by The Hordes' native tracking goal.
 PointBlank shots are recognized from the resolved server sound and active
 attachment set. Suppressed fire uses a 12-block direct investigation and never
 creates a global marker. Unsuppressed fire defaults to 96 blocks and creates
-the only Biohazard-approved ZombieTactics marker. Melee and durable block
-breaks use their own bounded ranges. Biohazard skips marker creation when
+the only Rotwire-approved ZombieTactics marker. Melee and durable block
+breaks use their own bounded ranges. Rotwire skips marker creation when
 ZombieTactics' configured marker range would exceed the current event radius.
 
 ## 7. External dependency map
 
 ### 7.1 Required runtime mods
 
-| Dependency | Metadata relationship | Java relationship | Resource relationship | Biohazard feature |
+| Dependency | Metadata relationship | Java relationship | Resource relationship | Rotwire feature |
 |---|---|---|---|---|
 | Minecraft 1.21.1 | required | foundational API | all standard resources | entire mod |
 | NeoForge 21.1.235+ | required | loader, events, config, networking, registries, `SavedData` | generated mod metadata | entire mod |
-| Lost Cities 1.21-8.3.10+ | required, load after | compiled API + IMC | `lostcities`, `lcmt`, and `biohazard` Lost Cities JSON | building resolution, encounters, furnished generation |
+| Lost Cities 1.21-8.3.10+ | required, load after | compiled API + IMC | `lostcities`, `lcmt`, and `rotwire` Lost Cities JSON | building resolution, encounters, furnished generation |
 | Handcrafted 4.0.3 to <4.1 | required, load after | registry lookup by string only | palette block IDs and selected storage IDs | generated furniture and storage loot |
-| Patchouli 1.21.1-93+ | required, load after | no direct Java API | `assets/biohazard/patchouli_books` and a starter book stack | Survivor's Field Manual |
+| Patchouli 1.21.1-93+ | required, load after | no direct Java API | `assets/rotwire/patchouli_books` and a starter book stack | Survivor's Field Manual |
 | PointBlank 2.2.0+ | required, load after | direct gun, sound-feature, and attachment API | recipes, quest icons/objectives, loot, manual | firearms progression and shot attention |
 | Tough As Nails 10.1.0.13+ | required, load after | no direct Java API | starter loot, delivery loot, manual | survival progression |
 | The Hordes 1.6.3c to <1.7 | required, load after | direct config, saved-data, capability, effect, packet imports | manual and loot context | horde fog and infection medicine |
@@ -568,23 +568,23 @@ ZombieTactics' configured marker range would exceed the current event radius.
 
 | Dependency | Relationship | Effect |
 |---|---|---|
-| Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Biohazard supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
+| Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Rotwire supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
 | Traveler's Backpack 10.1.36 to <10.2 | optional, load after | Equipped and stored backpack contents, tools, upgrades, and fluids contribute to weight. The integration class is loaded only when present. |
-| ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Biohazard emits an approved marker for unsuppressed fire only. |
+| ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Rotwire emits an approved marker for unsuppressed fire only. |
 | Lost Souls | incompatible, any version | Both mods manage Lost Cities building encounters, so metadata prevents a conflicting installation. |
 
 ### 7.3 Runtime libraries supplied by dependencies
 
 The development runtime pins Resourceful Lib, GeckoLib, GML, GlitchCore, Atlas
 Lib, and Balm because required mods need them. They are `localRuntime`, not
-Biohazard API dependencies. Atlas Lib is additionally `compileOnly` because The
+Rotwire API dependencies. Atlas Lib is additionally `compileOnly` because The
 Hordes' cure packet type implements its networking interface.
 
 ### 7.4 Gradle dependency scopes
 
 | Scope | Meaning here |
 |---|---|
-| `implementation` | Biohazard compiles directly against the API and exposes the dependency on its compile/runtime classpath: Lost Cities and FTB Quests. |
+| `implementation` | Rotwire compiles directly against the API and exposes the dependency on its compile/runtime classpath: Lost Cities and FTB Quests. |
 | `compileOnly` | Needed to compile direct imports but expected from the modpack at runtime: The Hordes, Atlas Lib, PointBlank, and Traveler's Backpack. |
 | `localRuntime` | Present in development/tests without becoming a transitive published dependency. |
 | `testImplementation` | JUnit Jupiter test API and engine support. |
