@@ -3,7 +3,7 @@
   "zsize": 16,
   "slices": [
     [
-      "NNNNNNNNNNNNNNNN",
+      " NN          NN ",
       "NFFFFFFFFFFFFFFN",
       "NFFFFFFFFFFFFFFN",
       "NFFFFFFFFFFFFFFN",
@@ -18,11 +18,11 @@
       "NFFFFFFFFF  FFFN",
       "NFFFFFFFFFccFFFN",
       "NFFFFFFFFFFFFFFN",
-      "NNNNNNNNNNNNNNNN"
+      " NNNNNNNNNNNNNN "
     ],
     [
-      "NNNNNNNNNNNNNNNN",
-      "N              N",
+      " NN          NN ",
+      "N  RNNNNNNNNR  N",
       "N              N",
       "N  TT  TT    e N",
       "N            O N",
@@ -36,11 +36,11 @@
       "N        :  :  N",
       "N  e   f :  :  N",
       "N              N",
-      "NNNNNNNNNNNNNNNN"
+      " NRNNNRNNNRNNRN "
     ],
     [
-      "RNVVVRVVVVRVVVNR",
-      "N              N",
+      " NV          VN ",
+      "N  RVVVVVVVVR  N",
       "V              V",
       "V  K   K       V",
       "V              V",
@@ -54,11 +54,11 @@
       "V              V",
       "V              V",
       "N              N",
-      "RNVVVRVVVVRVVVNR"
+      " NRVVRRVVVRVVRN "
     ],
     [
-      "RNVVVRVVVVRVVVNR",
-      "N              N",
+      " NV          VN ",
+      "N  RVVVVVVVVR  N",
       "V              V",
       "V              V",
       "V              V",
@@ -72,11 +72,11 @@
       "V              V",
       "V              V",
       "N              N",
-      "RNVVVRVVVVRVVVNR"
+      " NRVVRRVVVRVVRN "
     ],
     [
-      "NNVVVNVVVVNVVVNN",
-      "N              N",
+      " NV          VN ",
+      "N  RVVVVVVVVR  N",
       "V              V",
       "V              V",
       "V              V",
@@ -90,11 +90,11 @@
       "V         dd   V",
       "V              V",
       "N              N",
-      "NNVVVNVVVVNVVVNN"
+      " NRVVNRVVVRVVRN "
     ],
     [
-      "NNNNNNNNNNNNNNNN",
-      "N              N",
+      " NN          NN ",
+      "N  RNNNNNNNNR  N",
       "N              N",
       "N              N",
       "N   L   L      N",
@@ -108,7 +108,7 @@
       "N         cc   N",
       "N         dd   N",
       "N              N",
-      "NNNNNNNNNNNNNNNN"
+      " NRNNNRNNNRNNRN "
     ]
   ],
   "refpalette": "biohazard:custom_buildings"

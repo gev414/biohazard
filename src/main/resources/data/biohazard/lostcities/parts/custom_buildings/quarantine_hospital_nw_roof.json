@@ -3,8 +3,8 @@
   "zsize": 16,
   "slices": [
     [
-      "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF",
+      "  FFFFFFFFFFFFFF",
+      " FFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
@@ -21,8 +21,8 @@
       "FFFFFFFFFFFFFFFF"
     ],
     [
-      "WWWWWWWWWWWWWWWW",
-      "W               ",
+      "  WWWWWWWWWWWWWW",
+      " W              ",
       "W               ",
       "W  XX XX        ",
       "W  XX           ",
@@ -40,25 +40,7 @@
     ],
     [
       "                ",
-      "                ",
-      "                ",
-      "                ",
-      "                ",
-      "                ",
-      "                ",
-      "                ",
-      "                ",
-      "         WWWW   ",
-      "         W  W   ",
-      "         W  G   ",
-      "         W  W   ",
-      "            W   ",
-      "         WWWW   ",
-      "                "
-    ],
-    [
-      "                ",
-      "                ",
+      " G              ",
       "                ",
       "                ",
       "                ",
@@ -76,7 +58,25 @@
     ],
     [
       "                ",
+      " G              ",
       "                ",
+      "                ",
+      "                ",
+      "                ",
+      "                ",
+      "                ",
+      "                ",
+      "         WWWW   ",
+      "         W  W   ",
+      "         W  G   ",
+      "         W  W   ",
+      "            W   ",
+      "         WWWW   ",
+      "                "
+    ],
+    [
+      "                ",
+      " G              ",
       "                ",
       "                ",
       "                ",
@@ -94,7 +94,7 @@
     ],
     [
       "                ",
-      "                ",
+      " W              ",
       "                ",
       "                ",
       "                ",

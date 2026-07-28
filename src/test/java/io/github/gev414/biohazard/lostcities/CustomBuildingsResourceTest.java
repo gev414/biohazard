@@ -78,6 +78,35 @@ class CustomBuildingsResourceTest {
     }
 
     @Test
+    void soloTowersHaveDistinctNonRectangularExteriorProfiles() {
+        Set<String> signatures = new HashSet<>();
+        for (String building : SOLO_BUILDINGS) {
+            JsonArray slices = readPart(building + "_middle")
+                    .getAsJsonArray("slices");
+            String signature = boundarySignature(slices, 2);
+            assertTrue(
+                    signature.indexOf(' ') >= 0,
+                    () -> building + " still has a completely rectangular shell"
+            );
+            assertTrue(
+                    signatures.add(signature),
+                    () -> building + " duplicates another tower façade"
+            );
+
+            JsonArray ground = readPart(building + "_ground")
+                    .getAsJsonArray("slices");
+            for (int y = 1; y <= 3; y++) {
+                for (int z : new int[]{0, 1}) {
+                    String row = ground.get(y).getAsJsonArray()
+                            .get(z).getAsString();
+                    assertEquals(' ', row.charAt(7), building + " entrance");
+                    assertEquals(' ', row.charAt(8), building + " entrance");
+                }
+            }
+        }
+    }
+
+    @Test
     void paletteAndPartsCannotIntroduceLadders() {
         JsonObject palette = readJson(
                 "/data/biohazard/lostcities/palettes/custom_buildings.json"
@@ -331,6 +360,18 @@ class CustomBuildingsResourceTest {
             );
         }
         return characters;
+    }
+
+    private static String boundarySignature(JsonArray slices, int y) {
+        JsonArray rows = slices.get(y).getAsJsonArray();
+        StringBuilder signature = new StringBuilder();
+        signature.append(rows.get(0).getAsString());
+        signature.append(rows.get(15).getAsString());
+        for (int z = 0; z < 16; z++) {
+            signature.append(rows.get(z).getAsString().charAt(0));
+            signature.append(rows.get(z).getAsString().charAt(15));
+        }
+        return signature.toString();
     }
 
     private static Set<Character> readCustomStorageCharacters() {

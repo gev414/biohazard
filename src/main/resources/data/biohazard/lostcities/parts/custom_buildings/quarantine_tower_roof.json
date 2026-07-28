@@ -3,8 +3,8 @@
   "zsize": 16,
   "slices": [
     [
-      "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF",
+      "  FFFFFFFFFFFF  ",
+      " FFFFFFFFFFFFFF ",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
@@ -17,12 +17,12 @@
       "FFFFFFFFFF  FFFF",
       "FFFFFFFFFF  FFFF",
       "FFFFFFFFFFccFFFF",
-      "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF"
+      " FFFFFFFFFFFFFF ",
+      "  FFFFFFFFFFFF  "
     ],
     [
-      "WWWWWWWWWWWWWWWW",
-      "W              W",
+      "  WWWWWWWWWWWW  ",
+      " W            W ",
       "W              W",
       "W  XX XX       W",
       "W  XX          W",
@@ -35,12 +35,12 @@
       "W        W  W  W",
       "W        W  W  W",
       "W           W  W",
-      "W        WWWW  W",
-      "WWWWWWWWWWWWWWWW"
+      " W       WWWW W ",
+      "  WWWWWWWWWWWW  "
     ],
     [
       "                ",
-      "                ",
+      " G            G ",
       "                ",
       "                ",
       "                ",
@@ -53,12 +53,12 @@
       "         W  G   ",
       "         W  W   ",
       "            W   ",
-      "         WWWW   ",
+      " G       WWWW G ",
       "                "
     ],
     [
       "                ",
-      "                ",
+      " G            G ",
       "                ",
       "                ",
       "                ",
@@ -71,12 +71,12 @@
       "         W  G   ",
       "         W  W   ",
       "            W   ",
-      "         WWWW   ",
+      " G       WWWW G ",
       "                "
     ],
     [
       "                ",
-      "                ",
+      " G            G ",
       "                ",
       "                ",
       "                ",
@@ -89,11 +89,12 @@
       "         FFFF   ",
       "         FFFF   ",
       "         FFFF   ",
-      "         FFFF   ",
+      " G       FFFF G ",
       "                "
     ],
     [
       "                ",
+      " W            W ",
       "                ",
       "                ",
       "                ",
@@ -106,8 +107,7 @@
       "                ",
       "                ",
       "                ",
-      "                ",
-      "                ",
+      " W            W ",
       "                "
     ]
   ],

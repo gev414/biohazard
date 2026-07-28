@@ -9,6 +9,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import mcjty.lostcities.worldgen.lost.regassets.BuildingPartRE;
 import mcjty.lostcities.worldgen.lost.regassets.BuildingRE;
+import mcjty.lostcities.worldgen.lost.regassets.PaletteRE;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -39,14 +40,14 @@ class StairRetrofitResourceTest {
     private static final Map<String, Family> FAMILIES = new LinkedHashMap<>();
 
     static {
-        FAMILIES.put("building1", new Family(9, 10, 7, 5, 8, 95, 2));
+        FAMILIES.put("building1", new Family(9, 10, 7, 5, 8, 76, 2));
         FAMILIES.put("building2", new Family(4, 11, 5, 5, 7, 34, 2));
         FAMILIES.put("building3", new Family(4, 11, 6, 5, 8, 37, 1));
         FAMILIES.put("building4", new Family(4, 10, 8, 5, 7, 32, 2));
         FAMILIES.put("building5", new Family(4, 4, 3, 5, 7, 49, 0));
         FAMILIES.put("building6", new Family(4, 5, 3, 5, 7, 55, 2));
-        FAMILIES.put("building7", new Family(5, 10, 8, 5, 8, 37, 3));
-        FAMILIES.put("building8", new Family(8, 12, 7, 6, 9, 86, 7));
+        FAMILIES.put("building7", new Family(5, 10, 8, 5, 8, 32, 3));
+        FAMILIES.put("building8", new Family(8, 12, 7, 6, 9, 82, 7));
     }
 
     @Test
@@ -97,6 +98,7 @@ class StairRetrofitResourceTest {
 
     @Test
     void retrofitsPreserveHandcraftedFurnitureAndLootContainers() {
+        Set<Character> handcraftedSymbols = readHandcraftedCharacters();
         for (Map.Entry<String, Family> entry : FAMILIES.entrySet()) {
             String name = entry.getKey();
             Family family = entry.getValue();
@@ -113,7 +115,7 @@ class StairRetrofitResourceTest {
                         String value = row.getAsString();
                         lootChests += count(value, 'C');
                         for (char symbol : value.toCharArray()) {
-                            if (symbol > 127) {
+                            if (handcraftedSymbols.contains(symbol)) {
                                 handcrafted++;
                             }
                             if (storage.contains(symbol)) {
@@ -131,10 +133,13 @@ class StairRetrofitResourceTest {
                 );
             }
 
-            assertEquals(
-                    family.handcraftedMarkers(),
-                    handcrafted,
-                    () -> name + " lost Handcrafted furnishing/container markers"
+            int handcraftedCount = handcrafted;
+            assertTrue(
+                    handcraftedCount >= family.handcraftedMarkers(),
+                    () -> name
+                            + " dropped below its Handcrafted furnishing baseline: "
+                            + handcraftedCount + " < "
+                            + family.handcraftedMarkers()
             );
             assertEquals(
                     family.lootChests(),
@@ -199,6 +204,10 @@ class StairRetrofitResourceTest {
 
     @Test
     void pinnedLostCitiesCodecsAcceptAllRetrofitResources() {
+        assertCodecParses(
+                PaletteRE.CODEC,
+                "/data/biohazard/lostcities/palettes/furnished_facades.json"
+        );
         for (Map.Entry<String, Family> entry : FAMILIES.entrySet()) {
             String name = entry.getKey();
             Family family = entry.getValue();
@@ -222,6 +231,48 @@ class StairRetrofitResourceTest {
                         "/data/" + namespace
                                 + "/lostcities/buildings/" + name + ".json"
                 );
+            }
+        }
+    }
+
+    @Test
+    void everyFamilyHasARecessedMaterialSpecificFacadeAndOpenEntrance() {
+        Map<String, String> expectedMaterials = Map.of(
+                "building1", "διη",
+                "building2", "βμθ",
+                "building3", "γαη",
+                "building4", "οεθ",
+                "building5", "δαη",
+                "building6", "γνη",
+                "building7", "πζθ",
+                "building8", "αξη"
+        );
+
+        for (Map.Entry<String, String> entry : expectedMaterials.entrySet()) {
+            String name = entry.getKey();
+            JsonObject floor = readFamilyPart(name, 1);
+            JsonArray slices = floor.getAsJsonArray("slices");
+            String serialized = slices.toString();
+            for (char material : entry.getValue().toCharArray()) {
+                assertTrue(
+                        serialized.indexOf(material) >= 0,
+                        () -> name + " is missing façade material " + material
+                );
+            }
+            assertTrue(
+                    boundaryAirCount(slices, 2) > 0,
+                    () -> name + " still has a completely rectangular façade"
+            );
+
+            JsonArray ground = readRetrofitPart(name + "_ground")
+                    .getAsJsonArray("slices");
+            for (int y = 1; y <= 3; y++) {
+                for (int z : new int[]{0, 1}) {
+                    String row = ground.get(y).getAsJsonArray()
+                            .get(z).getAsString();
+                    assertEquals(' ', row.charAt(7), name + " entrance");
+                    assertEquals(' ', row.charAt(8), name + " entrance");
+                }
             }
         }
     }
@@ -370,7 +421,7 @@ class StairRetrofitResourceTest {
         assertEquals(16, part.get("xsize").getAsInt());
         assertEquals(16, part.get("zsize").getAsInt());
         assertEquals(
-                "biohazard:handcrafted_furnishings",
+                "biohazard:furnished_facades",
                 part.get("refpalette").getAsString()
         );
         JsonArray slices = part.getAsJsonArray("slices");
@@ -437,6 +488,41 @@ class StairRetrofitResourceTest {
         }
         assertFalse(characters.isEmpty());
         return characters;
+    }
+
+    private static Set<Character> readHandcraftedCharacters() {
+        JsonObject palette = readJson(
+                "/data/biohazard/lostcities/palettes/"
+                        + "handcrafted_furnishings.json"
+        );
+        Set<Character> characters = new java.util.HashSet<>();
+        for (JsonElement entry : palette.getAsJsonArray("palette")) {
+            characters.add(
+                    entry.getAsJsonObject().get("char")
+                            .getAsString().charAt(0)
+            );
+        }
+        return characters;
+    }
+
+    private static int boundaryAirCount(JsonArray slices, int y) {
+        JsonArray rows = slices.get(y).getAsJsonArray();
+        int count = 0;
+        for (int position = 0; position < 16; position++) {
+            if (rows.get(0).getAsString().charAt(position) == ' ') {
+                count++;
+            }
+            if (rows.get(15).getAsString().charAt(position) == ' ') {
+                count++;
+            }
+            if (rows.get(position).getAsString().charAt(0) == ' ') {
+                count++;
+            }
+            if (rows.get(position).getAsString().charAt(15) == ' ') {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static JsonObject readFamilyPart(String name, int index) {

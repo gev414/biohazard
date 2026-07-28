@@ -3,7 +3,7 @@
   "zsize": 16,
   "slices": [
     [
-      "FFFFFFFFFFFFFFFF",
+      " FFFFFFFFFFFFFF ",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
@@ -18,10 +18,10 @@
       "FFFFFFFFFF  FFFF",
       "FFFFFFFFFFccFFFF",
       "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF"
+      " FFFFFFFFFFFFFF "
     ],
     [
-      "PPPPPPPPPPPPPPPP",
+      " PPPPPPPPPPPPPP ",
       "P              P",
       "P              P",
       "P  XX XX       P",
@@ -36,7 +36,7 @@
       "P        P  P  P",
       "P           P  P",
       "P        PPPP  P",
-      "PPPPPPPPPPPPPPPP"
+      " PPPPPPPPPPPPPP "
     ],
     [
       "                ",

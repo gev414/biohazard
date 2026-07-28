@@ -3,7 +3,7 @@
   "zsize": 16,
   "slices": [
     [
-      "PPPPPPPPPPPPPPPP",
+      "PPPPPPPFFPPPPPPP",
       "PFFFFFFFFFFFFFFP",
       "PFFFFFFFFFFFFFFP",
       "PFFFFFFFFFFFFFFP",
@@ -21,8 +21,8 @@
       "PPPPPPPPPPPPPPPP"
     ],
     [
-      "PPPPPPH  HPPPPPP",
-      "P      P       P",
+      " P    H  HPPPPP ",
+      "P HPPH         P",
       "P q  u P  q  i P",
       "P Q    P  Q    P",
       "P              P",
@@ -35,12 +35,12 @@
       "P Q     Q:  :  P",
       "P    j P :  :m P",
       "P      P :  :  P",
-      "P      P       P",
-      "PPPPPPPPPPPPPPPP"
+      "P HPPH P       P",
+      " P    PPPPPPPPP "
     ],
     [
-      "HPGGGHH  HHGGGPH",
-      "P      P       P",
+      " P    H  HHGGGP ",
+      "P HGGH         P",
       "G      P       G",
       "G      P       G",
       "G              G",
@@ -53,12 +53,12 @@
       "G              G",
       "G      P       G",
       "G      P       G",
-      "P      P       P",
-      "HPGGGHGGGGHGGGPH"
+      "P HGGH P       P",
+      " P    GGGGHGGGP "
     ],
     [
-      "HPGGGHH  HHGGGPH",
-      "P      P       P",
+      " P    H  HHGGGP ",
+      "P HGGH         P",
       "G      P       G",
       "G      P       G",
       "G              G",
@@ -71,12 +71,12 @@
       "G         dd   G",
       "G      P       G",
       "G      P       G",
-      "P      P       P",
-      "HPGGGHGGGGHGGGPH"
+      "P HGGH P       P",
+      " P    GGGGHGGGP "
     ],
     [
-      "PPGGGPGGGGPGGGPP",
-      "P      P       P",
+      " P    HHHHPGGGP ",
+      "P HGGH P       P",
       "G      P       G",
       "G      P       G",
       "G              G",
@@ -89,12 +89,12 @@
       "G         cc   G",
       "G      P  dd   G",
       "G      P       G",
-      "P      P       P",
-      "PPGGGPGGGGPGGGPP"
+      "P HGGH P       P",
+      " P    GGGGPGGGP "
     ],
     [
-      "PPPPPPPPPPPPPPPP",
-      "P              P",
+      " P    PPPPPPPPP ",
+      "P HPPH         P",
       "P              P",
       "P              P",
       "P   L      L   P",
@@ -107,8 +107,8 @@
       "P   L      L   P",
       "P         cc   P",
       "P         dd   P",
-      "P              P",
-      "PPPPPPPPPPPPPPPP"
+      "P HPPH         P",
+      " P    PPPPPPPPP "
     ]
   ],
   "refpalette": "biohazard:custom_buildings"

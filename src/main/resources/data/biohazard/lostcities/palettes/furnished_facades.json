@@ -1,0 +1,208 @@
+{
+  "palette": [
+    {
+      "char": "①",
+      "block": "handcrafted:oak_chair[color=none,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "②",
+      "block": "handcrafted:oak_chair[color=none,facing=south,waterlogged=false]"
+    },
+    {
+      "char": "③",
+      "block": "handcrafted:oak_table[color=none,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "④",
+      "block": "handcrafted:spruce_chair[color=none,facing=east,waterlogged=false]"
+    },
+    {
+      "char": "⑤",
+      "block": "handcrafted:spruce_chair[color=none,facing=west,waterlogged=false]"
+    },
+    {
+      "char": "⑥",
+      "block": "handcrafted:oak_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "⑦",
+      "block": "handcrafted:oak_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "⑧",
+      "block": "handcrafted:oak_fancy_bed[color=white,facing=north,occupied=false,part=foot,shape=single]"
+    },
+    {
+      "char": "⑨",
+      "block": "handcrafted:oak_fancy_bed[color=white,facing=north,occupied=false,part=head,shape=single]"
+    },
+    {
+      "char": "⑩",
+      "block": "handcrafted:oak_chair[color=none,facing=west,waterlogged=false]"
+    },
+    {
+      "char": "⑪",
+      "block": "handcrafted:oak_drawer[facing=east,shape=single,type=1]"
+    },
+    {
+      "char": "⑫",
+      "block": "handcrafted:oak_drawer[facing=south,shape=single,type=1]"
+    },
+    {
+      "char": "⑬",
+      "block": "handcrafted:oak_drawer[facing=west,shape=single,type=1]"
+    },
+    {
+      "char": "⑭",
+      "block": "handcrafted:oak_cupboard[facing=east,type=1]"
+    },
+    {
+      "char": "⑮",
+      "block": "handcrafted:oak_cupboard[facing=south,type=1]"
+    },
+    {
+      "char": "⑯",
+      "block": "handcrafted:oak_cupboard[facing=west,type=1]"
+    },
+    {
+      "char": "⑰",
+      "block": "handcrafted:spruce_chair[color=none,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "⑱",
+      "block": "handcrafted:spruce_table[color=none,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "⑲",
+      "block": "handcrafted:spruce_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "⑳",
+      "block": "handcrafted:spruce_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "ⓐ",
+      "block": "handcrafted:dark_oak_couch[color=gray,facing=south,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "ⓑ",
+      "block": "handcrafted:oak_shelf[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "ⓒ",
+      "block": "handcrafted:oak_desk[color=gray,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "ⓓ",
+      "block": "handcrafted:oak_nightstand[color=gray,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "ⓔ",
+      "block": "handcrafted:dark_oak_fancy_bed[color=gray,facing=north,occupied=false,part=foot,shape=single]"
+    },
+    {
+      "char": "ⓕ",
+      "block": "handcrafted:dark_oak_fancy_bed[color=gray,facing=north,occupied=false,part=head,shape=single]"
+    },
+    {
+      "char": "ⓖ",
+      "block": "handcrafted:dark_oak_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "ⓗ",
+      "block": "handcrafted:dark_oak_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "ⓘ",
+      "block": "handcrafted:dark_oak_table[color=none,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "ⓙ",
+      "block": "handcrafted:dark_oak_chair[color=none,facing=south,waterlogged=false]"
+    },
+    {
+      "char": "ⓚ",
+      "block": "handcrafted:dark_oak_chair[color=none,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "ⓛ",
+      "block": "handcrafted:oak_side_table[color=brown,facing=north,waterlogged=false]"
+    },
+    {
+      "char": "ⓜ",
+      "block": "handcrafted:oak_couch[color=blue,facing=north,shape=single,waterlogged=false]"
+    },
+    {
+      "char": "α",
+      "block": "minecraft:polished_andesite"
+    },
+    {
+      "char": "β",
+      "block": "minecraft:light_gray_concrete"
+    },
+    {
+      "char": "γ",
+      "block": "minecraft:polished_deepslate"
+    },
+    {
+      "char": "δ",
+      "block": "minecraft:bricks"
+    },
+    {
+      "char": "ε",
+      "block": "minecraft:oxidized_cut_copper"
+    },
+    {
+      "char": "ζ",
+      "block": "minecraft:stripped_spruce_wood"
+    },
+    {
+      "char": "η",
+      "block": "minecraft:gray_stained_glass"
+    },
+    {
+      "char": "θ",
+      "block": "minecraft:light_blue_stained_glass"
+    },
+    {
+      "char": "ι",
+      "block": "minecraft:yellow_concrete"
+    },
+    {
+      "char": "κ",
+      "block": "minecraft:lime_concrete"
+    },
+    {
+      "char": "λ",
+      "block": "minecraft:red_concrete"
+    },
+    {
+      "char": "μ",
+      "block": "minecraft:smooth_quartz"
+    },
+    {
+      "char": "ν",
+      "block": "minecraft:iron_block"
+    },
+    {
+      "char": "ξ",
+      "block": "minecraft:dark_prismarine"
+    },
+    {
+      "char": "ο",
+      "block": "minecraft:calcite"
+    },
+    {
+      "char": "π",
+      "block": "minecraft:brown_terracotta"
+    },
+    {
+      "char": "ρ",
+      "block": "minecraft:iron_bars[east=false,north=false,south=false,waterlogged=false,west=false]"
+    },
+    {
+      "char": "L",
+      "block": "minecraft:bookshelf"
+    }
+  ]
+}

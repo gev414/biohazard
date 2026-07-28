@@ -123,6 +123,12 @@ chests, and other LCMT/vanilla objects, with Handcrafted furniture merged into
 the same 16x16 slices. This makes the exact files used by world generation easy
 to edit in-place. All eight families use the same validated two-wide stairs,
 clear landing vestibules, dedicated ground floors, and enclosed roof exits.
+Their exterior shells are no longer interchangeable rectangles: the families
+use separate brick, clinical, civic, research, industrial, bunker, housing,
+and mixed-use material profiles with chamfered corners, recessed window bays,
+façade ribs, balconies, buttresses, and matching roof geometry. All depth stays
+inside the building chunk, so roads and neighboring multibuilding cells remain
+untouched.
 The same definitions override both base Lost Cities and LCMT IDs, so inherited
 city styles and vanilla multibuildings cannot select older or incompatible
 vertical layouts.
@@ -142,9 +148,11 @@ Biohazard also owns a separate custom-building family under
 2x2 quarantine hospital, and a 3x2 emergency block. Every occupied floor is
 connected by a two-wide stair flight; the palette intentionally contains no
 ladder block. Building definitions force five or more floors independently of
-the selected Lost Cities profile. Small child-city-style overrides append the
-new selectors to base Lost Cities and LCMT styles while preserving the pinned
-upstream biome-specific selectors.
+the selected Lost Cities profile. The standalone towers have distinct stepped,
+recessed, ribbed, and balcony silhouettes; the hospital uses an articulated
+32x32 perimeter while keeping every internal quadrant seam open. Small
+child-city-style overrides append the new selectors to base Lost Cities and
+LCMT styles while preserving the pinned upstream biome-specific selectors.
 
 ## Patchouli Documentation
 

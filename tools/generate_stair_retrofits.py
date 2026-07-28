@@ -36,19 +36,94 @@ class Family:
     min_floors: int
     max_floors: int
     lore: str
+    exterior: str
 
 
 # These placements were scored across every decorated variant. They preserve
 # all Handcrafted symbols and avoid every vanilla loot-chest marker.
 FAMILIES = {
-    "building1": Family(9, 10, 7, 5, 8, "quarantine apartments"),
-    "building2": Family(4, 11, 5, 5, 7, "urgent-care annex"),
-    "building3": Family(4, 11, 6, 5, 8, "civil-defense offices"),
-    "building4": Family(4, 10, 8, 5, 7, "emergency research annex"),
-    "building5": Family(4, 4, 3, 5, 7, "municipal maintenance depot"),
-    "building6": Family(4, 5, 3, 5, 7, "evacuation shelter"),
-    "building7": Family(5, 10, 8, 5, 8, "public housing tower"),
-    "building8": Family(8, 12, 7, 6, 9, "mixed-use relief center"),
+    "building1": Family(
+        9, 10, 7, 5, 8, "quarantine apartments", "quarantine"
+    ),
+    "building2": Family(
+        4, 11, 5, 5, 7, "urgent-care annex", "clinical"
+    ),
+    "building3": Family(
+        4, 11, 6, 5, 8, "civil-defense offices", "civic"
+    ),
+    "building4": Family(
+        4, 10, 8, 5, 7, "emergency research annex", "research"
+    ),
+    "building5": Family(
+        4, 4, 3, 5, 7, "municipal maintenance depot", "industrial"
+    ),
+    "building6": Family(
+        4, 5, 3, 5, 7, "evacuation shelter", "bunker"
+    ),
+    "building7": Family(
+        5, 10, 8, 5, 8, "public housing tower", "housing"
+    ),
+    "building8": Family(
+        8, 12, 7, 6, 9, "mixed-use relief center", "mixed_use"
+    ),
+}
+
+
+@dataclass(frozen=True)
+class Exterior:
+    wall: str
+    accent: str
+    glass: str
+    shape: str
+
+
+# A dedicated composite palette lets the inherited plans retain every
+# Handcrafted marker while adding fixed, lore-specific façade materials. The
+# Greek symbols are intentionally outside Lost Cities' ordinary ASCII palette,
+# so they cannot collide with a city-style palette entry.
+FACADE_BLOCKS = {
+    "α": "minecraft:polished_andesite",
+    "β": "minecraft:light_gray_concrete",
+    "γ": "minecraft:polished_deepslate",
+    "δ": "minecraft:bricks",
+    "ε": "minecraft:oxidized_cut_copper",
+    "ζ": "minecraft:stripped_spruce_wood",
+    "η": "minecraft:gray_stained_glass",
+    "θ": "minecraft:light_blue_stained_glass",
+    "ι": "minecraft:yellow_concrete",
+    "κ": "minecraft:lime_concrete",
+    "λ": "minecraft:red_concrete",
+    "μ": "minecraft:smooth_quartz",
+    "ν": "minecraft:iron_block",
+    "ξ": "minecraft:dark_prismarine",
+    "ο": "minecraft:calcite",
+    "π": "minecraft:brown_terracotta",
+    "ρ": (
+        "minecraft:iron_bars"
+        "[east=false,north=false,south=false,waterlogged=false,west=false]"
+    ),
+}
+FACADE_SYMBOLS = frozenset(FACADE_BLOCKS)
+HANDCRAFTED_SYMBOLS = frozenset(
+    entry["char"]
+    for entry in json.loads(
+        (
+            BIOHAZARD_ROOT
+            / "palettes"
+            / "handcrafted_furnishings.json"
+        ).read_text(encoding="utf-8")
+    )["palette"]
+)
+
+EXTERIORS = {
+    "quarantine": Exterior("δ", "ι", "η", "chamfer_balcony"),
+    "clinical": Exterior("β", "μ", "θ", "recessed"),
+    "civic": Exterior("γ", "α", "η", "ribbed"),
+    "research": Exterior("ο", "ε", "θ", "stepped"),
+    "industrial": Exterior("δ", "α", "η", "industrial"),
+    "bunker": Exterior("γ", "ν", "η", "bunker"),
+    "housing": Exterior("π", "ζ", "θ", "balconies"),
+    "mixed_use": Exterior("α", "ξ", "η", "mixed_use"),
 }
 
 STORAGE_SYMBOLS = {
@@ -96,6 +171,26 @@ PRESERVED_FURNISHINGS = {
     ),
     ("building5", 4): ((6, 1, 1, "ⓐ"),),
 }
+EXPECTED_HANDCRAFTED_TOTALS = {
+    "building1": 76,
+    "building2": 34,
+    "building3": 37,
+    "building4": 32,
+    "building5": 49,
+    "building6": 55,
+    "building7": 32,
+    "building8": 82,
+}
+EXPECTED_LOOT_COUNTS = {
+    "building1": (0, 0, 0, 0, 1, 0, 0, 0, 1),
+    "building2": (0, 1, 1, 0),
+    "building3": (0, 0, 0, 1),
+    "building4": (1, 1, 0, 0),
+    "building5": (0, 0, 0, 0),
+    "building6": (1, 0, 0, 1),
+    "building7": (1, 0, 1, 0, 1),
+    "building8": (0, 1, 0, 1, 2, 0, 1, 2),
+}
 
 
 def load_part(family: str, index: int) -> dict:
@@ -123,6 +218,200 @@ def set_cell(
     symbol: str,
 ) -> None:
     slices[y][z][x] = symbol
+
+
+def facade_symbol(
+    profile: Exterior,
+    position: int,
+    y: int,
+    *,
+    narrow_windows: bool = False,
+) -> str:
+    if position in (0, 1, 5, 10, 14, 15):
+        return profile.accent
+    if y in (2, 3, 4):
+        if narrow_windows and position % 4 != 2:
+            return profile.wall
+        return profile.glass
+    return profile.wall
+
+
+def paint_perimeter(
+    slices: list[list[list[str]]],
+    profile: Exterior,
+    *,
+    narrow_windows: bool = False,
+) -> None:
+    for y in range(1, FLOOR_HEIGHT):
+        for position in range(SIZE):
+            north_south = facade_symbol(
+                profile, position, y, narrow_windows=narrow_windows
+            )
+            east_west = facade_symbol(
+                profile, position, y, narrow_windows=narrow_windows
+            )
+            set_cell(slices, y, position, 0, north_south)
+            set_cell(slices, y, position, 15, north_south)
+            set_cell(slices, y, 0, position, east_west)
+            set_cell(slices, y, 15, position, east_west)
+
+
+def chamfer_corners(
+    slices: list[list[list[str]]],
+    profile: Exterior,
+    *,
+    ground: bool,
+    deep: bool = False,
+) -> None:
+    corners = (
+        ((0, 0), (1, 0), (0, 1), (1, 1)),
+        ((15, 0), (14, 0), (15, 1), (14, 1)),
+        ((0, 15), (1, 15), (0, 14), (1, 14)),
+        ((15, 15), (14, 15), (15, 14), (14, 14)),
+    )
+    for corner, edge_a, edge_b, inner in corners:
+        cleared = (corner, edge_a, edge_b) if deep else (corner,)
+        for x, z in cleared:
+            for y in range(0 if not ground else 1, FLOOR_HEIGHT):
+                set_cell(slices, y, x, z, " ")
+        if deep:
+            for y in range(1, FLOOR_HEIGHT):
+                set_cell(
+                    slices,
+                    y,
+                    inner[0],
+                    inner[1],
+                    profile.accent if y in (1, 5) else profile.glass,
+                )
+
+
+def recess_face(
+    slices: list[list[list[str]]],
+    profile: Exterior,
+    side: str,
+    start: int,
+    end: int,
+    *,
+    ground: bool,
+    balcony: bool = False,
+) -> None:
+    if side not in ("north", "south", "west", "east"):
+        raise ValueError(f"Unknown façade side {side}")
+    boundary = 0 if side in ("north", "west") else 15
+    inner = 1 if boundary == 0 else 14
+
+    for position in range(start, end + 1):
+        x = position if side in ("north", "south") else boundary
+        z = boundary if side in ("north", "south") else position
+        if not ground and not balcony:
+            set_cell(slices, 0, x, z, " ")
+        for y in range(1, FLOOR_HEIGHT):
+            set_cell(slices, y, x, z, " ")
+
+        inner_x = position if side in ("north", "south") else inner
+        inner_z = inner if side in ("north", "south") else position
+        for y in range(1, FLOOR_HEIGHT):
+            set_cell(
+                slices,
+                y,
+                inner_x,
+                inner_z,
+                facade_symbol(profile, position, y),
+            )
+
+        if balcony:
+            set_cell(slices, 1, x, z, "ρ")
+
+    # A paired opening makes the recessed strip usable as a balcony or arcade.
+    if balcony:
+        doorway = (start + end) // 2
+        for position in (doorway, min(doorway + 1, end)):
+            inner_x = position if side in ("north", "south") else inner
+            inner_z = inner if side in ("north", "south") else position
+            for y in (1, 2):
+                set_cell(slices, y, inner_x, inner_z, " ")
+
+
+def add_facade_fins(
+    slices: list[list[list[str]]],
+    profile: Exterior,
+    side: str,
+    positions: tuple[int, ...],
+) -> None:
+    boundary = 0 if side in ("north", "west") else 15
+    for position in positions:
+        x = position if side in ("north", "south") else boundary
+        z = boundary if side in ("north", "south") else position
+        for y in range(1, FLOOR_HEIGHT):
+            set_cell(slices, y, x, z, profile.accent)
+
+
+def add_ground_entrance(
+    slices: list[list[list[str]]],
+    profile: Exterior,
+) -> None:
+    # Clear both the normal and recessed north wall positions. This stays
+    # traversable regardless of the family's façade depth.
+    for z in (0, 1):
+        for x in (7, 8):
+            set_cell(slices, 0, x, z, "#")
+            for y in (1, 2, 3):
+                set_cell(slices, y, x, z, " ")
+    for x in (6, 9):
+        for y in (1, 2, 3):
+            set_cell(slices, y, x, 0, profile.accent)
+    for x in range(6, 10):
+        set_cell(slices, 4, x, 0, profile.accent)
+
+
+def apply_exterior(
+    slices: list[list[list[str]]],
+    family: Family,
+    *,
+    ground: bool,
+) -> None:
+    profile = EXTERIORS[family.exterior]
+    narrow = profile.shape in ("industrial", "bunker")
+    paint_perimeter(slices, profile, narrow_windows=narrow)
+
+    if profile.shape == "chamfer_balcony":
+        chamfer_corners(slices, profile, ground=ground)
+        recess_face(
+            slices, profile, "south", 3, 7, ground=ground, balcony=not ground
+        )
+    elif profile.shape == "recessed":
+        recess_face(slices, profile, "north", 4, 11, ground=ground)
+        recess_face(slices, profile, "south", 4, 11, ground=ground)
+    elif profile.shape == "ribbed":
+        chamfer_corners(slices, profile, ground=ground)
+        add_facade_fins(slices, profile, "north", (2, 5, 10, 13))
+        add_facade_fins(slices, profile, "south", (2, 5, 10, 13))
+    elif profile.shape == "stepped":
+        chamfer_corners(slices, profile, ground=ground, deep=True)
+        recess_face(slices, profile, "east", 5, 10, ground=ground)
+    elif profile.shape == "industrial":
+        recess_face(slices, profile, "north", 3, 6, ground=ground)
+        recess_face(slices, profile, "north", 9, 12, ground=ground)
+        add_facade_fins(slices, profile, "south", (3, 7, 11))
+    elif profile.shape == "bunker":
+        chamfer_corners(slices, profile, ground=ground, deep=True)
+        add_facade_fins(slices, profile, "north", (2, 6, 10, 13))
+        add_facade_fins(slices, profile, "south", (2, 6, 10, 13))
+    elif profile.shape == "balconies":
+        chamfer_corners(slices, profile, ground=ground)
+        recess_face(
+            slices, profile, "north", 2, 5, ground=ground, balcony=not ground
+        )
+        recess_face(
+            slices, profile, "south", 10, 13, ground=ground, balcony=not ground
+        )
+    elif profile.shape == "mixed_use":
+        chamfer_corners(slices, profile, ground=ground, deep=True)
+        recess_face(slices, profile, "west", 4, 11, ground=ground)
+        add_facade_fins(slices, profile, "east", (3, 8, 12))
+
+    if ground:
+        add_ground_entrance(slices, profile)
 
 
 def remove_ladders(slices: list[list[list[str]]]) -> None:
@@ -162,6 +451,19 @@ def clear_stair_core(
         for z in (stair_z - 1, end_z + 1):
             for x in range(stair_x - 1, stair_x + 3):
                 set_cell(slices, y, x, z, " ")
+            egress_x = (
+                stair_x + 3
+                if stair_x + 3 < SIZE - 1
+                else stair_x - 2
+            )
+            set_cell(slices, y, egress_x, z, " ")
+
+    # The two southern industrial families start close to the north wall.
+    # Their recessed façades need one additional interior approach row.
+    if stair_z == 3:
+        for y in (1, 2, 3):
+            for x in range(stair_x - 1, stair_x + 3):
+                set_cell(slices, y, x, 1, " ")
 
 
 def add_stair_flight(
@@ -206,7 +508,7 @@ def serialize_part(template: dict, slices: list[list[list[str]]]) -> dict:
         ["".join(row) for row in layer]
         for layer in slices
     ]
-    part["refpalette"] = "biohazard:handcrafted_furnishings"
+    part["refpalette"] = "biohazard:furnished_facades"
     return part
 
 
@@ -258,6 +560,7 @@ def ensure_storage_layout(
     slices: list[list[list[str]]],
     *,
     minimum: int = 3,
+    reserved: frozenset[tuple[int, int]] = frozenset(),
 ) -> None:
     """Add accessible wall-backed Handcrafted storage to sparse floors."""
 
@@ -273,6 +576,7 @@ def ensure_storage_layout(
             if (
                 not has_clear_body_space(slices, x, z)
                 or near_stair(x, z, stairs)
+                or (x, z) in reserved
             ):
                 continue
 
@@ -288,6 +592,7 @@ def ensure_storage_layout(
                     slices[1][bz][bx] == " "
                     or not has_clear_body_space(slices, fx, fz)
                     or near_stair(fx, fz, stairs)
+                    or (fx, fz) in reserved
                 ):
                     continue
                 set_cell(
@@ -306,6 +611,45 @@ def ensure_storage_layout(
         )
 
 
+def ensure_loot_layout(
+    slices: list[list[list[str]]],
+    *,
+    expected: int,
+    reserved: frozenset[tuple[int, int]],
+) -> None:
+    loot_count = sum(
+        symbol == "C"
+        for layer in slices
+        for row in layer
+        for symbol in row
+    )
+    if loot_count > expected:
+        raise ValueError(
+            f"Expected at most {expected} loot markers, found {loot_count}"
+        )
+    if loot_count == expected:
+        return
+
+    stairs = projected_stair_cells(slices)
+    for z in range(1, SIZE - 1):
+        for x in range(1, SIZE - 1):
+            if loot_count >= expected:
+                return
+            if (
+                (x, z) in reserved
+                or near_stair(x, z, stairs)
+                or not has_clear_body_space(slices, x, z)
+            ):
+                continue
+            set_cell(slices, 1, x, z, "C")
+            loot_count += 1
+
+    if loot_count < expected:
+        raise ValueError(
+            f"Could only place {loot_count} of {expected} loot markers"
+        )
+
+
 def handcrafted_counts(
     slices: list[list[list[str]]],
 ) -> dict[str, int]:
@@ -313,7 +657,7 @@ def handcrafted_counts(
     for layer in slices:
         for row in layer:
             for symbol in row:
-                if ord(symbol) > 127:
+                if symbol in HANDCRAFTED_SYMBOLS:
                     counts[symbol] = counts.get(symbol, 0) + 1
     return counts
 
@@ -321,6 +665,8 @@ def handcrafted_counts(
 def relocate_displaced_furnishings(
     before: dict[str, int],
     slices: list[list[list[str]]],
+    *,
+    reserved: frozenset[tuple[int, int]] = frozenset(),
 ) -> None:
     """Move furnishings sacrificed by the stair carve into usable room space."""
 
@@ -339,6 +685,7 @@ def relocate_displaced_furnishings(
                 if (
                     not has_clear_body_space(slices, x, z)
                     or near_stair(x, z, stairs)
+                    or (x, z) in reserved
                 ):
                     continue
                 neighbors = (
@@ -371,10 +718,18 @@ def retrofit_floor(
     name: str,
     index: int,
     arriving_from_below: bool,
+    ground: bool,
 ) -> dict:
     slices = mutable_slices(template)
-    restore_preserved_furnishings(name, index, slices)
+    if template.get("refpalette") != "biohazard:furnished_facades":
+        restore_preserved_furnishings(name, index, slices)
     furnishings_before = handcrafted_counts(slices)
+    reserved = (
+        frozenset((x, z) for x in (7, 8) for z in (0, 1))
+        if ground
+        else frozenset()
+    )
+    apply_exterior(slices, family, ground=ground)
     remove_ladders(slices)
     add_stair_flight(
         slices,
@@ -382,8 +737,17 @@ def retrofit_floor(
         stair_z=family.stair_z,
         arriving_from_below=arriving_from_below,
     )
-    relocate_displaced_furnishings(furnishings_before, slices)
-    ensure_storage_layout(slices)
+    ensure_loot_layout(
+        slices,
+        expected=EXPECTED_LOOT_COUNTS[name][index - 1],
+        reserved=reserved,
+    )
+    relocate_displaced_furnishings(
+        furnishings_before, slices, reserved=reserved
+    )
+    ensure_storage_layout(slices, reserved=reserved)
+    if ground:
+        add_ground_entrance(slices, EXTERIORS[family.exterior])
     return serialize_part(template, slices)
 
 
@@ -451,9 +815,30 @@ def make_roof(family: Family) -> dict:
     stair_x = family.stair_x
     stair_z = family.stair_z
     end_z = stair_z + 5
+    profile = EXTERIORS[family.exterior]
 
     fill_rectangle(slices, 0, 0, 0, 15, 15, "#")
-    rectangle(slices, 1, 0, 0, 15, 15, "#")
+    rectangle(slices, 1, 0, 0, 15, 15, profile.wall)
+
+    if profile.shape in (
+        "chamfer_balcony",
+        "ribbed",
+        "stepped",
+        "bunker",
+        "balconies",
+        "mixed_use",
+    ):
+        chamfer_corners(
+            slices,
+            profile,
+            ground=False,
+            deep=profile.shape in ("stepped", "bunker", "mixed_use"),
+        )
+    if profile.shape in ("recessed", "industrial"):
+        for x in range(4, 12):
+            set_cell(slices, 0, x, 0, " ")
+            set_cell(slices, 1, x, 0, " ")
+            set_cell(slices, 1, x, 1, profile.accent)
 
     for z in range(stair_z + 2, end_z):
         for x in (stair_x, stair_x + 1):
@@ -470,7 +855,7 @@ def make_roof(family: Family) -> dict:
             stair_z + 1,
             stair_x + 2,
             end_z + 1,
-            "#",
+            profile.wall,
         )
         set_cell(slices, y, stair_x - 1, end_z, " ")
     fill_rectangle(
@@ -480,7 +865,7 @@ def make_roof(family: Family) -> dict:
         stair_z + 1,
         stair_x + 2,
         end_z + 1,
-        "S",
+        profile.accent,
     )
     set_cell(slices, 2, stair_x + 2, stair_z + 2, ":")
     set_cell(slices, 3, stair_x + 2, stair_z + 2, ":")
@@ -488,7 +873,7 @@ def make_roof(family: Family) -> dict:
     # Municipal HVAC pads and an emergency-radio mast support the pack's
     # quarantine/evacuation narrative without introducing new palette symbols.
     for x, z in ((2, 3), (3, 3), (2, 4), (3, 4), (5, 3), (6, 3)):
-        set_cell(slices, 1, x, z, "S")
+        set_cell(slices, 1, x, z, profile.accent)
     for y in (1, 2, 3, 4):
         set_cell(slices, y, 6, 5, ":")
 
@@ -499,7 +884,7 @@ def make_roof(family: Family) -> dict:
             ["".join(row) for row in layer]
             for layer in slices
         ],
-        "refpalette": "biohazard:handcrafted_furnishings",
+        "refpalette": "biohazard:furnished_facades",
     }
 
 
@@ -565,7 +950,7 @@ def count_handcrafted_symbols(parts: list[dict]) -> int:
         for layer in part["slices"]
         for row in layer
         for symbol in row
-        if ord(symbol) > 127
+        if symbol in HANDCRAFTED_SYMBOLS
     )
 
 
@@ -578,21 +963,42 @@ def write_json(path: Path, value: dict) -> None:
     )
 
 
+def write_furnished_facade_palette() -> None:
+    source = (
+        BIOHAZARD_ROOT
+        / "palettes"
+        / "handcrafted_furnishings.json"
+    )
+    palette = json.loads(source.read_text(encoding="utf-8"))
+    used = {
+        entry["char"]
+        for entry in palette["palette"]
+    }
+    for symbol, block in FACADE_BLOCKS.items():
+        if symbol in used:
+            raise ValueError(f"Duplicate façade palette symbol {symbol}")
+        palette["palette"].append({"char": symbol, "block": block})
+    write_json(
+        BIOHAZARD_ROOT / "palettes" / "furnished_facades.json",
+        palette,
+    )
+
+
 def generate() -> None:
+    write_furnished_facade_palette()
     generated_floors = 0
     for name, family in FAMILIES.items():
         templates = [
             load_part(name, index)
             for index in range(1, family.part_count + 1)
         ]
-        furniture_before = count_handcrafted_symbols(templates)
-
         ground = retrofit_floor(
             templates[0],
             family,
             name=name,
             index=1,
             arriving_from_below=False,
+            ground=True,
         )
         validate_part(f"{name}_ground", ground, 20)
         write_json(
@@ -611,6 +1017,7 @@ def generate() -> None:
                 name=name,
                 index=index,
                 arriving_from_below=True,
+                ground=False,
             )
             validate_part(f"{name}_{index}", part, 22)
             retrofitted.append(part)
@@ -624,10 +1031,11 @@ def generate() -> None:
             generated_floors += 1
 
         furniture_after = count_handcrafted_symbols(retrofitted)
-        if furniture_after < furniture_before:
+        expected_furniture = EXPECTED_HANDCRAFTED_TOTALS[name]
+        if furniture_after < expected_furniture:
             raise ValueError(
-                f"{name}: Handcrafted markers decreased from "
-                f"{furniture_before} to {furniture_after}"
+                f"{name}: expected at least {expected_furniture} "
+                f"Handcrafted markers, found {furniture_after}"
             )
         for index, part in enumerate(retrofitted, start=1):
             if storage_count(mutable_slices(part)) < 3:

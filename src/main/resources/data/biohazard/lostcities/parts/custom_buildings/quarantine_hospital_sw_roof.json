@@ -17,8 +17,8 @@
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
       "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF",
-      "FFFFFFFFFFFFFFFF"
+      " FFFFFFFFFFFFFFF",
+      "  FFFFFFFFFFFFFF"
     ],
     [
       "W               ",
@@ -35,8 +35,8 @@
       "W               ",
       "W               ",
       "W               ",
-      "W               ",
-      "WWWWWWWWWWWWWWWW"
+      " W              ",
+      "  WWWWWWWWWWWWWW"
     ],
     [
       "                ",
@@ -53,7 +53,7 @@
       "                ",
       "                ",
       "                ",
-      "                ",
+      " G              ",
       "                "
     ],
     [
@@ -71,7 +71,7 @@
       "                ",
       "                ",
       "                ",
-      "                ",
+      " G              ",
       "                "
     ],
     [
@@ -89,7 +89,7 @@
       "                ",
       "                ",
       "                ",
-      "                ",
+      " G              ",
       "                "
     ],
     [
@@ -107,7 +107,7 @@
       "                ",
       "                ",
       "                ",
-      "                ",
+      " W              ",
       "                "
     ]
   ],

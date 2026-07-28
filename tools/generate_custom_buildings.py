@@ -207,6 +207,206 @@ def add_shell(
             put(part[y], 9, 0, accent)
 
 
+def custom_chamfer(
+    part: list[list[list[str]]],
+    *,
+    wall: str,
+    glass: str,
+    external_sides: Iterable[str],
+    ground: bool,
+    deep: bool = False,
+) -> None:
+    sides = set(external_sides)
+    corners = (
+        ("north", "west", ((0, 0), (1, 0), (0, 1), (1, 1))),
+        ("north", "east", ((15, 0), (14, 0), (15, 1), (14, 1))),
+        ("south", "west", ((0, 15), (1, 15), (0, 14), (1, 14))),
+        ("south", "east", ((15, 15), (14, 15), (15, 14), (14, 14))),
+    )
+    for side_a, side_b, (corner, edge_a, edge_b, inner) in corners:
+        if side_a not in sides or side_b not in sides:
+            continue
+        cleared = (corner, edge_a, edge_b) if deep else (corner,)
+        for x, z in cleared:
+            for y in range(0 if not ground else 1, FLOOR_HEIGHT):
+                put(part[y], x, z, " ")
+        if deep:
+            for y in range(1, FLOOR_HEIGHT):
+                put(
+                    part[y],
+                    inner[0],
+                    inner[1],
+                    glass if y in (2, 3, 4) else wall,
+                )
+
+
+def custom_recess(
+    part: list[list[list[str]]],
+    *,
+    side: str,
+    start: int,
+    end: int,
+    wall: str,
+    glass: str,
+    accent: str,
+    ground: bool,
+    balcony: bool = False,
+) -> None:
+    boundary = 0 if side in ("north", "west") else 15
+    inner = 1 if boundary == 0 else 14
+    for position in range(start, end + 1):
+        x = position if side in ("north", "south") else boundary
+        z = boundary if side in ("north", "south") else position
+        if not ground and not balcony:
+            put(part[0], x, z, " ")
+        for y in range(1, FLOOR_HEIGHT):
+            put(part[y], x, z, " ")
+
+        inner_x = position if side in ("north", "south") else inner
+        inner_z = inner if side in ("north", "south") else position
+        for y in range(1, FLOOR_HEIGHT):
+            char = glass if y in (2, 3, 4) else wall
+            if position in (start, end):
+                char = accent
+            put(part[y], inner_x, inner_z, char)
+        if balcony:
+            put(part[1], x, z, ":")
+
+    if balcony:
+        door = (start + end) // 2
+        inner_x = door if side in ("north", "south") else inner
+        inner_z = inner if side in ("north", "south") else door
+        for y in (1, 2):
+            put(part[y], inner_x, inner_z, " ")
+
+
+def restore_custom_entrance(
+    part: list[list[list[str]]],
+    accent: str,
+) -> None:
+    for z in (0, 1):
+        for x in (7, 8):
+            put(part[0], x, z, "F")
+            for y in (1, 2, 3):
+                put(part[y], x, z, " ")
+    for x in (6, 9):
+        for y in (1, 2, 3):
+            put(part[y], x, 0, accent)
+    horizontal(part[4], 0, 6, 9, accent)
+
+
+def apply_custom_exterior(
+    part: list[list[list[str]]],
+    *,
+    theme: str,
+    wall: str,
+    glass: str,
+    accent: str,
+    external_sides: Iterable[str],
+    ground: bool,
+) -> None:
+    sides = tuple(external_sides)
+    if theme == "quarantine_tower":
+        custom_chamfer(
+            part,
+            wall=wall,
+            glass=glass,
+            external_sides=sides,
+            ground=ground,
+            deep=True,
+        )
+        custom_recess(
+            part,
+            side="west",
+            start=4,
+            end=11,
+            wall=wall,
+            glass=glass,
+            accent=accent,
+            ground=ground,
+        )
+    elif theme == "response_office":
+        custom_chamfer(
+            part,
+            wall=wall,
+            glass=glass,
+            external_sides=sides,
+            ground=ground,
+        )
+        custom_recess(
+            part,
+            side="north",
+            start=3,
+            end=12,
+            wall=wall,
+            glass=glass,
+            accent=accent,
+            ground=ground,
+        )
+        for position in (2, 6, 10, 13):
+            for y in range(1, FLOOR_HEIGHT):
+                put(part[y], position, 15, accent)
+    elif theme == "stairwell_apartments":
+        custom_chamfer(
+            part,
+            wall=wall,
+            glass=glass,
+            external_sides=sides,
+            ground=ground,
+        )
+        for side in ("north", "south"):
+            custom_recess(
+                part,
+                side=side,
+                start=2,
+                end=5,
+                wall=wall,
+                glass=glass,
+                accent=accent,
+                ground=ground,
+                balcony=not ground,
+            )
+    elif theme == "quarantine_hospital":
+        custom_chamfer(
+            part,
+            wall=wall,
+            glass=glass,
+            external_sides=sides,
+            ground=ground,
+            deep=True,
+        )
+        # Projecting vertical corner piers create a coherent 32×32 hospital
+        # frame without ever touching an internal quadrant seam.
+        for side in sides:
+            boundary = 0 if side in ("north", "west") else 15
+            for position in (4, 11):
+                x = position if side in ("north", "south") else boundary
+                z = boundary if side in ("north", "south") else position
+                for y in range(1, FLOOR_HEIGHT):
+                    put(part[y], x, z, accent)
+
+    if ground and "north" in sides:
+        restore_custom_entrance(part, accent)
+
+
+def apply_custom_roof_shape(
+    part: list[list[list[str]]],
+    *,
+    theme: str,
+    wall: str,
+    glass: str,
+    external_sides: Iterable[str],
+) -> None:
+    custom_chamfer(
+        part,
+        wall=wall,
+        glass=glass,
+        external_sides=external_sides,
+        ground=False,
+        deep=theme in ("quarantine_tower", "quarantine_hospital"),
+    )
+
+
 def add_stair_flight(
     part: list[list[list[str]]], *, arriving_from_below: bool
 ) -> None:
@@ -395,6 +595,13 @@ def make_solo_part(theme: str, stage: str) -> dict:
             external_sides=("north", "south", "west", "east"),
             stairs=True,
         )
+        apply_custom_roof_shape(
+            part,
+            theme=theme,
+            wall=wall,
+            glass=glass,
+            external_sides=("north", "south", "west", "east"),
+        )
     else:
         add_shell(
             part,
@@ -403,7 +610,18 @@ def make_solo_part(theme: str, stage: str) -> dict:
             accent=accent,
             ground_entrance=stage == "ground",
         )
+        apply_custom_exterior(
+            part,
+            theme=theme,
+            wall=wall,
+            glass=glass,
+            accent=accent,
+            external_sides=("north", "south", "west", "east"),
+            ground=stage == "ground",
+        )
         interior(part, stage=stage)
+        if stage == "ground":
+            restore_custom_entrance(part, accent)
         add_stair_flight(part, arriving_from_below=stage == "middle")
     return serialize_part(part)
 
@@ -428,6 +646,13 @@ def make_hospital_part(quadrant: str, stage: str) -> dict:
             external_sides=sides,
             stairs=has_stairs,
         )
+        apply_custom_roof_shape(
+            part,
+            theme="quarantine_hospital",
+            wall="W",
+            glass="G",
+            external_sides=sides,
+        )
     else:
         add_shell(
             part,
@@ -437,7 +662,18 @@ def make_hospital_part(quadrant: str, stage: str) -> dict:
             external_sides=sides,
             ground_entrance=stage == "ground" and "north" in sides,
         )
+        apply_custom_exterior(
+            part,
+            theme="quarantine_hospital",
+            wall="W",
+            glass="G",
+            accent="A",
+            external_sides=sides,
+            ground=stage == "ground",
+        )
         add_hospital_interior(part, stage=stage, quadrant=quadrant)
+        if stage == "ground" and "north" in sides:
+            restore_custom_entrance(part, "A")
         if has_stairs:
             add_stair_flight(part, arriving_from_below=stage == "middle")
     return serialize_part(part)
