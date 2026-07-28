@@ -1,0 +1,14 @@
+{
+  "dimx": 2,
+  "dimz": 2,
+  "buildings": [
+    [
+      "rotwire:custom_buildings/quarantine_hospital_nw",
+      "rotwire:custom_buildings/quarantine_hospital_sw"
+    ],
+    [
+      "rotwire:custom_buildings/quarantine_hospital_ne",
+      "rotwire:custom_buildings/quarantine_hospital_se"
+    ]
+  ]
+}

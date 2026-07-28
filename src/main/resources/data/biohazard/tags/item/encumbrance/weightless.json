@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "biohazard:documents",
-    "biohazard:research_data",
-    "biohazard:encrypted_intel"
-  ]
-}

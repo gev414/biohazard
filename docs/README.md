@@ -1,14 +1,14 @@
-# Biohazard engineering documentation
+# Rotwire engineering documentation
 
-This directory is the technical handbook for maintaining Biohazard. It
+This directory is the technical handbook for maintaining Rotwire. It
 documents the implementation that is present in this
 repository, not an aspirational architecture. When code and documentation
 disagree, the code is authoritative and the documentation should be corrected
 in the same change.
 
-Documented baseline: Biohazard `1.1.3`.
+Documented baseline: Rotwire `1.1.3`.
 
-Biohazard is a Minecraft 1.21.1 NeoForge integration mod. Its main job is to
+Rotwire is a Minecraft 1.21.1 NeoForge integration mod. Its main job is to
 turn a curated collection of third-party mods and data resources into one
 cohesive zombie-survival experience. The project contains conventional Java
 gameplay code, NeoForge event wiring, persistent world state, network payloads,
@@ -68,23 +68,23 @@ Choose the path that matches the work you are doing:
 
 | Property | Current value |
 |---|---|
-| Mod id | `biohazard` |
+| Mod id | `rotwire` |
 | Released version represented here | `1.1.3` |
 | Minecraft | `1.21.1` |
 | NeoForge | `21.1.235` |
 | Java | `21` |
 | Build tool | Gradle Wrapper `9.2.1`, ModDevGradle `2.0.141` |
-| Base package | `io.github.gev414.biohazard` |
+| Base package | `io.github.gev414.rotwire` |
 | License | MIT, with third-party resource notices in `THIRD_PARTY_NOTICES.md` |
 | CI | GitHub Actions runs `./gradlew build` on pushes and pull requests |
 
 ## Source layout
 
 ```text
-biohazard/
+rotwire/
 |-- build.gradle                     Build, dependencies, runs, metadata
 |-- gradle.properties                Version pins and project identity
-|-- src/main/java/.../biohazard/     Production Java
+|-- src/main/java/.../rotwire/     Production Java
 |   |-- block/                       Radio block and block entity
 |   |-- client/                      Client state, screens, fog, renderers
 |   |-- config/                      NeoForge config specifications
@@ -101,7 +101,7 @@ biohazard/
 |   `-- quest/                       FTB Quests and courier deliveries
 |-- src/main/resources/
 |   |-- assets/                      Client assets and Patchouli content
-|   |-- biohazard/ftbquests_defaults Bundled initial quest book
+|   |-- rotwire/ftbquests_defaults Bundled initial quest book
 |   `-- data/                        Server data packs and compatibility data
 |-- src/main/templates/              Expanded NeoForge mod metadata
 |-- src/test/java/                   JUnit unit and resource-contract tests
@@ -129,7 +129,7 @@ These are the invariants worth preserving during maintenance:
 3. World-persistent state belongs in `SavedData`, not static collections.
 4. Static collections are caches only and must be cleared on lifecycle events.
 5. External-mod state is consumed through its published API or event hooks.
-   Biohazard does not reimplement another mod's calendar or world generator.
+   Rotwire does not reimplement another mod's calendar or world generator.
 6. Content that can be expressed through standard resources should remain
    data-driven.
 7. A bundled default quest book is installed only into an empty destination.

@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Biohazard contains third-party material covered by separate licenses.
+Rotwire contains third-party material covered by separate licenses.
 
 ## The Lost Cities
 
@@ -72,13 +72,13 @@ The original MDK template files are covered by the MIT notice retained in `TEMPL
 
 ## Feed The Beast
 
-Biohazard integrates with FTB Quests to provide the Survivor Network's contract
+Rotwire integrates with FTB Quests to provide the Survivor Network's contract
 and quest-journal experience, and references FTB Teams resources for team-related
 quest presentation. FTB Quests, FTB Teams, and associated FTB assets are the
-property of Feed The Beast Ltd. and are not bundled in the Biohazard JAR. They
+property of Feed The Beast Ltd. and are not bundled in the Rotwire JAR. They
 remain subject to Feed The Beast's applicable terms and policies:
 https://feed-the-beast.com/policies/modpacks-mods-policy
 
 ## External Dependencies
 
-Biohazard depends on external mods and libraries that are not bundled in the Biohazard JAR. Those projects remain subject to their respective licenses and copyright notices.
+Rotwire depends on external mods and libraries that are not bundled in the Rotwire JAR. Those projects remain subject to their respective licenses and copyright notices.

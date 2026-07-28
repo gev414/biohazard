@@ -1,8 +1,8 @@
 # Stealth, attention, and encumbrance
 
-Biohazard adds a server-authoritative survival loop around what the player
+Rotwire adds a server-authoritative survival loop around what the player
 carries and how much attention their actions create. The system is configured
-in `biohazard-survival.toml`.
+in `rotwire-survival.toml`.
 
 ## Player loop
 
@@ -29,7 +29,7 @@ attacking an infected always reveals the attacker to that mob.
 
 Mobs spawned by The Hordes bypass stealth suppression. The Hordes remains the
 owner of its tracking goal, so horde mobs continue pursuing their assigned
-player without a suspicion window or Biohazard distance cap.
+player without a suspicion window or Rotwire distance cap.
 
 ## Noise and investigation
 
@@ -46,18 +46,18 @@ PointBlank suppression is determined from the active attachment item IDs and
 attachment groups, not from a guessed sound-name convention.
 
 When ZombieTactics 1.3.3 is installed and
-`replaceZombieTacticsMarkers = true`, Biohazard rejects that mod's automatic
+`replaceZombieTacticsMarkers = true`, Rotwire rejects that mod's automatic
 marker entities. It creates an approved marker only for unsuppressed gunfire
 and only when ZombieTactics' marker range does not exceed the configured
 loud-gun radius. Smaller sounds use
-Biohazard's radius-bounded investigation navigation so a 12-block suppressed
+Rotwire's radius-bounded investigation navigation so a 12-block suppressed
 shot cannot leak into ZombieTactics' global marker range.
 
 ## Carried weight
 
 Weight includes the main inventory, armor, offhand, and an equipped Traveler's
 Backpack. Stored Traveler's Backpack items also include their storage slots,
-tools, upgrades, and fluid tanks. Biohazard only reads backpack state.
+tools, upgrades, and fluid tanks. Rotwire only reads backpack state.
 
 Stackable items contribute their category's per-item weight multiplied by the
 actual item count. There is no minimum-stack charge, and an item's maximum
@@ -68,13 +68,13 @@ Classification uses the first matching rule in this order: weightless,
 light/heavy equipment, firearm, armor, item-density tags, block, unstackable,
 then default. The available override tags are:
 
-- `biohazard:encumbrance/weightless`
-- `biohazard:encumbrance/tiny`
-- `biohazard:encumbrance/light`
-- `biohazard:encumbrance/dense`
-- `biohazard:encumbrance/very_dense`
-- `biohazard:encumbrance/equipment/light`
-- `biohazard:encumbrance/equipment/heavy`
+- `rotwire:encumbrance/weightless`
+- `rotwire:encumbrance/tiny`
+- `rotwire:encumbrance/light`
+- `rotwire:encumbrance/dense`
+- `rotwire:encumbrance/very_dense`
+- `rotwire:encumbrance/equipment/light`
+- `rotwire:encumbrance/equipment/heavy`
 
 For example, the defaults make 25 cobblestone weigh `3.0`, 30 sticks weigh
 `0.6`, and 16 coal weigh `1.28`. A light firearm weighs `1.25`, a normal
@@ -103,7 +103,7 @@ penalties.
 ## Configuration and displayed values
 
 The Java values in `SurvivalSystemsConfig` are defaults for a newly generated
-`biohazard-survival.toml`. NeoForge preserves assignments already stored in an
+`rotwire-survival.toml`. NeoForge preserves assignments already stored in an
 existing TOML when the mod is rebuilt with different defaults.
 
 Encumbrance calculations, movement penalties, the lower-right HUD, and the
