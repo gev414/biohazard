@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "rotwire:documents",
+    "rotwire:research_data",
+    "rotwire:encrypted_intel"
+  ]
+}

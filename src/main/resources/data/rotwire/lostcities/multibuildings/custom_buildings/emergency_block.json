@@ -1,0 +1,18 @@
+{
+  "dimx": 3,
+  "dimz": 2,
+  "buildings": [
+    [
+      "rotwire:custom_buildings/quarantine_tower",
+      "rotwire:custom_buildings/response_office"
+    ],
+    [
+      "rotwire:custom_buildings/stairwell_apartments",
+      "rotwire:custom_buildings/quarantine_tower"
+    ],
+    [
+      "rotwire:custom_buildings/response_office",
+      "rotwire:custom_buildings/stairwell_apartments"
+    ]
+  ]
+}

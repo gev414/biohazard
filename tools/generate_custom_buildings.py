@@ -1,4 +1,4 @@
-"""Generate Biohazard's stair-connected Lost Cities building resources.
+"""Generate Rotwire's stair-connected Lost Cities building resources.
 
 The generated parts use the six-block floor height used by Lost Cities 8.3.10.
 Every traversable upper floor repeats the same two-wide stair flight.  The
@@ -14,7 +14,7 @@ from typing import Iterable
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_ROOT = ROOT / "src" / "main" / "resources" / "data" / "biohazard" / "lostcities"
+DATA_ROOT = ROOT / "src" / "main" / "resources" / "data" / "rotwire" / "lostcities"
 SIZE = 16
 FLOOR_HEIGHT = 6
 
@@ -103,14 +103,14 @@ PALETTE = {
 }
 
 BUILDING_SELECTOR_ENTRIES = [
-    {"factor": 0.24, "value": "biohazard:custom_buildings/quarantine_tower"},
-    {"factor": 0.20, "value": "biohazard:custom_buildings/response_office"},
-    {"factor": 0.26, "value": "biohazard:custom_buildings/stairwell_apartments"},
+    {"factor": 0.24, "value": "rotwire:custom_buildings/quarantine_tower"},
+    {"factor": 0.20, "value": "rotwire:custom_buildings/response_office"},
+    {"factor": 0.26, "value": "rotwire:custom_buildings/stairwell_apartments"},
 ]
 
 MULTIBUILDING_SELECTOR_ENTRIES = [
-    {"factor": 0.16, "value": "biohazard:custom_buildings/quarantine_hospital"},
-    {"factor": 0.08, "value": "biohazard:custom_buildings/emergency_block"},
+    {"factor": 0.16, "value": "rotwire:custom_buildings/quarantine_hospital"},
+    {"factor": 0.08, "value": "rotwire:custom_buildings/emergency_block"},
 ]
 
 
@@ -575,7 +575,7 @@ def serialize_part(part: list[list[list[str]]]) -> dict:
         "xsize": SIZE,
         "zsize": SIZE,
         "slices": [["".join(row) for row in layer] for layer in part],
-        "refpalette": "biohazard:custom_buildings",
+        "refpalette": "rotwire:custom_buildings",
     }
 
 
@@ -680,9 +680,9 @@ def make_hospital_part(quadrant: str, stage: str) -> dict:
 
 
 def building_definition(name: str, min_floors: int, max_floors: int) -> dict:
-    base = f"biohazard:custom_buildings/{name}"
+    base = f"rotwire:custom_buildings/{name}"
     return {
-        "refpalette": "biohazard:custom_buildings",
+        "refpalette": "rotwire:custom_buildings",
         "filler": "#",
         "rubble": "}",
         "mincellars": 0,
@@ -773,12 +773,12 @@ def generate() -> None:
             "dimz": 2,
             "buildings": [
                 [
-                    "biohazard:custom_buildings/quarantine_hospital_nw",
-                    "biohazard:custom_buildings/quarantine_hospital_sw",
+                    "rotwire:custom_buildings/quarantine_hospital_nw",
+                    "rotwire:custom_buildings/quarantine_hospital_sw",
                 ],
                 [
-                    "biohazard:custom_buildings/quarantine_hospital_ne",
-                    "biohazard:custom_buildings/quarantine_hospital_se",
+                    "rotwire:custom_buildings/quarantine_hospital_ne",
+                    "rotwire:custom_buildings/quarantine_hospital_se",
                 ],
             ],
         },
@@ -790,16 +790,16 @@ def generate() -> None:
             "dimz": 2,
             "buildings": [
                 [
-                    "biohazard:custom_buildings/quarantine_tower",
-                    "biohazard:custom_buildings/response_office",
+                    "rotwire:custom_buildings/quarantine_tower",
+                    "rotwire:custom_buildings/response_office",
                 ],
                 [
-                    "biohazard:custom_buildings/stairwell_apartments",
-                    "biohazard:custom_buildings/quarantine_tower",
+                    "rotwire:custom_buildings/stairwell_apartments",
+                    "rotwire:custom_buildings/quarantine_tower",
                 ],
                 [
-                    "biohazard:custom_buildings/response_office",
-                    "biohazard:custom_buildings/stairwell_apartments",
+                    "rotwire:custom_buildings/response_office",
+                    "rotwire:custom_buildings/stairwell_apartments",
                 ],
             ],
         },

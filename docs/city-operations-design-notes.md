@@ -6,7 +6,7 @@ decisions and the configuration points used by the first implementation.
 ## Confirmed direction
 
 - A city operation may require five fully cleared buildings.
-- Progress must come from buildings whose Biohazard encounter actually reaches
+- Progress must come from buildings whose Rotwire encounter actually reaches
   `CLEARED`. Buildings materialized as `SAFE` do not count.
 - Building progress is unique by `BuildingKey`. A multi-chunk building already
   resolves to one root key and therefore counts once.
@@ -29,7 +29,7 @@ decisions and the configuration points used by the first implementation.
 ## City-zone discovery
 
 Lost Cities exposes whether an individual chunk is a city chunk, but it does
-not expose a persistent city ID, city center, or complete chunk list. Biohazard
+not expose a persistent city ID, city center, or complete chunk list. Rotwire
 will therefore need to derive a city zone by scanning connected city chunks and
 persisting its own stable zone identity and membership.
 
@@ -93,12 +93,12 @@ is still hidden inside.
   cardinal/diagonal connectivity, and a stable fallback sector for city
   profiles that reach the cap.
 - City progress, exact footprints, danger, cleared building keys, and operation
-  bindings are stored in `biohazard_city_zones`.
-- `biohazard:city_scaled_infected` is the data-pack entity-type tag for health
+  bindings are stored in `rotwire_city_zones`.
+- `rotwire:city_scaled_infected` is the data-pack entity-type tag for health
   scaling.
-- FTB custom tasks tagged `biohazard_city_operation` track five new unique
-  clears by default. `biohazard_city_buildings_<count>` changes the target.
-- All server tuning is in `biohazard-city-operations.toml`.
+- FTB custom tasks tagged `rotwire_city_operation` track five new unique
+  clears by default. `rotwire_city_buildings_<count>` changes the target.
+- All server tuning is in `rotwire-city-operations.toml`.
 
 ## Candidate progression example
 

@@ -10,9 +10,9 @@ For cross-system sequences and authority rules, read
 
 ## 1. Composition root
 
-### `Biohazard`
+### `Rotwire`
 
-Source: [`Biohazard.java`](../src/main/java/io/github/gev414/biohazard/Biohazard.java)
+Source: [`Rotwire.java`](../src/main/java/io/github/gev414/rotwire/Rotwire.java)
 
 **Role.** NeoForge entry point and dependency-composition root. It should wire
 services together but not contain gameplay rules.
@@ -38,21 +38,21 @@ the correct loader phase rather than at arbitrary class-load time.
 
 ### `ModBlocks`
 
-Source: [`ModBlocks.java`](../src/main/java/io/github/gev414/biohazard/block/ModBlocks.java)
+Source: [`ModBlocks.java`](../src/main/java/io/github/gev414/rotwire/block/ModBlocks.java)
 
-Registers `biohazard:radio_transmitter` as a `RadioTransmitterBlock`. Its
+Registers `rotwire:radio_transmitter` as a `RadioTransmitterBlock`. Its
 material behavior is brown map color, hardness 3, blast resistance 6, metal
 sound, non-occluding shape, and correct-tool-required drops. The matching item,
 block entity, model, blockstate, recipe, loot table, tags, translations, and
 texture are separate contracts.
 
-Depends on: `Biohazard.MOD_ID`, `RadioTransmitterBlock`, NeoForge registries.
+Depends on: `Rotwire.MOD_ID`, `RadioTransmitterBlock`, NeoForge registries.
 
 ### `ModBlockEntities`
 
-Source: [`ModBlockEntities.java`](../src/main/java/io/github/gev414/biohazard/block/entity/ModBlockEntities.java)
+Source: [`ModBlockEntities.java`](../src/main/java/io/github/gev414/rotwire/block/entity/ModBlockEntities.java)
 
-Registers block entity type `biohazard:radio_transmitter`, constructed by
+Registers block entity type `rotwire:radio_transmitter`, constructed by
 `RadioTransmitterBlockEntity::new` and valid only for the registered transmitter
 block.
 
@@ -60,31 +60,31 @@ Depends on: `ModBlocks.RADIO_TRANSMITTER`, `RadioTransmitterBlockEntity`.
 
 ### `ModItems`
 
-Source: [`ModItems.java`](../src/main/java/io/github/gev414/biohazard/item/ModItems.java)
+Source: [`ModItems.java`](../src/main/java/io/github/gev414/rotwire/item/ModItems.java)
 
 Registers:
 
 | Registry id | Java type | Stack size | Purpose |
 |---|---|---:|---|
-| `biohazard:radio_transmitter` | `BlockItem` | default | Places the radio block |
-| `biohazard:documents` | `Item` | 64 | Quest evidence/currency |
-| `biohazard:research_data` | `Item` | 32 | Quest evidence/currency |
-| `biohazard:encrypted_intel` | `Item` | 16 | High-tier quest evidence |
-| `biohazard:infection_cure` | `InfectionMedicineItem(FULL_CURE)` | 4 | Removes The Hordes infection; epic rarity |
-| `biohazard:antiviral_suppressant` | `InfectionMedicineItem(SUPPRESSANT)` | 8 | Delays infection/grants immunity; rare rarity |
+| `rotwire:radio_transmitter` | `BlockItem` | default | Places the radio block |
+| `rotwire:documents` | `Item` | 64 | Quest evidence/currency |
+| `rotwire:research_data` | `Item` | 32 | Quest evidence/currency |
+| `rotwire:encrypted_intel` | `Item` | 16 | High-tier quest evidence |
+| `rotwire:infection_cure` | `InfectionMedicineItem(FULL_CURE)` | 4 | Removes The Hordes infection; epic rarity |
+| `rotwire:antiviral_suppressant` | `InfectionMedicineItem(SUPPRESSANT)` | 8 | Delays infection/grants immunity; rare rarity |
 
 Resource models, textures, translations, creative tabs, loot, and recipes refer
 to these stable IDs.
 
 ### `ModEntities`
 
-Source: [`ModEntities.java`](../src/main/java/io/github/gev414/biohazard/entity/ModEntities.java)
+Source: [`ModEntities.java`](../src/main/java/io/github/gev414/rotwire/entity/ModEntities.java)
 
 Registers:
 
-- `biohazard:brute`, a monster-sized `BruteEntity` using the class's dimensions
+- `rotwire:brute`, a monster-sized `BruteEntity` using the class's dimensions
   and eye height, with client tracking range 8;
-- `biohazard:brute_rock`, a small miscellaneous projectile updated every 10
+- `rotwire:brute_rock`, a small miscellaneous projectile updated every 10
   ticks with client tracking range 4.
 
 Attributes and renderers are not part of registry creation; they are registered
@@ -92,10 +92,10 @@ by `ModEntityEvents` and `ClientModEvents` respectively.
 
 ### `ModDamageTypes`
 
-Source: [`ModDamageTypes.java`](../src/main/java/io/github/gev414/biohazard/damage/ModDamageTypes.java)
+Source: [`ModDamageTypes.java`](../src/main/java/io/github/gev414/rotwire/damage/ModDamageTypes.java)
 
-Declares the resource key `biohazard:brute_rock_splash`. The actual damage type
-is data-backed by `data/biohazard/damage_type/brute_rock_splash.json` and is
+Declares the resource key `rotwire:brute_rock_splash`. The actual damage type
+is data-backed by `data/rotwire/damage_type/brute_rock_splash.json` and is
 added to Minecraft's `no_anger` damage-type tag. The projectile resolves the
 holder from the active registry at impact time.
 
@@ -107,9 +107,9 @@ call. Detailed defaults and operational implications are in
 
 ### `EncounterConfig`
 
-Source: [`EncounterConfig.java`](../src/main/java/io/github/gev414/biohazard/config/EncounterConfig.java)
+Source: [`EncounterConfig.java`](../src/main/java/io/github/gev414/rotwire/config/EncounterConfig.java)
 
-Defines the server-side `biohazard-encounters.toml` contract: master switch,
+Defines the server-side `rotwire-encounters.toml` contract: master switch,
 selection probabilities (including a separate multi-chunk boss chance),
 snapshotted spawn mode, activation radius/scan
 interval, kill range, active-mob cap, update interval, spawn distances and
@@ -125,25 +125,25 @@ Consumed by: `EncounterManager`, `EncounterSpawner`, `EncounterEvents`.
 
 ### `HordeAtmosphereConfig`
 
-Source: [`HordeAtmosphereConfig.java`](../src/main/java/io/github/gev414/biohazard/config/HordeAtmosphereConfig.java)
+Source: [`HordeAtmosphereConfig.java`](../src/main/java/io/github/gev414/rotwire/config/HordeAtmosphereConfig.java)
 
-Defines client-side `biohazard-client.toml`: enabled flag, pre-event fade
+Defines client-side `rotwire-client.toml`: enabled flag, pre-event fade
 duration, and target near/far fog planes. It affects only presentation and is
 consumed by `HordeAtmosphereClientEvents`.
 
 ### `RadioQuestConfig`
 
-Source: [`RadioQuestConfig.java`](../src/main/java/io/github/gev414/biohazard/config/RadioQuestConfig.java)
+Source: [`RadioQuestConfig.java`](../src/main/java/io/github/gev414/rotwire/config/RadioQuestConfig.java)
 
-Defines server-side `biohazard-radio-quests.toml`: transmitter range,
+Defines server-side `rotwire-radio-quests.toml`: transmitter range,
 calibration duration, and per-category courier delays. It is consumed by radio
 block entities, radio proximity search, and `DeliveryCategory.delayTicks()`.
 
 ### `SurvivalSystemsConfig`
 
-Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/biohazard/config/SurvivalSystemsConfig.java)
+Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/rotwire/config/SurvivalSystemsConfig.java)
 
-Defines `biohazard-survival.toml`: weight categories and tier thresholds,
+Defines `rotwire-survival.toml`: weight categories and tier thresholds,
 movement penalties, progressive visual-awareness tuning, alert memory, loud
 action grace, attention radii, and ZombieTactics marker replacement. All
 values are read live and the specification is initialized idempotently.
@@ -155,7 +155,7 @@ filtering and priority choices, not durable state.
 
 ### `EncounterEvents`
 
-Source: [`EncounterEvents.java`](../src/main/java/io/github/gev414/biohazard/event/EncounterEvents.java)
+Source: [`EncounterEvents.java`](../src/main/java/io/github/gev414/rotwire/event/EncounterEvents.java)
 
 Handles three runtime events:
 
@@ -173,7 +173,7 @@ lock path, so it is not locked by this implementation.
 
 ### `HordeAtmosphereSyncEvents`
 
-Source: [`HordeAtmosphereSyncEvents.java`](../src/main/java/io/github/gev414/biohazard/event/HordeAtmosphereSyncEvents.java)
+Source: [`HordeAtmosphereSyncEvents.java`](../src/main/java/io/github/gev414/rotwire/event/HordeAtmosphereSyncEvents.java)
 
 Server adapter for The Hordes state. Once per second it derives a compact
 `HordeAtmospherePayload` per online player. A last-sent map suppresses identical
@@ -188,7 +188,7 @@ reduce network traffic.
 
 ### `ModCreativeTabEvents`
 
-Source: [`ModCreativeTabEvents.java`](../src/main/java/io/github/gev414/biohazard/event/ModCreativeTabEvents.java)
+Source: [`ModCreativeTabEvents.java`](../src/main/java/io/github/gev414/rotwire/event/ModCreativeTabEvents.java)
 
 Populates vanilla creative tabs:
 
@@ -201,7 +201,7 @@ creative mode; update this adapter where appropriate.
 
 ### `ModEntityEvents`
 
-Source: [`ModEntityEvents.java`](../src/main/java/io/github/gev414/biohazard/event/ModEntityEvents.java)
+Source: [`ModEntityEvents.java`](../src/main/java/io/github/gev414/rotwire/event/ModEntityEvents.java)
 
 Binds the Brute entity type to the attributes produced by
 `BruteEntity.createAttributes()`. Missing this binding normally produces an
@@ -209,8 +209,8 @@ entity registration/runtime failure.
 
 ### `SurvivalSystemsEvents` and `SurvivalStatusSync`
 
-Sources: [`SurvivalSystemsEvents.java`](../src/main/java/io/github/gev414/biohazard/event/SurvivalSystemsEvents.java),
-[`SurvivalStatusSync.java`](../src/main/java/io/github/gev414/biohazard/event/SurvivalStatusSync.java)
+Sources: [`SurvivalSystemsEvents.java`](../src/main/java/io/github/gev414/rotwire/event/SurvivalSystemsEvents.java),
+[`SurvivalStatusSync.java`](../src/main/java/io/github/gev414/rotwire/event/SurvivalStatusSync.java)
 
 The event facade routes server ticks, target changes, incoming damage, block
 breaks, PointBlank sounds, marker joins, login/logout, and server stop to the
@@ -221,7 +221,7 @@ tier, quiet state, and maximum nearby suspicion at most every five ticks.
 
 ### `LostCitiesIntegration`
 
-Source: [`LostCitiesIntegration.java`](../src/main/java/io/github/gev414/biohazard/lostcities/LostCitiesIntegration.java)
+Source: [`LostCitiesIntegration.java`](../src/main/java/io/github/gev414/rotwire/lostcities/LostCitiesIntegration.java)
 
 Requests `ILostCities` through Lost Cities inter-mod communication during
 common setup. The nested `ApiReceiver` stores the supplied API in a nullable
@@ -233,9 +233,9 @@ its handshake, only this adapter should need structural changes.
 
 ### `LostCitiesBuildingResolver`
 
-Source: [`LostCitiesBuildingResolver.java`](../src/main/java/io/github/gev414/biohazard/lostcities/LostCitiesBuildingResolver.java)
+Source: [`LostCitiesBuildingResolver.java`](../src/main/java/io/github/gev414/rotwire/lostcities/LostCitiesBuildingResolver.java)
 
-Converts Lost Cities chunk metadata into Biohazard's stable
+Converts Lost Cities chunk metadata into Rotwire's stable
 `BuildingDescriptor`. It can resolve the current chunk or search chunk metadata
 for the nearest deduplicated building inside a configured radius.
 
@@ -266,7 +266,7 @@ Depends on: `LostCitiesIntegration`, Lost Cities API types, `BuildingKey`, and
 
 ### `BuildingKey`
 
-Source: [`BuildingKey.java`](../src/main/java/io/github/gev414/biohazard/encounter/BuildingKey.java)
+Source: [`BuildingKey.java`](../src/main/java/io/github/gev414/rotwire/encounter/BuildingKey.java)
 
 Immutable identity for one physical building: dimension ID and root chunk X/Z.
 It provides direct NBT save/load helpers. Multi-building normalization happens
@@ -279,7 +279,7 @@ Compatibility contract: NBT keys `dimension`, `rootChunkX`, `rootChunkZ`.
 
 ### `BuildingDescriptor`
 
-Source: [`BuildingDescriptor.java`](../src/main/java/io/github/gev414/biohazard/encounter/BuildingDescriptor.java)
+Source: [`BuildingDescriptor.java`](../src/main/java/io/github/gev414/rotwire/encounter/BuildingDescriptor.java)
 
 Immutable runtime description returned by the Lost Cities adapter. It combines
 identity, building resource ID, horizontal chunk dimensions, and vertical
@@ -298,7 +298,7 @@ This object is reconstructed from external metadata and is not itself saved.
 
 ### `EncounterSelection`
 
-Source: [`EncounterSelection.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterSelection.java)
+Source: [`EncounterSelection.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterSelection.java)
 
 Pure deterministic selection function returning `haunted`, `bossSelected`, and
 `targetKills`. It mixes the world seed, dimension string hash, unsigned root
@@ -319,7 +319,7 @@ only previously unseen buildings unless saved data is migrated or removed.
 
 ### `EncounterPhase`
 
-Source: [`EncounterPhase.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterPhase.java)
+Source: [`EncounterPhase.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterPhase.java)
 
 State-machine enum:
 
@@ -335,7 +335,7 @@ The enum name is serialized. Renaming a constant is a save-format change.
 
 ### `BuildingEncounter`
 
-Source: [`BuildingEncounter.java`](../src/main/java/io/github/gev414/biohazard/encounter/BuildingEncounter.java)
+Source: [`BuildingEncounter.java`](../src/main/java/io/github/gev414/rotwire/encounter/BuildingEncounter.java)
 
 Mutable aggregate containing one building's durable encounter state. A
 non-haunted boss selection materializes directly as `BOSS_PENDING` with a zero
@@ -363,10 +363,10 @@ Legacy records without `spawnMode` load as `WAVE`.
 
 ### `EncounterSavedData`
 
-Source: [`EncounterSavedData.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterSavedData.java)
+Source: [`EncounterSavedData.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterSavedData.java)
 
 Server-wide persistence repository backed by Overworld `DataStorage`, file key
-`biohazard_building_encounters`. It stores a linked map from `BuildingKey` to
+`rotwire_building_encounters`. It stores a linked map from `BuildingKey` to
 `BuildingEncounter`.
 
 API:
@@ -382,9 +382,9 @@ Loading catches runtime failures per entry and retains the rest. It uses
 
 ### `EncounterEntityData`
 
-Source: [`EncounterEntityData.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterEntityData.java)
+Source: [`EncounterEntityData.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterEntityData.java)
 
-Utility for attaching/reading a `biohazardEncounter` compound in an entity's
+Utility for attaching/reading a `rotwireEncounter` compound in an entity's
 persistent data. The compound embeds `BuildingKey` fields plus lower-case role.
 `read` converts malformed or unknown role data to `Optional.empty()`.
 
@@ -394,7 +394,7 @@ specific building and role.
 
 ### `EncounterManager`
 
-Source: [`EncounterManager.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterManager.java)
+Source: [`EncounterManager.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterManager.java)
 
 Primary encounter application service. It owns orchestration but not durable
 storage.
@@ -433,7 +433,7 @@ Minecraft player/server APIs, translations.
 
 ### `EncounterSpawner`
 
-Source: [`EncounterSpawner.java`](../src/main/java/io/github/gev414/biohazard/encounter/EncounterSpawner.java)
+Source: [`EncounterSpawner.java`](../src/main/java/io/github/gev414/rotwire/encounter/EncounterSpawner.java)
 
 Entity query and spawn service for encounters.
 
@@ -470,7 +470,7 @@ persistence and are marked before insertion.
 
 ### `BruteEntity`
 
-Source: [`BruteEntity.java`](../src/main/java/io/github/gev414/biohazard/entity/BruteEntity.java)
+Source: [`BruteEntity.java`](../src/main/java/io/github/gev414/rotwire/entity/BruteEntity.java)
 
 Custom boss based on vanilla `Zombie` and implementing `RangedAttackMob`.
 
@@ -510,7 +510,7 @@ combat participation across reloads, it requires explicit persistence.
 
 ### `RockThrowAttackGoal`
 
-Source: [`RockThrowAttackGoal.java`](../src/main/java/io/github/gev414/biohazard/entity/ai/RockThrowAttackGoal.java)
+Source: [`RockThrowAttackGoal.java`](../src/main/java/io/github/gev414/rotwire/entity/ai/RockThrowAttackGoal.java)
 
 Generic ranged goal for a type that is both `Mob` and `RangedAttackMob`.
 Constructor validation rejects invalid ranges/timings. It claims MOVE and LOOK,
@@ -524,7 +524,7 @@ final normalized distance factor.
 
 ### `BruteRockProjectile`
 
-Source: [`BruteRockProjectile.java`](../src/main/java/io/github/gev414/biohazard/entity/projectile/BruteRockProjectile.java)
+Source: [`BruteRockProjectile.java`](../src/main/java/io/github/gev414/rotwire/entity/projectile/BruteRockProjectile.java)
 
 Throwable item projectile rendered as cobblestone.
 
@@ -537,7 +537,7 @@ On first server-side hit it:
 5. searches a two-block-radius AABB for other living targets;
 6. excludes owner/direct target, checks bounding-box distance and line of
    exposure with `Explosion.getSeenPercent`;
-7. deals 4 `biohazard:brute_rock_splash` damage;
+7. deals 4 `rotwire:brute_rock_splash` damage;
 8. discards itself.
 
 Splash damage has an impact position but no causing/direct entity in the
@@ -546,7 +546,7 @@ and anger behavior; the damage type is also tagged `no_anger`.
 
 ### `BruteRenderer`
 
-Source: [`BruteRenderer.java`](../src/main/java/io/github/gev414/biohazard/client/renderer/BruteRenderer.java)
+Source: [`BruteRenderer.java`](../src/main/java/io/github/gev414/rotwire/client/renderer/BruteRenderer.java)
 
 Client-only renderer extending vanilla `ZombieRenderer`. It uses
 `textures/entity/brute.png`, multiplies shadow radius by the Brute scale, and
@@ -557,7 +557,7 @@ scaled in the registered entity type; renderer scale controls visual size.
 
 ### `RadioTransmitterBlock`
 
-Source: [`RadioTransmitterBlock.java`](../src/main/java/io/github/gev414/biohazard/block/RadioTransmitterBlock.java)
+Source: [`RadioTransmitterBlock.java`](../src/main/java/io/github/gev414/rotwire/block/RadioTransmitterBlock.java)
 
 Horizontal, non-full-cube block with four direction-specific voxel shapes and a
 block entity. Placement faces the player and begins calibration server-side.
@@ -580,7 +580,7 @@ Direct dependencies: FTB Quests and Architectury networking, `RadioNetwork`,
 
 ### `RadioTransmitterBlockEntity`
 
-Source: [`RadioTransmitterBlockEntity.java`](../src/main/java/io/github/gev414/biohazard/block/entity/RadioTransmitterBlockEntity.java)
+Source: [`RadioTransmitterBlockEntity.java`](../src/main/java/io/github/gev414/rotwire/block/entity/RadioTransmitterBlockEntity.java)
 
 Persists one absolute `ready_at` game time. `beginCalibration` applies the
 current server config and marks the block entity dirty. `onLoad` initializes
@@ -592,7 +592,7 @@ retroactively change a transmitter that already has `ready_at`.
 
 ### `RadioNetwork`
 
-Source: [`RadioNetwork.java`](../src/main/java/io/github/gev414/biohazard/quest/RadioNetwork.java)
+Source: [`RadioNetwork.java`](../src/main/java/io/github/gev414/rotwire/quest/RadioNetwork.java)
 
 Server proximity service. `findConnectedTransmitter` scans all block positions
 in the configured cube around the player's block position, rejects points
@@ -610,9 +610,9 @@ increasing the upper bound or calling it from a tick loop.
 
 ### `QuestDefaultsInstaller`
 
-Source: [`QuestDefaultsInstaller.java`](../src/main/java/io/github/gev414/biohazard/quest/QuestDefaultsInstaller.java)
+Source: [`QuestDefaultsInstaller.java`](../src/main/java/io/github/gev414/rotwire/quest/QuestDefaultsInstaller.java)
 
-Installs nine packaged files from `/biohazard/ftbquests_defaults/` into
+Installs nine packaged files from `/rotwire/ftbquests_defaults/` into
 `config/ftbquests/quests` during mod construction. If the destination directory
 exists and has any entry, it logs and preserves it. An absent or empty directory
 receives the complete default set, creating parents and replacing individual
@@ -624,25 +624,25 @@ The backup chapter present under resources is not installed.
 
 ### `FTBQuestsIntegration`
 
-Source: [`FTBQuestsIntegration.java`](../src/main/java/io/github/gev414/biohazard/quest/FTBQuestsIntegration.java)
+Source: [`FTBQuestsIntegration.java`](../src/main/java/io/github/gev414/rotwire/quest/FTBQuestsIntegration.java)
 
 Adapter to FTB Quests' Architectury events. Initialization is idempotent.
 
 Task protocol:
 
-- server-side custom task with `biohazard_radio_accept`: configure a one-point,
+- server-side custom task with `rotwire_radio_accept`: configure a one-point,
   button-enabled task whose callback requires a connected radio and completes
   it;
-- server-side custom task with `biohazard_radio_complete`: configure the same
+- server-side custom task with `rotwire_radio_complete`: configure the same
   button mechanics, then delegate atomic turn-in to `RadioSubmission`.
 
 Reward protocol:
 
-- `biohazard_radio_delivery`: schedule generated items;
-- `biohazard_radio_choice_delivery`: schedule distinct options;
-- `biohazard_manifest_<name>`: required manifest suffix;
-- `biohazard_category_<name>`: optional, defaults to supplies;
-- `biohazard_choice_count_<1..9>`: optional, defaults to 3.
+- `rotwire_radio_delivery`: schedule generated items;
+- `rotwire_radio_choice_delivery`: schedule distinct options;
+- `rotwire_manifest_<name>`: required manifest suffix;
+- `rotwire_category_<name>`: optional, defaults to supplies;
+- `rotwire_choice_count_<1..9>`: optional, defaults to 3.
 
 If both delivery tags are present, choice behavior wins. Missing manifest shows
 an error but the event still returns pass; FTB Quests' reward lifecycle remains
@@ -651,13 +651,13 @@ its own responsibility. Full authoring behavior is documented in
 
 ### `RadioSubmission`
 
-Source: [`RadioSubmission.java`](../src/main/java/io/github/gev414/biohazard/quest/RadioSubmission.java)
+Source: [`RadioSubmission.java`](../src/main/java/io/github/gev414/rotwire/quest/RadioSubmission.java)
 
 Package-private atomic turn-in service. It first verifies every quest task
 except the final completion task, tagged submission item tasks, and tasks FTB
 considers optional for progression. Any incomplete required objective aborts.
 
-For each `ItemTask` tagged `biohazard_radio_submit`, it uses `task.test(stack)`
+For each `ItemTask` tagged `rotwire_radio_submit`, it uses `task.test(stack)`
 against main inventory slots and an in-memory remaining-count array. Allocation
 records prevent two requirements from spending the same item count. If every
 task reaches `getMaxProgress`, it shrinks allocated stacks, adds only missing
@@ -672,7 +672,7 @@ submission sources.
 
 ### `DeliveryCategory`
 
-Source: [`DeliveryCategory.java`](../src/main/java/io/github/gev414/biohazard/quest/delivery/DeliveryCategory.java)
+Source: [`DeliveryCategory.java`](../src/main/java/io/github/gev414/rotwire/quest/delivery/DeliveryCategory.java)
 
 Enum of `SUPPLIES`, `AMMUNITION`, `MEDICAL`, `EQUIPMENT`, and `FIREARM`.
 It maps reward tags to a category, category to configured seconds, seconds to
@@ -684,7 +684,7 @@ authoring, tests, and potentially existing saves.
 
 ### `DeliveryKind`
 
-Source: [`DeliveryKind.java`](../src/main/java/io/github/gev414/biohazard/quest/delivery/DeliveryKind.java)
+Source: [`DeliveryKind.java`](../src/main/java/io/github/gev414/rotwire/quest/delivery/DeliveryKind.java)
 
 Package-private enum distinguishing normal `ITEMS` from unresolved `CHOICE`.
 Unknown serialized values fall back to items, prioritizing recoverable
@@ -692,7 +692,7 @@ collection over an unusable screen.
 
 ### `RadioDelivery`
 
-Source: [`RadioDelivery.java`](../src/main/java/io/github/gev414/biohazard/quest/delivery/RadioDelivery.java)
+Source: [`RadioDelivery.java`](../src/main/java/io/github/gev414/rotwire/quest/delivery/RadioDelivery.java)
 
 Package-private mutable persistent aggregate for one shipment. Constructor and
 mutators copy item stacks to avoid aliasing caller-owned stacks.
@@ -711,10 +711,10 @@ serialization.
 
 ### `DeliverySavedData`
 
-Source: [`DeliverySavedData.java`](../src/main/java/io/github/gev414/biohazard/quest/delivery/DeliverySavedData.java)
+Source: [`DeliverySavedData.java`](../src/main/java/io/github/gev414/rotwire/quest/delivery/DeliverySavedData.java)
 
 Package-private repository in Overworld data storage under
-`biohazard_radio_deliveries`. It exposes the mutable delivery list only within
+`rotwire_radio_deliveries`. It exposes the mutable delivery list only within
 the package and marks itself dirty when adding. Managers must mark dirty after
 mutating/removing existing records.
 
@@ -723,7 +723,7 @@ list is empty. There is no explicit file-format version or custom migration.
 
 ### `DeliveryManager`
 
-Source: [`DeliveryManager.java`](../src/main/java/io/github/gev414/biohazard/quest/delivery/DeliveryManager.java)
+Source: [`DeliveryManager.java`](../src/main/java/io/github/gev414/rotwire/quest/delivery/DeliveryManager.java)
 
 Primary courier application service.
 
@@ -762,24 +762,24 @@ normal collection already ran before status is requested.
 
 ### `ModPayloads`
 
-Source: [`ModPayloads.java`](../src/main/java/io/github/gev414/biohazard/network/ModPayloads.java)
+Source: [`ModPayloads.java`](../src/main/java/io/github/gev414/rotwire/network/ModPayloads.java)
 
 Registers protocol version string `3` and five play-phase payloads:
 
 | Payload ID | Direction | Handler |
 |---|---|---|
-| `biohazard:horde_atmosphere` | server to client | update transient fog state |
-| `biohazard:city_status` | server to client | update the radio-linked QuestScreen panel |
-| `biohazard:survival_status` | server to client | update load and stealth HUD state |
-| `biohazard:courier_choice_open` | server to client | open choice screen |
-| `biohazard:courier_choice_select` | client to server | validate and apply choice |
+| `rotwire:horde_atmosphere` | server to client | update transient fog state |
+| `rotwire:city_status` | server to client | update the radio-linked QuestScreen panel |
+| `rotwire:survival_status` | server to client | update load and stealth HUD state |
+| `rotwire:courier_choice_open` | server to client | open choice screen |
+| `rotwire:courier_choice_select` | client to server | validate and apply choice |
 
 Changing field encoding or compatibility may require a protocol version change.
 Keep handlers side-safe.
 
 ### `HordeAtmospherePayload`
 
-Source: [`HordeAtmospherePayload.java`](../src/main/java/io/github/gev414/biohazard/network/HordeAtmospherePayload.java)
+Source: [`HordeAtmospherePayload.java`](../src/main/java/io/github/gev414/rotwire/network/HordeAtmospherePayload.java)
 
 Record containing two booleans and two variable-length integers. Its handler
 replaces `HordeAtmosphereState`. Day length and start time are normalized again
@@ -787,7 +787,7 @@ inside the client snapshot, providing defense against invalid values.
 
 ### `CourierChoiceOpenPayload`
 
-Source: [`CourierChoiceOpenPayload.java`](../src/main/java/io/github/gev414/biohazard/network/CourierChoiceOpenPayload.java)
+Source: [`CourierChoiceOpenPayload.java`](../src/main/java/io/github/gev414/rotwire/network/CourierChoiceOpenPayload.java)
 
 Server-to-client record with a 36-character delivery UUID string and a list of
 item ID strings, each capped at 256 characters. The count is a VarInt. Current
@@ -799,7 +799,7 @@ Handler delegates to `CourierChoiceClient`.
 
 ### `CityStatusPayload`
 
-Source: [`CityStatusPayload.java`](../src/main/java/io/github/gev414/biohazard/network/CityStatusPayload.java)
+Source: [`CityStatusPayload.java`](../src/main/java/io/github/gev414/rotwire/network/CityStatusPayload.java)
 
 Server-to-client snapshot sent when a calibrated transmitter opens the Survivor
 Network. The client renders it as a compact, collapsed-by-default city-status
@@ -809,7 +809,7 @@ so city status no longer occupies Minecraft chat.
 
 ### `SurvivalStatusPayload`
 
-Source: [`SurvivalStatusPayload.java`](../src/main/java/io/github/gev414/biohazard/network/SurvivalStatusPayload.java)
+Source: [`SurvivalStatusPayload.java`](../src/main/java/io/github/gev414/rotwire/network/SurvivalStatusPayload.java)
 
 Server-to-client transient HUD snapshot containing tenths of weight, tier
 ordinal, enabled state, quiet state, clamped suspicion percentage, all three
@@ -819,7 +819,7 @@ servers.
 
 ### `CourierChoiceSelectPayload`
 
-Source: [`CourierChoiceSelectPayload.java`](../src/main/java/io/github/gev414/biohazard/network/CourierChoiceSelectPayload.java)
+Source: [`CourierChoiceSelectPayload.java`](../src/main/java/io/github/gev414/rotwire/network/CourierChoiceSelectPayload.java)
 
 Client-to-server record with delivery UUID string and VarInt option index. The
 handler requires `context.player()` to be a `ServerPlayer` and delegates all
@@ -829,7 +829,7 @@ authorization/validation to `DeliveryManager.selectChoice`.
 
 ### `ClientModEvents`
 
-Source: [`ClientModEvents.java`](../src/main/java/io/github/gev414/biohazard/client/ClientModEvents.java)
+Source: [`ClientModEvents.java`](../src/main/java/io/github/gev414/rotwire/client/ClientModEvents.java)
 
 Client-only automatic event subscriber. It:
 
@@ -844,7 +844,7 @@ Its `Dist.CLIENT` restriction prevents dedicated-server classloading failures.
 
 ### `HordeAtmosphereState`
 
-Source: [`HordeAtmosphereState.java`](../src/main/java/io/github/gev414/biohazard/client/HordeAtmosphereState.java)
+Source: [`HordeAtmosphereState.java`](../src/main/java/io/github/gev414/rotwire/client/HordeAtmosphereState.java)
 
 Thread-visible transient holder using a volatile immutable `Snapshot`. The
 inactive default is no horde, 24,000-tick day, 18,000 start. Snapshot
@@ -853,7 +853,7 @@ Logout resets to default.
 
 ### `HordeAtmosphereFog`
 
-Source: [`HordeAtmosphereFog.java`](../src/main/java/io/github/gev414/biohazard/client/HordeAtmosphereFog.java)
+Source: [`HordeAtmosphereFog.java`](../src/main/java/io/github/gev414/rotwire/client/HordeAtmosphereFog.java)
 
 Pure math service, intentionally separated for unit testing.
 
@@ -870,7 +870,7 @@ source.
 
 ### `HordeAtmosphereClientEvents`
 
-Source: [`HordeAtmosphereClientEvents.java`](../src/main/java/io/github/gev414/biohazard/client/HordeAtmosphereClientEvents.java)
+Source: [`HordeAtmosphereClientEvents.java`](../src/main/java/io/github/gev414/rotwire/client/HordeAtmosphereClientEvents.java)
 
 Consumes render-fog events only when enabled, using terrain fog, no fluid fog,
 and an Overworld client level. It computes strength, clamps configured near
@@ -879,7 +879,7 @@ distance, and writes the new planes. Logout resets transient state.
 
 ### `CourierChoiceClient`
 
-Source: [`CourierChoiceClient.java`](../src/main/java/io/github/gev414/biohazard/client/CourierChoiceClient.java)
+Source: [`CourierChoiceClient.java`](../src/main/java/io/github/gev414/rotwire/client/CourierChoiceClient.java)
 
 Tiny side boundary that converts a received payload into a
 `CourierChoiceScreen` through the Minecraft client singleton. Keeping this
@@ -887,7 +887,7 @@ indirection prevents the payload record from owning UI construction details.
 
 ### `CourierChoiceScreen`
 
-Source: [`CourierChoiceScreen.java`](../src/main/java/io/github/gev414/biohazard/client/CourierChoiceScreen.java)
+Source: [`CourierChoiceScreen.java`](../src/main/java/io/github/gev414/rotwire/client/CourierChoiceScreen.java)
 
 Non-pausing screen that resolves payload item IDs through the client registry,
 lays out up to three columns of 78x48 buttons, renders a dark panel, item icons,
@@ -900,10 +900,10 @@ component-rich stacks should be accompanied by a protocol/UI design change.
 
 ### Survival and radio HUD clients
 
-Sources: [`SurvivalStatusClient.java`](../src/main/java/io/github/gev414/biohazard/client/SurvivalStatusClient.java),
-[`InventoryEncumbranceClient.java`](../src/main/java/io/github/gev414/biohazard/client/InventoryEncumbranceClient.java),
-[`RadioHordeStatusClient.java`](../src/main/java/io/github/gev414/biohazard/client/RadioHordeStatusClient.java),
-[`RadioClock.java`](../src/main/java/io/github/gev414/biohazard/client/RadioClock.java)
+Sources: [`SurvivalStatusClient.java`](../src/main/java/io/github/gev414/rotwire/client/SurvivalStatusClient.java),
+[`InventoryEncumbranceClient.java`](../src/main/java/io/github/gev414/rotwire/client/InventoryEncumbranceClient.java),
+[`RadioHordeStatusClient.java`](../src/main/java/io/github/gev414/rotwire/client/RadioHordeStatusClient.java),
+[`RadioClock.java`](../src/main/java/io/github/gev414/rotwire/client/RadioClock.java)
 
 `SurvivalStatusClient` renders the load tier, quiet/exposed state, and
 suspicion bar from the latest server payload. `InventoryEncumbranceClient`
@@ -919,12 +919,12 @@ Minecraft-tick-to-24-hour conversion; it does not calculate a countdown.
 
 ### Encumbrance services
 
-Sources: [`EncumbranceManager.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceManager.java),
-[`TravelersBackpackIntegration.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/TravelersBackpackIntegration.java),
-[`EncumbranceMath.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceMath.java),
-[`EncumbranceTier.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceTier.java),
-[`EncumbranceSnapshot.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/EncumbranceSnapshot.java),
-[`ModItemTags.java`](../src/main/java/io/github/gev414/biohazard/encumbrance/ModItemTags.java)
+Sources: [`EncumbranceManager.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/EncumbranceManager.java),
+[`TravelersBackpackIntegration.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/TravelersBackpackIntegration.java),
+[`EncumbranceMath.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/EncumbranceMath.java),
+[`EncumbranceTier.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/EncumbranceTier.java),
+[`EncumbranceSnapshot.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/EncumbranceSnapshot.java),
+[`ModItemTags.java`](../src/main/java/io/github/gev414/rotwire/encumbrance/ModItemTags.java)
 
 The manager periodically totals inventory, armor, offhand, and optional
 Traveler's Backpack state and owns one replaceable transient movement modifier.
@@ -937,10 +937,10 @@ block, unstackable, and default classification.
 
 ### Awareness and attention services
 
-Sources: [`AwarenessManager.java`](../src/main/java/io/github/gev414/biohazard/stealth/AwarenessManager.java),
-[`AwarenessMath.java`](../src/main/java/io/github/gev414/biohazard/stealth/AwarenessMath.java),
-[`AttentionManager.java`](../src/main/java/io/github/gev414/biohazard/stealth/AttentionManager.java),
-[`PointBlankAttention.java`](../src/main/java/io/github/gev414/biohazard/stealth/PointBlankAttention.java)
+Sources: [`AwarenessManager.java`](../src/main/java/io/github/gev414/rotwire/stealth/AwarenessManager.java),
+[`AwarenessMath.java`](../src/main/java/io/github/gev414/rotwire/stealth/AwarenessMath.java),
+[`AttentionManager.java`](../src/main/java/io/github/gev414/rotwire/stealth/AttentionManager.java),
+[`PointBlankAttention.java`](../src/main/java/io/github/gev414/rotwire/stealth/PointBlankAttention.java)
 
 Awareness owns transient mob/player suspicion, alert memory, and player
 loud-action grace. It suppresses only automatic targets against quiet players,
@@ -950,13 +950,13 @@ Attention sends affected infected toward bounded sound positions.
 PointBlank integration matches the resolved server fire sound to the shooter
 and classifies active suppressor attachments; only unsuppressed fire creates an
 approved ZombieTactics marker, and only when its configured marker range does
-not exceed the Biohazard event radius.
+not exceed the Rotwire event radius.
 
 ## 14. Item behavior
 
 ### `InfectionMedicineItem`
 
-Source: [`InfectionMedicineItem.java`](../src/main/java/io/github/gev414/biohazard/item/InfectionMedicineItem.java)
+Source: [`InfectionMedicineItem.java`](../src/main/java/io/github/gev414/rotwire/item/InfectionMedicineItem.java)
 
 Potion-bottle item parameterized by `Kind`.
 
@@ -983,14 +983,14 @@ and append two translated tooltip lines. Static duration math is unit-tested.
 
 ### `HandcraftedStorageLoot`
 
-Source: [`HandcraftedStorageLoot.java`](../src/main/java/io/github/gev414/biohazard/loot/HandcraftedStorageLoot.java)
+Source: [`HandcraftedStorageLoot.java`](../src/main/java/io/github/gev414/rotwire/loot/HandcraftedStorageLoot.java)
 
 Lazy one-time loot service for an explicit allowlist of nine Handcrafted block
 IDs: three cupboards, three drawers, oak shelf, oak nightstand, and oak desk.
 
 It uses block-entity persistent booleans to distinguish player placement and
 already-stocked state. World-generated allowlisted containers are filled from
-`biohazard:chests/handcrafted_storage` on first interaction with a standard
+`rotwire:chests/handcrafted_storage` on first interaction with a standard
 chest context, interacting player, position, and luck. It also triggers the
 vanilla generate-loot criterion for server players.
 
@@ -1001,7 +1001,7 @@ Handcrafted storage ID requires confirming that its block entity implements
 
 ## 16. Dependency-by-service summary
 
-| Service family | Minecraft/NeoForge | Lost Cities | FTB Quests/Architectury | The Hordes/Atlas | Handcrafted | Biohazard data |
+| Service family | Minecraft/NeoForge | Lost Cities | FTB Quests/Architectury | The Hordes/Atlas | Handcrafted | Rotwire data |
 |---|---:|---:|---:|---:|---:|---:|
 | Bootstrap/registries/config | yes | initialization | initialization | config registration context | no | metadata |
 | Encounters | yes | API metadata | no | no | special container ordering | translations, loot |
