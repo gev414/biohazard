@@ -12,22 +12,41 @@ public final class LostCitiesCityResolver {
             int chunkX,
             int chunkZ
     ) {
+        ILostChunkInfo chunkInfo = chunkInfo(level, chunkX, chunkZ);
+        return chunkInfo != null && chunkInfo.isCity();
+    }
+
+    public static boolean isStreetChunk(
+            ServerLevel level,
+            int chunkX,
+            int chunkZ
+    ) {
+        ILostChunkInfo chunkInfo = chunkInfo(level, chunkX, chunkZ);
+        return chunkInfo != null
+                && chunkInfo.isCity()
+                && chunkInfo.getBuildingId() == null;
+    }
+
+    private static ILostChunkInfo chunkInfo(
+            ServerLevel level,
+            int chunkX,
+            int chunkZ
+    ) {
         ILostCities lostCities = LostCitiesIntegration.api();
         if (lostCities == null) {
-            return false;
+            return null;
         }
 
         ILostCityInformation cityInformation =
                 lostCities.getLostInfo(level);
         if (cityInformation == null) {
-            return false;
+            return null;
         }
 
-        ILostChunkInfo chunkInfo = cityInformation.getChunkInfo(
+        return cityInformation.getChunkInfo(
                 chunkX,
                 chunkZ
         );
-        return chunkInfo != null && chunkInfo.isCity();
     }
 
     private LostCitiesCityResolver() {

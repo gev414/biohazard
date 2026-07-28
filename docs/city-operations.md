@@ -37,6 +37,27 @@ radios mapped to the same city report the same total. A radio outside a mapped
 Lost Cities zone still provides ordinary Survivor Network access, but reports
 that no city zone is mapped and cannot accept a city-operation objective.
 
+## Roaming street infected
+
+Lost Cities streets can also contain uncommon, scattered vanilla zombies.
+These are ambient natural mobs rather than building encounters: they do not
+lock containers, carry encounter markers, count toward encounter kills, or
+persist indefinitely.
+
+Each player receives one configurable spawn roll every 200 ticks by default,
+with a 15% success chance. A successful roll can add only one zombie, and no
+more than four Rotwire street zombies are kept within 96 horizontal blocks of
+a player. Candidates must be in a loaded Lost Cities city chunk that has no
+building ID, stand on a solid outdoor surface with open sky, and remain at
+least 28 horizontal blocks from every player. Normal despawning removes
+zombies that are no longer near survivors.
+
+Street spawning works in recognized Lost Cities streets even before a radio
+maps the surrounding zone. It honors Peaceful difficulty and the
+`doMobSpawning` game rule. It deliberately does not apply the vanilla darkness
+check, so daylight does not prevent these zombies from appearing; disabling
+sunburn therefore lets them continue roaming during the day.
+
 ## Danger and infected scaling
 
 By default, every five unique cleared encounter buildings increase the city's
@@ -89,7 +110,7 @@ for the exact FTB Quests setup.
 All city settings are in the world's
 `serverconfig/rotwire-city-operations.toml`. Operators can adjust survey
 budget/caps, city connectivity, influence perimeter, clears per level, maximum
-danger, and normal/Brute health scaling. See
+danger, normal/Brute health scaling, and ambient street population. See
 [Configuration and operations](configuration-and-operations.md#4-city-operations-config)
 for the full table and persistence notes.
 

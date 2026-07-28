@@ -18,6 +18,14 @@ public final class CityOperationsConfig {
     public static ModConfigSpec.IntValue MAX_DANGER_LEVEL;
     public static ModConfigSpec.DoubleValue HEALTH_PER_DANGER_LEVEL;
     public static ModConfigSpec.DoubleValue BRUTE_HEALTH_PER_DANGER_LEVEL;
+    public static ModConfigSpec.BooleanValue STREET_SPAWNS_ENABLED;
+    public static ModConfigSpec.IntValue STREET_SPAWN_INTERVAL_TICKS;
+    public static ModConfigSpec.DoubleValue STREET_SPAWN_CHANCE;
+    public static ModConfigSpec.IntValue STREET_ZOMBIE_CAP;
+    public static ModConfigSpec.IntValue STREET_ZOMBIE_CAP_RADIUS;
+    public static ModConfigSpec.IntValue STREET_MINIMUM_SPAWN_DISTANCE;
+    public static ModConfigSpec.IntValue STREET_MAXIMUM_SPAWN_DISTANCE;
+    public static ModConfigSpec.IntValue STREET_SPAWN_POSITION_ATTEMPTS;
 
     public static void initialize() {
         if (SPEC != null) {
@@ -30,7 +38,10 @@ public final class CityOperationsConfig {
         ).push("cityOperations");
 
         ENABLED = BUILDER
-                .comment("Enable city surveying, progress, and infected scaling.")
+                .comment(
+                        "Enable city surveying, progress, infected scaling, "
+                                + "and street spawns."
+                )
                 .define("enabled", true);
 
         BUILDER.push("survey");
@@ -78,8 +89,55 @@ public final class CityOperationsConfig {
                 .defineInRange("bruteHealthPerLevel", 0.10D, 0.0D, 10.0D);
         BUILDER.pop();
 
+        BUILDER.push("streetSpawns");
+        STREET_SPAWNS_ENABLED = BUILDER
+                .comment(
+                        "Spawn uncommon roaming zombies in Lost Cities street chunks.",
+                        "These zombies are ambient mobs, not building encounters."
+                )
+                .define("enabled", true);
+        STREET_SPAWN_INTERVAL_TICKS = BUILDER
+                .comment("Ticks between one ambient spawn roll per player.")
+                .defineInRange("intervalTicks", 200, 20, 72_000);
+        STREET_SPAWN_CHANCE = BUILDER
+                .comment("Chance that each player's interval roll attempts one spawn.")
+                .defineInRange("chance", 0.15D, 0.0D, 1.0D);
+        STREET_ZOMBIE_CAP = BUILDER
+                .comment(
+                        "Maximum Rotwire street zombies near a player.",
+                        "A value of zero disables spawning without changing enabled."
+                )
+                .defineInRange("nearbyCap", 4, 0, 128);
+        STREET_ZOMBIE_CAP_RADIUS = BUILDER
+                .comment("Radius used to enforce the nearby street-zombie cap.")
+                .defineInRange("nearbyCapRadius", 96, 16, 256);
+        STREET_MINIMUM_SPAWN_DISTANCE = BUILDER
+                .comment("Minimum horizontal spawn distance from every player.")
+                .defineInRange("minimumDistance", 28, 1, 128);
+        STREET_MAXIMUM_SPAWN_DISTANCE = BUILDER
+                .comment("Maximum horizontal spawn distance from the anchor player.")
+                .defineInRange("maximumDistance", 64, 1, 256);
+        STREET_SPAWN_POSITION_ATTEMPTS = BUILDER
+                .comment("Candidate street positions tested per successful spawn roll.")
+                .defineInRange("positionAttempts", 16, 1, 128);
+        BUILDER.pop();
+
         BUILDER.pop();
         SPEC = BUILDER.build();
+    }
+
+    public static int minimumStreetSpawnDistance() {
+        return Math.min(
+                STREET_MINIMUM_SPAWN_DISTANCE.get(),
+                STREET_MAXIMUM_SPAWN_DISTANCE.get()
+        );
+    }
+
+    public static int maximumStreetSpawnDistance() {
+        return Math.max(
+                STREET_MINIMUM_SPAWN_DISTANCE.get(),
+                STREET_MAXIMUM_SPAWN_DISTANCE.get()
+        );
     }
 
     private CityOperationsConfig() {
