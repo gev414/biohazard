@@ -2,6 +2,7 @@ package io.github.gev414.rotwire;
 
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
+import io.github.gev414.rotwire.city.CityStreetZombieSpawner;
 import io.github.gev414.rotwire.city.InfectedCityScaling;
 import io.github.gev414.rotwire.config.CityOperationsConfig;
 import io.github.gev414.rotwire.config.EncounterConfig;
@@ -90,6 +91,9 @@ public final class Rotwire {
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onRightClickBlock);
         NeoForge.EVENT_BUS.addListener(
                 InfectedCityScaling::onEntityJoinLevel
+        );
+        NeoForge.EVENT_BUS.addListener(
+                CityStreetZombieSpawner::onServerTick
         );
         NeoForge.EVENT_BUS.addListener(
                 HandcraftedStorageLoot::onBlockPlaced

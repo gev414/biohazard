@@ -140,12 +140,12 @@ large value should still be load-tested.
 
 File: `rotwire-city-operations.toml`
 
-Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]` and
-`[cityOperations.danger]`.
+Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]`,
+`[cityOperations.danger]`, and `[cityOperations.streetSpawns]`.
 
 | Key | Type/range | Default | Existing-state effect |
 |---|---|---:|---|
-| `enabled` | boolean | `true` | Stops new city surveys/progress/scaling when false; saved zones remain intact |
+| `enabled` | boolean | `true` | Stops new city surveys/progress/scaling and ambient street spawning when false; saved zones remain intact |
 | `survey.chunksPerTick` | 1 to 256 | `16` | Live for loaded, incomplete surveys; higher values finish sooner at greater tick cost |
 | `survey.maxChunks` | 64 to 262,144 | `16,384` | Live cap for incomplete surveys; capped surveys use a stable fallback sector |
 | `survey.diagonalConnectivity` | boolean | `false` | Live for incomplete surveys; determines whether diagonal city chunks join one zone |
@@ -155,12 +155,21 @@ Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]` and
 | `danger.maxLevel` | 0 to 100 | `12` | Live cap; lowering it does not remove an infected's already remembered higher level |
 | `danger.healthPerLevel` | 0.0 to 10.0 | `0.10` | Live for future normal-infected upgrades; `0.10` is +10% base maximum health per level |
 | `danger.bruteHealthPerLevel` | 0.0 to 10.0 | `0.10` | Live for future Brute upgrades; separate because Brutes have much higher base health |
+| `streetSpawns.enabled` | boolean | `true` | Enables uncommon non-encounter zombies on outdoor Lost Cities streets |
+| `streetSpawns.intervalTicks` | 20 to 72,000 | `200` | Live delay between one spawn roll per eligible player |
+| `streetSpawns.chance` | 0.0 to 1.0 | `0.15` | Live chance that an interval roll searches for one spawn position |
+| `streetSpawns.nearbyCap` | 0 to 128 | `4` | Live cap on Rotwire street zombies near each player; zero disables spawning |
+| `streetSpawns.nearbyCapRadius` | 16 to 256 | `96` | Live horizontal radius used for the nearby cap |
+| `streetSpawns.minimumDistance` | 1 to 128 | `28` | Live minimum horizontal distance from every non-spectating player |
+| `streetSpawns.maximumDistance` | 1 to 256 | `64` | Live maximum horizontal distance from the anchor player |
+| `streetSpawns.positionAttempts` | 1 to 128 | `16` | Live candidate positions tested after a successful roll |
 
 Surveying starts alongside transmitter calibration. A radio does not connect
 until both are complete. City state is shared by mapped radios and stored in
 `rotwire_city_zones`; deleting config values does not reset that world data.
 Read [City operations](city-operations.md) before changing progression values
-on an established world.
+on an established world. Street zombies are ordinary despawning mobs and do
+not add persistent city or encounter records.
 
 ## 5. Survival systems config
 

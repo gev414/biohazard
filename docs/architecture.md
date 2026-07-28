@@ -90,9 +90,9 @@ with `@Mod("rotwire")`. Its constructor wires the system in this order:
 6. Request the Lost Cities API during common setup using inter-mod
    communication.
 7. Attach gameplay listeners to the NeoForge event bus: encounter ticks and
-   deaths, container interactions, Handcrafted placement, horde state sync,
-   delivery ticks, stealth/attention signals, encumbrance updates, and
-   server-stop cleanup.
+   deaths, ambient city-street spawning, container interactions, Handcrafted
+   placement, horde state sync, delivery ticks, stealth/attention signals,
+   encumbrance updates, and server-stop cleanup.
 
 ### The two event buses
 
@@ -251,6 +251,12 @@ default progression is one level per five clears up to level 12. An entity's
 highest applied danger is also stored in its persistent data, while a named
 permanent maximum-health modifier makes the upgrade survive unloading and
 prevents leaving a city from weakening it.
+
+Ambient street zombies do not use this saved-data layer. A throttled server
+tick samples loaded Lost Cities chunks around players, accepts only city
+chunks without building metadata and open-sky spawn surfaces, and enforces a
+small horizontal population cap. Spawned zombies carry only a marker used for
+that transient cap and otherwise use ordinary mob despawning.
 
 ### 5.6 Brute and normal entity state
 

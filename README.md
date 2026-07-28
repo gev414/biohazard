@@ -67,8 +67,10 @@ Radio Transmitters also map local Lost Cities zones and report shared city
 progress through a compact drawer in the Survivor Network screen. Fully
 cleared encounter buildings raise city danger, which increases tagged
 infected's maximum health without weakening them when they later leave the
-city. See [City operations](docs/city-operations.md) for the gameplay loop,
-status drawer, progression defaults, and server tuning.
+city. Uncommon ambient zombies also roam outdoor Lost Cities street chunks
+without participating in building encounters. See
+[City operations](docs/city-operations.md) for the gameplay loop, status
+drawer, street population, progression defaults, and server tuning.
 
 ## Stealth, attention, and encumbrance
 
