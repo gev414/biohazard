@@ -1,6 +1,6 @@
 # Development and maintenance guide
 
-This guide covers the engineering workflow for changing Biohazard safely after
+This guide covers the engineering workflow for changing Rotwire safely after
 release. It assumes the repository root is the working directory.
 
 ## 1. Supported toolchain
@@ -214,7 +214,7 @@ High-value additions, in order:
    never rely on a static map as the only copy.
 5. Define stable registry IDs, translation keys, payload IDs, config keys, and
    NBT names before release.
-6. Wire initialization from `Biohazard` or a side-safe subscriber.
+6. Wire initialization from `Rotwire` or a side-safe subscriber.
 7. Add unit tests around pure rules and serialization.
 8. Add resources and acceptance tests.
 9. Document the class in `service-reference.md` and the flow in

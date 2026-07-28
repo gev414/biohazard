@@ -21,4 +21,4 @@ Combat and scavenging can pull danger toward you even before you are seen. Suppr
 
 ## Radio Horde Watch
 
-A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor Network interface, confirming whether the current day is a horde day, whether a horde is active, and the current world time in 24-hour format. The display intentionally avoids an unreliable countdown and leaves Biohazard's existing pre-horde fog warnings fully intact.
+A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor Network interface, confirming whether the current day is a horde day, whether a horde is active, and the current world time in 24-hour format. The display intentionally avoids an unreliable countdown and leaves Rotwire's existing pre-horde fog warnings fully intact.

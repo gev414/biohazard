@@ -1,0 +1,27 @@
+{
+  "refpalette": "rotwire:custom_buildings",
+  "filler": "#",
+  "rubble": "}",
+  "mincellars": 0,
+  "maxcellars": 0,
+  "minfloors": 5,
+  "maxfloors": 7,
+  "allowDoors": true,
+  "allowFillers": false,
+  "overrideFloors": true,
+  "parts": [
+    {
+      "floor": 0,
+      "part": "rotwire:custom_buildings/quarantine_tower_ground"
+    },
+    {
+      "top": false,
+      "range": "1,100",
+      "part": "rotwire:custom_buildings/quarantine_tower_middle"
+    },
+    {
+      "top": true,
+      "part": "rotwire:custom_buildings/quarantine_tower_roof"
+    }
+  ]
+}

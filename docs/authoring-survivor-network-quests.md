@@ -1,7 +1,7 @@
 # Authoring Survivor Network quests
 
 This guide is for creating new FTB Quests contracts for the five survivor
-network contacts. It assumes the Biohazard courier system is installed and
+network contacts. It assumes the Rotwire courier system is installed and
 the player uses a calibrated Radio Transmitter to accept, transmit, and collect
 work.
 
@@ -24,7 +24,7 @@ Every radio contract follows the same in-world loop:
 The quest page can be viewed anywhere, but network actions are checked by the
 server. The default transmitter range is six blocks and calibration takes sixty
 seconds after placement or relocation. Both values, along with delivery times,
-are configurable in `config/biohazard-radio-quests.toml`.
+are configurable in `config/rotwire-radio-quests.toml`.
 
 ## Choose the right questgiver
 
@@ -57,12 +57,12 @@ the final radio complete task controls the actual turn-in.
 
 Add these tasks to every courier contract:
 
-1. A **Custom** task tagged `biohazard_radio_accept`. This is the accept button.
+1. A **Custom** task tagged `rotwire_radio_accept`. This is the accept button.
 2. Any normal field objectives: kill, location, checkmark, item discovery, and
    so on.
 3. One or more physical item tasks for evidence/materials, each tagged
-   `biohazard_radio_submit`.
-4. A final **Custom** task tagged `biohazard_radio_complete`. This is the
+   `rotwire_radio_submit`.
+4. A final **Custom** task tagged `rotwire_radio_complete`. This is the
    transmit/turn-in button.
 
 The accept and complete custom tasks need an icon because FTB Quests presents
@@ -79,9 +79,9 @@ as follows:
 {
   consume_items: false
   count: 4L
-  item: { count: 1, id: "biohazard:documents" }
+  item: { count: 1, id: "rotwire:documents" }
   only_from_crafting: true
-  tags: ["biohazard_radio_submit"]
+  tags: ["rotwire_radio_submit"]
   type: "item"
 }
 ```
@@ -103,8 +103,8 @@ Use a **Custom** task with these tags when a contract should require new
 encounter-building clears in one city:
 
 ```text
-biohazard_city_operation
-biohazard_city_buildings_5
+rotwire_city_operation
+rotwire_city_buildings_5
 ```
 
 The count tag is optional; without it the target is five. The accept task binds
@@ -126,23 +126,23 @@ tag, and one category tag.
 For a standard fixed or random package:
 
 ```text
-biohazard_radio_delivery
-biohazard_manifest_field_medical_cache
-biohazard_category_medical
+rotwire_radio_delivery
+rotwire_manifest_field_medical_cache
+rotwire_category_medical
 ```
 
 For a selection package, where the player chooses one result when the courier
 arrives:
 
 ```text
-biohazard_radio_choice_delivery
-biohazard_manifest_rook_weapon_choice
-biohazard_choice_count_3
-biohazard_category_firearm
+rotwire_radio_choice_delivery
+rotwire_manifest_rook_weapon_choice
+rotwire_choice_count_3
+rotwire_category_firearm
 ```
 
-Use only one of `biohazard_radio_delivery` and
-`biohazard_radio_choice_delivery`. The latter presents distinct choices from
+Use only one of `rotwire_radio_delivery` and
+`rotwire_radio_choice_delivery`. The latter presents distinct choices from
 the same loot table; it does not deliver all candidates. Choice counts are 1
 through 9, with 3 used when no count tag is supplied.
 
@@ -153,10 +153,10 @@ filename exactly, without `.json`.
 
 ## Create the shipment manifest
 
-For a manifest tag named `biohazard_manifest_field_medical_cache`, create:
+For a manifest tag named `rotwire_manifest_field_medical_cache`, create:
 
 ```text
-src/main/resources/data/biohazard/loot_table/quest_delivery/field_medical_cache.json
+src/main/resources/data/rotwire/loot_table/quest_delivery/field_medical_cache.json
 ```
 
 This minimal manifest always sends four purified water bottles:
@@ -180,7 +180,7 @@ This minimal manifest always sends four purified water bottles:
       ]
     }
   ],
-  "random_sequence": "biohazard:quest_delivery/field_medical_cache"
+  "random_sequence": "rotwire:quest_delivery/field_medical_cache"
 }
 ```
 
@@ -197,18 +197,18 @@ an already-earned delivery.
 
 Create a repeatable Medic quest with a modest repeat cooldown.
 
-- Add `biohazard_radio_accept` to the first custom task.
+- Add `rotwire_radio_accept` to the first custom task.
 - Add a kill task for 10 infected targets, if desired.
-- Add an item task requiring 6 `biohazard:infected_tissue` with
-  `biohazard_radio_submit`, `consume_items: false`, and
+- Add an item task requiring 6 `rotwire:infected_tissue` with
+  `rotwire_radio_submit`, `consume_items: false`, and
   `only_from_crafting: true`.
-- Add the `biohazard_radio_complete` custom task.
+- Add the `rotwire_radio_complete` custom task.
 - Add an auto-enabled custom reward tagged:
 
   ```text
-  biohazard_radio_delivery
-  biohazard_manifest_voss_analysis_cache
-  biohazard_category_medical
+  rotwire_radio_delivery
+  rotwire_manifest_voss_analysis_cache
+  rotwire_category_medical
   ```
 
 - Create `quest_delivery/voss_analysis_cache.json` with a sensible mix of
@@ -222,7 +222,7 @@ field objective, category, and manifest to match the contact's role.
 The source defaults live in:
 
 ```text
-src/main/resources/biohazard/ftbquests_defaults/
+src/main/resources/rotwire/ftbquests_defaults/
 ```
 
 Each chapter is an SNBT file, for example `chapters/medic.snbt` or
@@ -230,7 +230,7 @@ Each chapter is an SNBT file, for example `chapters/medic.snbt` or
 then copy the resulting quest data into the matching source default. Add its
 player-facing strings to `lang/en_us.snbt` in the same defaults directory.
 
-Biohazard only installs its defaults when the target quest directory is missing
+Rotwire only installs its defaults when the target quest directory is missing
 or empty. It never merges or overwrites an existing quest book. To test a new
 default install, use a fresh instance or deliberately move aside the test
 instance's `config/ftbquests/quests` directory after confirming its exact path.
@@ -256,7 +256,7 @@ Do not expect rebuilding the mod to replace a live quest book automatically.
 | Turn-in says requirements are missing | One required item task lacks the item, count, submit tag, or correct FTB item configuration. |
 | Reward claims but no package appears | Missing manifest tag, filename mismatch, invalid/empty loot table, or server log error. |
 | Package arrives immediately or too slowly | Wrong/missing category tag or a changed server delivery-time configuration. |
-| Choice screen never opens | Used normal delivery tag instead of `biohazard_radio_choice_delivery`. |
+| Choice screen never opens | Used normal delivery tag instead of `rotwire_radio_choice_delivery`. |
 | Source change does not appear in game | You edited the packaged default, but the instance already has a populated live FTB quest directory. |
 
 

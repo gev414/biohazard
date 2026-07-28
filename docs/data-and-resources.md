@@ -1,6 +1,6 @@
 # Data and resource reference
 
-Biohazard is intentionally data-heavy. Java owns coordination and stateful
+Rotwire is intentionally data-heavy. Java owns coordination and stateful
 rules; JSON, SNBT, textures, and language files own most content, balance, and
 cross-mod resource overrides. This document explains where each resource lives,
 who consumes it, and what must change with it.
@@ -14,7 +14,7 @@ Minecraft JAR resources are split into two conceptual trees:
 - `data/<namespace>/...` is server/data-pack content: loot tables, recipes,
   advancements, tags, damage types, and Lost Cities world-generation data.
 
-`src/main/resources/biohazard/ftbquests_defaults` is neither a standard data
+`src/main/resources/rotwire/ftbquests_defaults` is neither a standard data
 pack nor resource pack. It is private classpath content copied by
 `QuestDefaultsInstaller` into an empty FTB Quests config directory.
 
@@ -28,13 +28,13 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 
 | Namespace | Resource kind | File count | Purpose |
 |---|---|---:|---|
-| `biohazard` | advancement | 1 | starter loadout trigger |
-| `biohazard` | damage type | 1 | Brute rock splash definition |
-| `biohazard` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
-| `biohazard` | Lost Cities | 94 | Handcrafted palettes, articulated tower exteriors, stair retrofits, and custom buildings |
-| `biohazard` | Patchouli book definition | 1 | field manual book-level data |
-| `biohazard` | recipe | 1 | Radio Transmitter crafting recipe |
-| `biohazard` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
+| `rotwire` | advancement | 1 | starter loadout trigger |
+| `rotwire` | damage type | 1 | Brute rock splash definition |
+| `rotwire` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
+| `rotwire` | Lost Cities | 94 | Handcrafted palettes, articulated tower exteriors, stair retrofits, and custom buildings |
+| `rotwire` | Patchouli book definition | 1 | field manual book-level data |
+| `rotwire` | recipe | 1 | Radio Transmitter crafting recipe |
+| `rotwire` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
 | `lcmt` | Lost Cities | 23 | targeted optional LCMT part, building, and city-style overrides |
 | `lostcities` | Lost Cities | 52 | base palettes, variants, conditions, city styles, and stair-building overrides |
 | `minecraft` | tags | 3 | mining/tool and damage behavior integration |
@@ -49,14 +49,14 @@ added or removed.
 
 | Namespace | Resource kind | File count | Purpose |
 |---|---|---:|---|
-| `biohazard` | blockstates | 1 | transmitter facing variants |
-| `biohazard` | language | 1 | item, block, entity, message, tooltip, and screen strings |
-| `biohazard` | models | 7 | one block and six item models |
-| `biohazard` | Patchouli content | 21 | categories, entries, and guide images |
-| `biohazard` | textures | 10 | block layers, items, Brute, and guide images |
+| `rotwire` | blockstates | 1 | transmitter facing variants |
+| `rotwire` | language | 1 | item, block, entity, message, tooltip, and screen strings |
+| `rotwire` | models | 7 | one block and six item models |
+| `rotwire` | Patchouli content | 21 | categories, entries, and guide images |
+| `rotwire` | textures | 10 | block layers, items, Brute, and guide images |
 | `ftbquests` | language/theme | 2 | Survivor Network quest-book presentation |
 
-## 3. Biohazard registry-resource contracts
+## 3. Rotwire registry-resource contracts
 
 Every registered object needs a coherent set of resources. Missing one often
 produces a purple/black model, untranslated key, incorrect drops, or an object
@@ -66,15 +66,15 @@ that cannot be obtained normally.
 
 | Concern | Resource |
 |---|---|
-| Registry IDs | `biohazard:radio_transmitter` block, item, block entity |
-| Blockstate | `assets/biohazard/blockstates/radio_transmitter.json` |
-| Block model | `assets/biohazard/models/block/radio_transmitter.json` |
-| Item model | `assets/biohazard/models/item/radio_transmitter.json` |
+| Registry IDs | `rotwire:radio_transmitter` block, item, block entity |
+| Blockstate | `assets/rotwire/blockstates/radio_transmitter.json` |
+| Block model | `assets/rotwire/models/block/radio_transmitter.json` |
+| Item model | `assets/rotwire/models/item/radio_transmitter.json` |
 | Textures | five layered files under `textures/block/radio_transmitter_*.png` |
-| Recipe | `data/biohazard/recipe/radio_transmitter.json` |
-| Block loot | `data/biohazard/loot_table/blocks/radio_transmitter.json` |
+| Recipe | `data/rotwire/recipe/radio_transmitter.json` |
+| Block loot | `data/rotwire/loot_table/blocks/radio_transmitter.json` |
 | Tool tags | Minecraft mineable-pickaxe and needs-stone-tool tags |
-| Translation | `block.biohazard.radio_transmitter` in `en_us.json` |
+| Translation | `block.rotwire.radio_transmitter` in `en_us.json` |
 | Manual | `entries/firearms/radio_transmitter.json` plus image |
 
 The Java voxel shapes and JSON model rotations are separate. If the visual
@@ -91,15 +91,15 @@ Item models exist for:
 - `antiviral_suppressant`.
 
 Evidence items use dedicated textures. The suppressant/cure use item models and
-client tint/tooltip behavior from Java. All require `item.biohazard.<id>` and
-the medicine tooltips require `tooltip.biohazard.<id>` plus `.detail`.
+client tint/tooltip behavior from Java. All require `item.rotwire.<id>` and
+the medicine tooltips require `tooltip.rotwire.<id>` plus `.detail`.
 
 ### Brute and rock splash
 
-- `assets/biohazard/textures/entity/brute.png` supplies the renderer texture.
-- `data/biohazard/loot_table/entities/brute.json` is the entity loot table
+- `assets/rotwire/textures/entity/brute.png` supplies the renderer texture.
+- `data/rotwire/loot_table/entities/brute.json` is the entity loot table
   selected through the standard entity ID convention.
-- `data/biohazard/damage_type/brute_rock_splash.json` defines the registered
+- `data/rotwire/damage_type/brute_rock_splash.json` defines the registered
   damage type.
 - `data/minecraft/tags/damage_type/no_anger.json` includes the splash damage so
   affected mobs do not acquire anger from the anonymous area hit.
@@ -110,7 +110,7 @@ The rock itself renders as vanilla cobblestone and has no custom item model.
 
 ## 4. Loot-table catalog
 
-All paths below are relative to `data/biohazard/loot_table` and are loaded by
+All paths below are relative to `data/rotwire/loot_table` and are loaded by
 Minecraft's reloadable registry.
 
 ### Block and entity loot
@@ -126,7 +126,7 @@ Minecraft's reloadable registry.
 |---|---|---|
 | `gameplay/starter_loadout_v1.json` | advancement reward | initial curated survival equipment |
 
-The advancement `biohazard:starter_loadout_v1` is the grant trigger. Changing a
+The advancement `rotwire:starter_loadout_v1` is the grant trigger. Changing a
 starter loadout after a player already completed the advancement does not
 automatically re-grant it. Versioning the advancement/table ID is the safest
 way to intentionally grant a new one-time loadout.
@@ -152,7 +152,7 @@ exception: Java rolls it on first interaction.
 ### Courier manifests
 
 Courier code addresses these as
-`biohazard:quest_delivery/<manifest-suffix>`. The suffix in an FTB reward tag
+`rotwire:quest_delivery/<manifest-suffix>`. The suffix in an FTB reward tag
 must match the filename exactly without `.json`.
 
 | Manifest | Intended use |
@@ -198,7 +198,7 @@ to that contract if their quests are part of installed defaults.
 Bundled source root:
 
 ```text
-src/main/resources/biohazard/ftbquests_defaults/
+src/main/resources/rotwire/ftbquests_defaults/
 |-- data.snbt
 |-- chapter_groups.snbt
 |-- chapters/
@@ -221,11 +221,11 @@ quest directory through the installer.
 | Concern | Owner |
 |---|---|
 | Graph, IDs, dependencies, task/reward tags | SNBT defaults or live FTB config |
-| Task/reward callback behavior | Biohazard Java integration |
+| Task/reward callback behavior | Rotwire Java integration |
 | Team progress and quest lifecycle | FTB Quests |
-| Physical turn-in inventory mutation | Biohazard `RadioSubmission` |
-| Shipment contents | Biohazard loot-table manifests |
-| Delivery timer/mailbox | Biohazard saved data |
+| Physical turn-in inventory mutation | Rotwire `RadioSubmission` |
+| Shipment contents | Rotwire loot-table manifests |
+| Delivery timer/mailbox | Rotwire saved data |
 | Quest-facing strings | FTB SNBT language file and/or FTB assets language |
 
 ### Default installation behavior
@@ -243,11 +243,11 @@ the protocol contract in [Radio quests](radio-quests.md).
 
 The book-level data is located at:
 
-- `data/biohazard/patchouli_books/field_manual/book.json`
+- `data/rotwire/patchouli_books/field_manual/book.json`
 
 English content is located at:
 
-- `assets/biohazard/patchouli_books/field_manual/en_us/`
+- `assets/rotwire/patchouli_books/field_manual/en_us/`
 
 Categories:
 
@@ -290,8 +290,8 @@ These resources target IDs owned by base Lost Cities:
 - variant families cover stone, brick, quartz, blackstone, and deepslate, with
   rubble alternatives;
 - building families 1 through 8 override the vanilla definitions with
-  Biohazard's furnished, consistently stair-connected floors and roof exits;
-- `citystyle_standard.json` and `citystyle_desert.json` append Biohazard's
+  Rotwire's furnished, consistently stair-connected floors and roof exits;
+- `citystyle_standard.json` and `citystyle_desert.json` append Rotwire's
   standalone and multibuilding selectors to the base style inheritance chain.
 
 Because these IDs are in `lostcities:`, they override or extend resources by
@@ -304,19 +304,19 @@ symbols.
 These target optional Lost Cities Modern Tweaks IDs:
 
 - eight building definitions (`building1` through `building8`);
-- all eight families force five or more floors and select only Biohazard
+- all eight families force five or more floors and select only Rotwire
   stair-connected ground, furnished, and roof parts;
 - selected town, cafeteria, factory, shop, center/civic, library, and railway
   part overrides;
 - pinned copies of LCMT's standard, desert, jungle, and snowy child city styles
-  that retain their 2.0.7-specific fields and append Biohazard's selectors.
+  that retain their 2.0.7-specific fields and append Rotwire's selectors.
 
 If LCMT is absent, Lost Cities has no reason to resolve these IDs. If present,
 the mod metadata constrains supported LCMT versions to 2.0.7 through below 2.1.
 
-### `data/biohazard/lostcities`
+### `data/rotwire/lostcities`
 
-Biohazard-owned content consists of six palettes, 79 building parts, seven
+Rotwire-owned content consists of six palettes, 79 building parts, seven
 custom building definitions, and two multibuilding definitions:
 
 - `handcrafted_cafeteria`;
@@ -374,7 +374,7 @@ retrofits and their 16 building overrides are generated by
    selection.
 8. Verify every referenced Handcrafted block ID and state exists in the pinned
    Handcrafted version.
-9. Keep all active Biohazard tower vertical travel stair-only. Do not add a
+9. Keep all active Rotwire tower vertical travel stair-only. Do not add a
    ladder palette entry or the lowercase `l` ladder marker.
 10. Keep façade recesses and projections inside the owning 16x16 chunk, and
     never close an internal multibuilding seam.
@@ -393,7 +393,7 @@ Risks when upgrading PointBlank:
 - renamed items or recipe serializers;
 - changed native recipe IDs causing an old recipe to coexist instead of
   replace;
-- changed balance making Biohazard recipes inappropriate;
+- changed balance making Rotwire recipes inappropriate;
 - quest and loot item IDs no longer resolving.
 
 ### Waystones
@@ -408,7 +408,7 @@ changed criterion.
 
 ## 9. Tags
 
-Three Minecraft-namespace tags integrate Biohazard with standard mechanics:
+Three Minecraft-namespace tags integrate Rotwire with standard mechanics:
 
 | Tag | Purpose |
 |---|---|
@@ -420,19 +420,19 @@ Check each file's `replace` field before editing. A mistaken `replace: true`
 under the Minecraft namespace could erase contributions from vanilla or other
 mods.
 
-Nine Biohazard-namespace tags expose gameplay classification:
+Nine Rotwire-namespace tags expose gameplay classification:
 
 | Tag | Registry | Purpose |
 |---|---|---|
-| `biohazard:city_scaled_infected` | entity type | entities eligible for persistent city-danger health scaling |
-| `biohazard:stealth_affected_infected` | entity type | infected governed by quiet-target suppression, suspicion, and bounded investigation |
-| `biohazard:encumbrance/weightless` | item | forces a carried stack to contribute no weight |
-| `biohazard:encumbrance/tiny` | item | applies the tiny per-item weight |
-| `biohazard:encumbrance/light` | item | applies the light per-item weight |
-| `biohazard:encumbrance/dense` | item | applies the dense per-item weight |
-| `biohazard:encumbrance/very_dense` | item | applies the very-dense per-item weight |
-| `biohazard:encumbrance/equipment/light` | item | applies the flat light-equipment weight per item |
-| `biohazard:encumbrance/equipment/heavy` | item | applies the flat heavy-equipment weight per item |
+| `rotwire:city_scaled_infected` | entity type | entities eligible for persistent city-danger health scaling |
+| `rotwire:stealth_affected_infected` | entity type | infected governed by quiet-target suppression, suspicion, and bounded investigation |
+| `rotwire:encumbrance/weightless` | item | forces a carried stack to contribute no weight |
+| `rotwire:encumbrance/tiny` | item | applies the tiny per-item weight |
+| `rotwire:encumbrance/light` | item | applies the light per-item weight |
+| `rotwire:encumbrance/dense` | item | applies the dense per-item weight |
+| `rotwire:encumbrance/very_dense` | item | applies the very-dense per-item weight |
+| `rotwire:encumbrance/equipment/light` | item | applies the flat light-equipment weight per item |
+| `rotwire:encumbrance/equipment/heavy` | item | applies the flat heavy-equipment weight per item |
 
 Weightless and equipment tags take precedence over firearm and armor detection.
 Density tags then take precedence over block, unstackable, and default
@@ -441,19 +441,19 @@ participate in city scaling, stealth awareness, both, or neither.
 
 ## 10. Localization contracts
 
-`assets/biohazard/lang/en_us.json` contains several classes of key:
+`assets/rotwire/lang/en_us.json` contains several classes of key:
 
-- `block.biohazard.*` and `item.biohazard.*` registry display names;
-- `entity.biohazard.brute`;
-- `tooltip.biohazard.*` and `.detail`;
-- `message.biohazard.encounter.*`;
-- `message.biohazard.radio.*`;
-- `message.biohazard.delivery.*`;
-- `message.biohazard.infection.*`;
-- `screen.biohazard.courier_choice.*`;
-- `screen.biohazard.radio_horde.*`;
-- `hud.biohazard.encumbrance.*` and `hud.biohazard.stealth.*`;
-- `tooltip.biohazard.encumbrance.*`;
+- `block.rotwire.*` and `item.rotwire.*` registry display names;
+- `entity.rotwire.brute`;
+- `tooltip.rotwire.*` and `.detail`;
+- `message.rotwire.encounter.*`;
+- `message.rotwire.radio.*`;
+- `message.rotwire.delivery.*`;
+- `message.rotwire.infection.*`;
+- `screen.rotwire.courier_choice.*`;
+- `screen.rotwire.radio_horde.*`;
+- `hud.rotwire.encumbrance.*` and `hud.rotwire.stealth.*`;
+- `tooltip.rotwire.encumbrance.*`;
 - damage/death-message keys required by the damage type.
 
 Java should emit translation keys and parameters, not assembled English
@@ -491,7 +491,7 @@ language data. Search both locations before assuming a quest string is unused.
 ### New courier manifest
 
 - JSON under `loot_table/quest_delivery`.
-- Exact `biohazard_manifest_<filename>` reward tag.
+- Exact `rotwire_manifest_<filename>` reward tag.
 - Category and delivery-kind tags.
 - Resource-contract test update when used by shipped defaults.
 - In-game roll test with all required mods present.

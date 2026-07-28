@@ -1,10 +1,10 @@
 """Replace Lost Cities' ladder tower families with zombie-traversable stairs.
 
-The Biohazard pack already decorates the LCMT versions of building families
+The Rotwire pack already decorates the LCMT versions of building families
 1-8 with Handcrafted furniture. Families 1, 2, 3, 5, 6, and 8 still inherited
 the original vertical ladder shaft. This generator keeps those decorated floor
 plans, removes every ladder marker, and installs the same proven two-wide stair
-flight used by Biohazard's custom buildings.
+flight used by Rotwire's custom buildings.
 
 Both the base Lost Cities and LCMT building definitions are overridden. This
 also fixes inherited city-style and multibuilding selections without replacing
@@ -21,8 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCE_ROOT = ROOT / "src" / "main" / "resources"
-BIOHAZARD_ROOT = (
-    RESOURCE_ROOT / "data" / "biohazard" / "lostcities"
+ROTWIRE_ROOT = (
+    RESOURCE_ROOT / "data" / "rotwire" / "lostcities"
 )
 SIZE = 16
 FLOOR_HEIGHT = 6
@@ -108,7 +108,7 @@ HANDCRAFTED_SYMBOLS = frozenset(
     entry["char"]
     for entry in json.loads(
         (
-            BIOHAZARD_ROOT
+            ROTWIRE_ROOT
             / "palettes"
             / "handcrafted_furnishings.json"
         ).read_text(encoding="utf-8")
@@ -195,7 +195,7 @@ EXPECTED_LOOT_COUNTS = {
 
 def load_part(family: str, index: int) -> dict:
     path = (
-        BIOHAZARD_ROOT
+        ROTWIRE_ROOT
         / "parts"
         / family
         / f"{family}_{index}.json"
@@ -508,7 +508,7 @@ def serialize_part(template: dict, slices: list[list[list[str]]]) -> dict:
         ["".join(row) for row in layer]
         for layer in slices
     ]
-    part["refpalette"] = "biohazard:furnished_facades"
+    part["refpalette"] = "rotwire:furnished_facades"
     return part
 
 
@@ -721,7 +721,7 @@ def retrofit_floor(
     ground: bool,
 ) -> dict:
     slices = mutable_slices(template)
-    if template.get("refpalette") != "biohazard:furnished_facades":
+    if template.get("refpalette") != "rotwire:furnished_facades":
         restore_preserved_furnishings(name, index, slices)
     furnishings_before = handcrafted_counts(slices)
     reserved = (
@@ -884,7 +884,7 @@ def make_roof(family: Family) -> dict:
             ["".join(row) for row in layer]
             for layer in slices
         ],
-        "refpalette": "biohazard:furnished_facades",
+        "refpalette": "rotwire:furnished_facades",
     }
 
 
@@ -893,7 +893,7 @@ def building_definition(name: str, family: Family) -> dict:
         {
             "top": False,
             "range": "1,100",
-            "part": f"biohazard:{name}/{name}_{index}",
+            "part": f"rotwire:{name}/{name}_{index}",
         }
         for index in range(1, family.part_count + 1)
     ]
@@ -910,12 +910,12 @@ def building_definition(name: str, family: Family) -> dict:
         "parts": [
             {
                 "floor": 0,
-                "part": f"biohazard:stair_retrofits/{name}_ground",
+                "part": f"rotwire:stair_retrofits/{name}_ground",
             },
             *normal_parts,
             {
                 "top": True,
-                "part": f"biohazard:stair_retrofits/{name}_roof",
+                "part": f"rotwire:stair_retrofits/{name}_roof",
             },
         ],
     }
@@ -965,7 +965,7 @@ def write_json(path: Path, value: dict) -> None:
 
 def write_furnished_facade_palette() -> None:
     source = (
-        BIOHAZARD_ROOT
+        ROTWIRE_ROOT
         / "palettes"
         / "handcrafted_furnishings.json"
     )
@@ -979,7 +979,7 @@ def write_furnished_facade_palette() -> None:
             raise ValueError(f"Duplicate façade palette symbol {symbol}")
         palette["palette"].append({"char": symbol, "block": block})
     write_json(
-        BIOHAZARD_ROOT / "palettes" / "furnished_facades.json",
+        ROTWIRE_ROOT / "palettes" / "furnished_facades.json",
         palette,
     )
 
@@ -1002,7 +1002,7 @@ def generate() -> None:
         )
         validate_part(f"{name}_ground", ground, 20)
         write_json(
-            BIOHAZARD_ROOT
+            ROTWIRE_ROOT
             / "parts"
             / "stair_retrofits"
             / f"{name}_ground.json",
@@ -1022,7 +1022,7 @@ def generate() -> None:
             validate_part(f"{name}_{index}", part, 22)
             retrofitted.append(part)
             write_json(
-                BIOHAZARD_ROOT
+                ROTWIRE_ROOT
                 / "parts"
                 / name
                 / f"{name}_{index}.json",
@@ -1046,7 +1046,7 @@ def generate() -> None:
         roof = make_roof(family)
         validate_part(f"{name}_roof", roof, 2)
         write_json(
-            BIOHAZARD_ROOT
+            ROTWIRE_ROOT
             / "parts"
             / "stair_retrofits"
             / f"{name}_roof.json",
