@@ -1,0 +1,116 @@
+{
+  "palette": [
+    {
+      "char": "#",
+      "block": "minecraft:polished_deepslate"
+    },
+    {
+      "char": "}",
+      "block": "minecraft:cobbled_deepslate"
+    },
+    {
+      "char": "F",
+      "block": "minecraft:smooth_stone"
+    },
+    {
+      "char": "W",
+      "block": "minecraft:light_gray_concrete"
+    },
+    {
+      "char": "N",
+      "block": "minecraft:polished_blackstone_bricks"
+    },
+    {
+      "char": "P",
+      "block": "minecraft:bricks"
+    },
+    {
+      "char": "G",
+      "block": "minecraft:gray_stained_glass"
+    },
+    {
+      "char": "V",
+      "block": "minecraft:blue_stained_glass"
+    },
+    {
+      "char": "A",
+      "block": "minecraft:lime_concrete"
+    },
+    {
+      "char": "R",
+      "block": "minecraft:red_concrete"
+    },
+    {
+      "char": "H",
+      "block": "minecraft:yellow_concrete"
+    },
+    {
+      "char": "B",
+      "block": "minecraft:barrel[facing=up,open=false]"
+    },
+    {
+      "char": "u",
+      "block": "handcrafted:oak_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "i",
+      "block": "handcrafted:oak_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "j",
+      "block": "handcrafted:spruce_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "m",
+      "block": "handcrafted:spruce_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "e",
+      "block": "handcrafted:dark_oak_cupboard[facing=north,type=1]"
+    },
+    {
+      "char": "f",
+      "block": "handcrafted:dark_oak_drawer[facing=north,shape=single,type=1]"
+    },
+    {
+      "char": "T",
+      "block": "minecraft:stripped_oak_wood[axis=y]"
+    },
+    {
+      "char": "K",
+      "block": "minecraft:black_concrete"
+    },
+    {
+      "char": "O",
+      "block": "minecraft:bookshelf"
+    },
+    {
+      "char": "X",
+      "block": "minecraft:iron_block"
+    },
+    {
+      "char": "q",
+      "block": "minecraft:white_bed[facing=south,occupied=false,part=foot]"
+    },
+    {
+      "char": "Q",
+      "block": "minecraft:white_bed[facing=south,occupied=false,part=head]"
+    },
+    {
+      "char": "c",
+      "block": "minecraft:stone_brick_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"
+    },
+    {
+      "char": "d",
+      "block": "minecraft:stone_brick_stairs[facing=north,half=top,shape=straight,waterlogged=false]"
+    },
+    {
+      "char": ":",
+      "block": "minecraft:iron_bars[east=false,north=false,south=false,waterlogged=false,west=false]"
+    },
+    {
+      "char": "L",
+      "block": "minecraft:sea_lantern"
+    }
+  ]
+}

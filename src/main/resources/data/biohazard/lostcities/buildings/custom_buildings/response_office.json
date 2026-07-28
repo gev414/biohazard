@@ -1,0 +1,27 @@
+{
+  "refpalette": "biohazard:custom_buildings",
+  "filler": "#",
+  "rubble": "}",
+  "mincellars": 0,
+  "maxcellars": 0,
+  "minfloors": 6,
+  "maxfloors": 9,
+  "allowDoors": true,
+  "allowFillers": false,
+  "overrideFloors": true,
+  "parts": [
+    {
+      "floor": 0,
+      "part": "biohazard:custom_buildings/response_office_ground"
+    },
+    {
+      "top": false,
+      "range": "1,100",
+      "part": "biohazard:custom_buildings/response_office_middle"
+    },
+    {
+      "top": true,
+      "part": "biohazard:custom_buildings/response_office_roof"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
       "name": "biohazard:food",
       "rolls": {
         "min": 1,
-        "max": 5
+        "max": 3
       },
       "entries": [
         {
@@ -15,7 +15,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 6
+                "max": 2
               }
             }
           ],
@@ -29,7 +29,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 4
+                "max": 2
               }
             }
           ],
@@ -43,7 +43,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -57,7 +57,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -71,7 +71,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -84,8 +84,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 5
+                "min": 1,
+                "max": 2
               }
             }
           ],
@@ -98,8 +98,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 6
+                "min": 1,
+                "max": 2
               }
             }
           ],
@@ -112,8 +112,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 6
+                "min": 1,
+                "max": 2
               }
             }
           ],
@@ -126,8 +126,8 @@
             {
               "function": "set_count",
               "count": {
-                "min": 3,
-                "max": 8
+                "min": 1,
+                "max": 3
               }
             }
           ],
@@ -169,7 +169,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -183,7 +183,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -211,7 +211,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -225,7 +225,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -239,7 +239,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],
@@ -253,7 +253,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 3
+                "max": 2
               }
             }
           ],

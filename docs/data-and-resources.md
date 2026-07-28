@@ -31,18 +31,18 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | `biohazard` | advancement | 1 | starter loadout trigger |
 | `biohazard` | damage type | 1 | Brute rock splash definition |
 | `biohazard` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
-| `biohazard` | Lost Cities | 46 | Handcrafted palettes and decorated LCMT tower floors |
+| `biohazard` | Lost Cities | 94 | Handcrafted palettes, articulated tower exteriors, stair retrofits, and custom buildings |
 | `biohazard` | Patchouli book definition | 1 | field manual book-level data |
 | `biohazard` | recipe | 1 | Radio Transmitter crafting recipe |
 | `biohazard` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
-| `lcmt` | Lost Cities | 19 | targeted optional LCMT part/building overrides |
-| `lostcities` | Lost Cities | 42 | base Lost Cities palette/variant/condition overrides |
+| `lcmt` | Lost Cities | 23 | targeted optional LCMT part, building, and city-style overrides |
+| `lostcities` | Lost Cities | 52 | base palettes, variants, conditions, city styles, and stair-building overrides |
 | `minecraft` | tags | 3 | mining/tool and damage behavior integration |
 | `pointblank` | recipes | 8 | PointBlank recipe replacements/definitions |
 | `waystones` | advancements | 4 | recipe unlock alignment for overridden recipes |
 | `waystones` | recipes | 4 | portable travel recipe overrides |
 
-Counts describe the 1.1.3 repository and should be updated when families are
+Counts describe the 1.1.4 repository and should be updated when families are
 added or removed.
 
 ### Client asset inventory
@@ -288,7 +288,11 @@ These resources target IDs owned by base Lost Cities:
 - palette families define common blocks, brick/desert variants, glass colors
   and forms, an oil rig, rails, and related generation materials;
 - variant families cover stone, brick, quartz, blackstone, and deepslate, with
-  rubble alternatives.
+  rubble alternatives;
+- building families 1 through 8 override the vanilla definitions with
+  Biohazard's furnished, consistently stair-connected floors and roof exits;
+- `citystyle_standard.json` and `citystyle_desert.json` append Biohazard's
+  standalone and multibuilding selectors to the base style inheritance chain.
 
 Because these IDs are in `lostcities:`, they override or extend resources by
 exact ID. When upgrading Lost Cities, compare upstream copies and schemas. Do
@@ -300,28 +304,61 @@ symbols.
 These target optional Lost Cities Modern Tweaks IDs:
 
 - eight building definitions (`building1` through `building8`);
+- all eight families force five or more floors and select only Biohazard
+  stair-connected ground, furnished, and roof parts;
 - selected town, cafeteria, factory, shop, center/civic, library, and railway
-  part overrides.
+  part overrides;
+- pinned copies of LCMT's standard, desert, jungle, and snowy child city styles
+  that retain their 2.0.7-specific fields and append Biohazard's selectors.
 
 If LCMT is absent, Lost Cities has no reason to resolve these IDs. If present,
 the mod metadata constrains supported LCMT versions to 2.0.7 through below 2.1.
 
 ### `data/biohazard/lostcities`
 
-Biohazard-owned content consists of four Handcrafted palettes and 42 decorated
-tower floor parts:
+Biohazard-owned content consists of six palettes, 79 building parts, seven
+custom building definitions, and two multibuilding definitions:
 
 - `handcrafted_cafeteria`;
 - `handcrafted_furnishings`;
 - `handcrafted_library`;
 - `handcrafted_transit`;
-- `parts/building1` through `parts/building8`.
+- `custom_buildings`;
+- `furnished_facades`, which combines the Handcrafted symbols with fixed
+  lore-specific masonry, glass, metal, timber, and balcony-rail materials;
+- `parts/building1` through `parts/building8`;
+- `parts/stair_retrofits` with dedicated ground floors and enclosed roof exits
+  for all eight inherited tower families;
+- `parts/custom_buildings` with three standalone tower families and four
+  connected hospital quadrants;
+- `buildings/custom_buildings` with forced multi-floor, no-cellar definitions;
+- `multibuildings/custom_buildings/quarantine_hospital`, a connected 2x2
+  hospital with stair cores in opposite corners;
+- `multibuildings/custom_buildings/emergency_block`, a 3x2 city block assembled
+  from the standalone towers.
 
 The decorated parts preserve LCMT's normal room shells and merge Handcrafted
 furniture markers into the slices used by the corresponding building
-definitions. Empty, roof, and special parts remain owned by LCMT. This design
-keeps the exact generation files editable in source and avoids runtime Java
-patching.
+definitions. All eight families use a continuous two-wide stair flight with
+clear, full-height vestibules, at least three accessible Handcrafted storage
+blocks per furnished floor, and no ladder markers. Their definitions override
+the same IDs in both `lostcities:` and `lcmt:`, so inherited selectors and
+multibuildings resolve the validated stair versions. This design keeps
+generation data-driven and avoids runtime Java patching.
+
+Each inherited family also has a dedicated exterior profile. Depending on its
+lore role, a floor can use corner cutbacks, one-block recessed window walls,
+vertical fins, industrial bays, bunker buttresses, or usable balcony strips.
+Ground entrances are cleared through both the outer and recessed façade lines,
+and roofs repeat the family's footprint/material language. The custom solo
+towers use three additional silhouettes, while hospital shaping is restricted
+to true external edges so the four connected chunks remain open internally.
+
+Custom-building JSON is generated deterministically by
+`tools/generate_custom_buildings.py`; edit the generator and rerun it instead of
+hand-editing those 31 generated resources. The decorated ladder-family
+retrofits and their 16 building overrides are generated by
+`tools/generate_stair_retrofits.py`.
 
 #### Lost Cities editing rules
 
@@ -337,6 +374,10 @@ patching.
    selection.
 8. Verify every referenced Handcrafted block ID and state exists in the pinned
    Handcrafted version.
+9. Keep all active Biohazard tower vertical travel stair-only. Do not add a
+   ladder palette entry or the lowercase `l` ladder marker.
+10. Keep façade recesses and projections inside the owning 16x16 chunk, and
+    never close an internal multibuilding seam.
 
 ## 8. Cross-mod recipe and advancement overrides
 
