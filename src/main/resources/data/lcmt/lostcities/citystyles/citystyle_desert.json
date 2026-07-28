@@ -1,0 +1,74 @@
+{
+  "style": "lcmt:desert",
+  "inherit": "lcmt:citystyle_common",
+  "generalblocks": {
+    "leaves": "☘",
+    "rubbledirt": "▣"
+  },
+  "selectors": {
+    "buildings": [
+      {
+        "factor": 0.24,
+        "value": "biohazard:custom_buildings/quarantine_tower"
+      },
+      {
+        "factor": 0.2,
+        "value": "biohazard:custom_buildings/response_office"
+      },
+      {
+        "factor": 0.26,
+        "value": "biohazard:custom_buildings/stairwell_apartments"
+      }
+    ],
+    "multibuildings": [
+      {
+        "factor": 0.16,
+        "value": "biohazard:custom_buildings/quarantine_hospital"
+      },
+      {
+        "factor": 0.08,
+        "value": "biohazard:custom_buildings/emergency_block"
+      }
+    ],
+    "fountains": [
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_small_sandstone_1"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_small_sandstone_2"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_small_quartz_1"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_small_quartz_2"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_medium_sandstone_1"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:fountain/fountain_medium_bricks_1"
+      }
+    ],
+    "parks": [
+      {
+        "factor": 1.0,
+        "value": "lcmt:park/park_pool_desert"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:park/park_cactus_field"
+      },
+      {
+        "factor": 1.0,
+        "value": "lcmt:park/park_desert_fountain_huge_1"
+      }
+    ]
+  }
+}

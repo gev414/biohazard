@@ -1,0 +1,30 @@
+{
+  "style": "standard",
+  "inherit": "citystyle_common",
+  "selectors": {
+    "buildings": [
+      {
+        "factor": 0.24,
+        "value": "biohazard:custom_buildings/quarantine_tower"
+      },
+      {
+        "factor": 0.2,
+        "value": "biohazard:custom_buildings/response_office"
+      },
+      {
+        "factor": 0.26,
+        "value": "biohazard:custom_buildings/stairwell_apartments"
+      }
+    ],
+    "multibuildings": [
+      {
+        "factor": 0.16,
+        "value": "biohazard:custom_buildings/quarantine_hospital"
+      },
+      {
+        "factor": 0.08,
+        "value": "biohazard:custom_buildings/emergency_block"
+      }
+    ]
+  }
+}
