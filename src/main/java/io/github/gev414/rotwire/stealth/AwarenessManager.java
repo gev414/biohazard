@@ -4,6 +4,7 @@ import io.github.gev414.rotwire.city.ModEntityTypeTags;
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import io.github.gev414.rotwire.encumbrance.EncumbranceManager;
 import io.github.gev414.rotwire.entity.BruteEntity;
+import io.github.gev414.rotwire.weather.WeatherManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -189,11 +190,15 @@ public final class AwarenessManager {
                         elapsedSeconds,
                         distance,
                         range,
-                        mob instanceof BruteEntity
-                                ? SurvivalSystemsConfig
-                                .BRUTE_DETECTION_MULTIPLIER
-                                .get()
-                                : 1.0D
+                        (
+                                mob instanceof BruteEntity
+                                        ? SurvivalSystemsConfig
+                                        .BRUTE_DETECTION_MULTIPLIER
+                                        .get()
+                                        : 1.0D
+                        ) * WeatherManager.suspicionMultiplier(
+                                player.serverLevel()
+                        )
                 );
             } else {
                 value = AwarenessMath.decay(

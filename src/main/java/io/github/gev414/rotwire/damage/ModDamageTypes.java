@@ -16,6 +16,14 @@ public final class ModDamageTypes {
                             "brute_rock_splash"
                     )
             );
+    public static final ResourceKey<DamageType> CONTAMINATED_RAIN =
+            ResourceKey.create(
+                    Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Rotwire.MOD_ID,
+                            "contaminated_rain"
+                    )
+            );
 
     private ModDamageTypes() {
     }

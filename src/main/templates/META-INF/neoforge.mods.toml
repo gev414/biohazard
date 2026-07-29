@@ -145,6 +145,14 @@ Adds custom hostile entities and survival gameplay content for the Rotwire modpa
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="sereneseasons"
+    type="optional"
+    reason="Rotwire can seasonally weight its persisted radio weather forecast"
+    versionRange="[${serene_seasons_version},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="waystones"
     type="required"
     reason="Rotwire's travel progression and Brute rewards use Waystones"

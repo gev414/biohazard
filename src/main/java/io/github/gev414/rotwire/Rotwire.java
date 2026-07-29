@@ -4,11 +4,13 @@ import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
 import io.github.gev414.rotwire.city.CityStreetZombieSpawner;
 import io.github.gev414.rotwire.city.InfectedCityScaling;
+import io.github.gev414.rotwire.combat.KnockbackManager;
 import io.github.gev414.rotwire.config.CityOperationsConfig;
 import io.github.gev414.rotwire.config.EncounterConfig;
 import io.github.gev414.rotwire.config.HordeAtmosphereConfig;
 import io.github.gev414.rotwire.config.RadioQuestConfig;
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
+import io.github.gev414.rotwire.config.WeatherConfig;
 import io.github.gev414.rotwire.entity.ModEntities;
 import io.github.gev414.rotwire.effect.ModEffects;
 import io.github.gev414.rotwire.event.EncounterEvents;
@@ -23,6 +25,8 @@ import io.github.gev414.rotwire.network.ModPayloads;
 import io.github.gev414.rotwire.quest.FTBQuestsIntegration;
 import io.github.gev414.rotwire.quest.QuestDefaultsInstaller;
 import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
+import io.github.gev414.rotwire.weather.WeatherCommands;
+import io.github.gev414.rotwire.weather.WeatherManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.ModContainer;
@@ -78,6 +82,12 @@ public final class Rotwire {
                 SurvivalSystemsConfig.SPEC,
                 "rotwire-survival.toml"
         );
+        WeatherConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                WeatherConfig.SPEC,
+                "rotwire-weather.toml"
+        );
 
         QuestDefaultsInstaller.installIfMissing();
         FTBQuestsIntegration.initialize();
@@ -112,6 +122,9 @@ public final class Rotwire {
         );
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerStopped);
+        NeoForge.EVENT_BUS.addListener(WeatherCommands::register);
+        NeoForge.EVENT_BUS.addListener(WeatherManager::onServerTick);
+        NeoForge.EVENT_BUS.addListener(WeatherManager::onServerStopped);
         NeoForge.EVENT_BUS.addListener(
                 SurvivalSystemsEvents::onServerTick
         );
@@ -121,6 +134,10 @@ public final class Rotwire {
         );
         NeoForge.EVENT_BUS.addListener(
                 SurvivalSystemsEvents::onIncomingDamage
+        );
+        NeoForge.EVENT_BUS.addListener(
+                EventPriority.LOWEST,
+                KnockbackManager::onLivingKnockBack
         );
         NeoForge.EVENT_BUS.addListener(
                 SurvivalSystemsEvents::onBlockBreak

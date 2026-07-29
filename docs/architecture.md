@@ -18,6 +18,8 @@ Rotwire owns:
 - pre-horde client fog derived from The Hordes' authoritative server state;
 - carried-weight tiers, movement penalties, infected stealth awareness, and
   noise-driven investigation;
+- deterministic persisted weather plans, two-day radio forecasts, and
+  contaminated-precipitation exposure;
 - radio Horde Watch presentation derived from the same horde snapshot;
 - one-time stocking of selected world-generated Handcrafted storage blocks;
 - packaged quest defaults, loot, world-generation data, recipes, and in-game
@@ -82,8 +84,8 @@ with `@Mod("rotwire")`. Its constructor wires the system in this order:
    bus.
 2. Attach creative-tab population, entity attributes, and network payload
    registration to the mod event bus.
-3. Build and register the encounter, radio, city-operations, and survival
-   server configs plus the horde-atmosphere client config.
+3. Build and register the encounter, radio, city-operations, survival, and
+   weather server configs plus the horde-atmosphere client config.
 4. Install the bundled FTB Quests defaults if the target quest directory is
    absent or empty.
 5. Register FTB Quests custom task and reward callbacks.
@@ -142,6 +144,7 @@ remain separate authority domains.
 | Horde schedule | The Hordes on server | Receives compact atmospheric snapshot |
 | Weight, quiet state, suspicion, attention radii | Server survival services | Renders the latest compact HUD snapshot |
 | Radio horde-day/active state | The Hordes on server | Renders existing horde snapshot only during a radio quest session |
+| Weather schedule and exposure | Rotwire server weather services | Renders the radio forecast and warning vignette |
 | Fog distance | Client config and renderer | Computes and applies presentation only |
 
 The courier choice path is the clearest security example. The client receives a
@@ -258,14 +261,27 @@ chunks without building metadata and open-sky spawn surfaces, and enforces a
 small horizontal population cap. Spawned zombies carry only a marker used for
 that transient cap and otherwise use ordinary mob despawning.
 
-### 5.6 Brute and normal entity state
+### 5.6 Weather schedule state
+
+`WeatherScheduleSavedData` is stored server-wide under
+`rotwire_weather_schedule`. It keeps deterministic plans around the rolling
+today/tomorrow forecast so a restart or reload cannot silently change a radio
+report. Plans record day, weather type, and the event start/end tick. A
+permission-gated test override is stored in the same file with its start and
+expiry game time; it changes the active condition without mutating those plans.
+
+Exposure timers are deliberately transient. The server rebuilds them from the
+current contaminated plan and whether precipitation reaches each player.
+Reaching shelter discards the timer instead of persisting partial exposure.
+
+### 5.7 Brute and normal entity state
 
 The Brute relies on ordinary Minecraft entity persistence for health, target,
 position, and the encounter marker. Its boss-bar participant sets and tracking
 sets are in-memory presentation state; they are rebuilt from interaction and
 tracking and cleared on death/removal.
 
-### 5.7 Transient client state
+### 5.8 Transient client state
 
 `HordeAtmosphereState` contains only the most recent payload snapshot. It is
 reset when the client logs out and is never saved. The Hordes remains the
@@ -275,6 +291,10 @@ durable and authoritative source.
 shown only while the FTB Quests screen is open, starts collapsed as a compact
 right-edge drawer, and is cleared when that screen closes. City progress itself
 remains server-authoritative in `CityZoneSavedData`.
+
+`WeatherForecastClient` and `WeatherExposureClient` hold only the last compact
+server snapshots. The first renders the radio `WX` drawer; the second fades a
+screen-edge warning without calculating exposure or damage locally.
 
 `SurvivalStatusClient` holds only the latest server HUD snapshot, including
 the server's tier thresholds and movement penalties used by the inventory
@@ -553,6 +573,24 @@ the only Rotwire-approved ZombieTactics marker. Melee and durable block
 breaks use their own bounded ranges. Rotwire skips marker creation when
 ZombieTactics' configured marker range would exceed the current event radius.
 
+### 6.9 Weather scheduling, forecast, and exposure
+
+At a throttled server tick, `WeatherManager` loads or generates the Overworld
+plan and applies its current rain/thunder state. Generation is deterministic
+from world seed and day, but the result is persisted because neighboring plans
+and safety rules affect the outcome. Serene Seasons supplies only the current
+season used to weight choices.
+
+Opening a calibrated Radio Transmitter sends today and tomorrow in one
+server-to-client snapshot. An active operator override adds its condition and
+expiry, allowing the client to label it explicitly while retaining the
+underlying forecasts. During contaminated precipitation, the server checks
+whether rain reaches each survival player every five ticks. Direct exposure
+starts a short grace timer, then the server applies the custom damage type at
+the configured interval. A separate compact snapshot drives the green warning
+or harmful red-orange vignette; no timing bar or client damage logic is
+present.
+
 ## 7. External dependency map
 
 ### 7.1 Required runtime mods
@@ -577,6 +615,7 @@ ZombieTactics' configured marker range would exceed the current event radius.
 | Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Rotwire supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
 | Traveler's Backpack 10.1.36 to <10.2 | optional, load after | Equipped and stored backpack contents, tools, upgrades, and fluids contribute to weight. The integration class is loaded only when present. |
 | ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Rotwire emits an approved marker for unsuppressed fire only. |
+| Serene Seasons 10.1.0.3 | optional, load after | The current season adjusts Rotwire's daily weather weights. Disable its independent weather-frequency changes while Rotwire scheduling is enabled. |
 | Lost Souls | incompatible, any version | Both mods manage Lost Cities building encounters, so metadata prevents a conflicting installation. |
 
 ### 7.3 Runtime libraries supplied by dependencies
@@ -591,7 +630,7 @@ Hordes' cure packet type implements its networking interface.
 | Scope | Meaning here |
 |---|---|
 | `implementation` | Rotwire compiles directly against the API and exposes the dependency on its compile/runtime classpath: Lost Cities and FTB Quests. |
-| `compileOnly` | Needed to compile direct imports but expected from the modpack at runtime: The Hordes, Atlas Lib, PointBlank, and Traveler's Backpack. |
+| `compileOnly` | Needed to compile direct imports but expected from the modpack at runtime: The Hordes, Atlas Lib, PointBlank, Traveler's Backpack, and optional Serene Seasons. |
 | `localRuntime` | Present in development/tests without becoming a transitive published dependency. |
 | `testImplementation` | JUnit Jupiter test API and engine support. |
 

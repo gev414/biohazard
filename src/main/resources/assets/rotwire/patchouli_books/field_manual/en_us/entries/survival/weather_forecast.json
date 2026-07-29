@@ -1,0 +1,39 @@
+{
+  "name": "Weather and Forecasts",
+  "category": "rotwire:survival",
+  "icon": "minecraft:lightning_rod",
+  "sortnum": 35,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "rotwire:radio_transmitter",
+      "title": "Plan Before Leaving",
+      "text": "Overworld weather follows a stable daily plan. A calibrated Radio Transmitter lets you check the sky before committing to a long route, exposed rooftop, or distant supply run."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Read the WX Tab",
+      "text": "Open the Survivor Network and expand WX. It reports the condition outside now, the next transition, today's weather window, tomorrow's forecast, and the current season. The plan survives restarts, so tomorrow's report can be trusted."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Weather as Cover",
+      "text": "Rain and thunder mask both sight and sound. Rain slows infected suspicion and shortens loud-action investigation; storms provide stronger cover. This never makes you invisible, and contaminated weather adds a much greater danger."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Contaminated Rain",
+      "text": "Direct toxic rainfall produces a dirty-green edge vignette and a SEEK SHELTER warning. You have four seconds to get under cover. After that, the warning turns pulsing red-orange and the rain deals one heart every five seconds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Contaminated Storm",
+      "text": "A contaminated thunderstorm is more severe: only two seconds of warning, then one heart every three seconds. Lightning, storm ambience, and reduced visibility remain part of the threat."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Shelter Breaks Exposure",
+      "text": "A solid roof or overhang that blocks precipitation immediately resets exposure. The vignette fades once you are safe."
+    }
+  ]
+}
