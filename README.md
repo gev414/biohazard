@@ -72,6 +72,16 @@ without participating in building encounters. See
 [City operations](docs/city-operations.md) for the gameplay loop, status
 drawer, street population, progression defaults, and server tuning.
 
+## Weather forecast and contaminated storms
+
+Calibrated Radio Transmitters now include a collapsible `WX` drawer with the
+current condition plus stable forecasts for today and tomorrow. Ordinary rain
+and storms mask sight and sound for the stealth system. Contaminated variants
+instead make direct outdoor precipitation dangerous after a short warning:
+the screen-edge vignette shifts from dirty green to pulsing red-orange and
+prompts the player to seek shelter, without adding a countdown bar. See
+[Weather forecast and contaminated precipitation](docs/weather-forecast-and-hazards.md).
+
 ## Stealth, attention, and encumbrance
 
 Carried equipment now forms a second survival constraint: inventory, armor,
@@ -160,7 +170,10 @@ LCMT styles while preserving the pinned upstream biome-specific selectors.
 
 The in-game Survivor's Field Manual is treated as part of the project itself rather than external documentation.
 
-Patchouli pages are maintained alongside the source code, allowing gameplay documentation to evolve together with implementation.
+Patchouli pages are maintained alongside the source code, allowing gameplay
+documentation to evolve together with implementation. Its Survival section
+includes the radio WX forecast, ordinary-weather cover, contaminated exposure,
+warning vignette, and shelter timing.
 
 ## Data-Driven Resources
 

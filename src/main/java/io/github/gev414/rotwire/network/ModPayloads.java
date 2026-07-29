@@ -5,7 +5,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModPayloads {
 
-    private static final String PROTOCOL_VERSION = "3";
+    private static final String PROTOCOL_VERSION = "5";
 
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
@@ -23,6 +23,16 @@ public final class ModPayloads {
                 SurvivalStatusPayload.TYPE,
                 SurvivalStatusPayload.STREAM_CODEC,
                 SurvivalStatusPayload::handle
+        );
+        registrar.playToClient(
+                WeatherForecastPayload.TYPE,
+                WeatherForecastPayload.STREAM_CODEC,
+                WeatherForecastPayload::handle
+        );
+        registrar.playToClient(
+                WeatherExposurePayload.TYPE,
+                WeatherExposurePayload.STREAM_CODEC,
+                WeatherExposurePayload::handle
         );
         registrar.playToClient(
                 CourierChoiceOpenPayload.TYPE,

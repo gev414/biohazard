@@ -8,6 +8,7 @@ import io.github.gev414.rotwire.block.entity.ModBlockEntities;
 import io.github.gev414.rotwire.city.CityZoneManager;
 import io.github.gev414.rotwire.quest.RadioNetwork;
 import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
+import io.github.gev414.rotwire.weather.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -151,6 +152,7 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
                         ),
                         () -> CityZoneManager.sendNoStatus(serverPlayer)
                 );
+        WeatherManager.sendForecast(serverPlayer);
         NetworkManager.sendToPlayer(
                 serverPlayer,
                 new OpenQuestBookMessage(0L)

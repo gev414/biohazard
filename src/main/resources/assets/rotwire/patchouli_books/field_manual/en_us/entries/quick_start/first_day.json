@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "First Priorities",
-      "text": "1. Fill your canteen and find a route to purified water.$(br2)2. Activate any Waystone you find and intend to use.$(br2)3. Establish shelter before night.$(br2)4. Search the city carefully; a working radio can turn recovered evidence into supplies."
+      "text": "1. Fill your canteen and find a route to purified water.$(br2)2. Activate any Waystone you find and intend to use.$(br2)3. Establish overhead shelter before night.$(br2)4. Build a working radio: it turns recovered evidence into supplies and warns you about tomorrow's weather."
     },
     {
       "type": "patchouli:text",

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "rotwire:brute_rock_splash"
+    "rotwire:brute_rock_splash",
+    "rotwire:contaminated_rain"
   ]
 }

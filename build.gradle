@@ -176,6 +176,9 @@ dependencies {
     // for Rotwire consumers and is loaded only when Traveler's Backpack is
     // present.
     compileOnly "maven.modrinth:rlloIFEV:${travelersbackpack_modrinth_version}"
+    // Optional seasonal weighting for Rotwire's authoritative daily weather
+    // forecast. The scheduler has a temperate fallback when it is absent.
+    compileOnly "maven.modrinth:e0bNACJD:${serene_seasons_modrinth_version}"
     // Required survival integration. Rotwire's sleep effects update Tough As
     // Nails thirst through its public API.
     compileOnly "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
@@ -193,6 +196,7 @@ dependencies {
     localRuntime "maven.modrinth:O3HDffUR:${hordes_modrinth_version}"
     localRuntime "maven.modrinth:LOpKHB2A:${waystones_modrinth_version}"
     localRuntime "maven.modrinth:rlloIFEV:${travelersbackpack_modrinth_version}"
+    localRuntime "maven.modrinth:e0bNACJD:${serene_seasons_modrinth_version}"
 
     localRuntime "maven.modrinth:8BmcQJ2H:${geckolib_modrinth_version}"
     localRuntime "maven.modrinth:zg2tT2Vu:${gml_modrinth_version}"
@@ -248,6 +252,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             waystones_version      : waystones_version,
             ftb_quests_version     : ftb_quests_version,
             travelersbackpack_version: travelersbackpack_version,
+            serene_seasons_version : serene_seasons_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

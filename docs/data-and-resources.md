@@ -29,7 +29,7 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | Namespace | Resource kind | File count | Purpose |
 |---|---|---:|---|
 | `rotwire` | advancement | 1 | starter loadout trigger |
-| `rotwire` | damage type | 1 | Brute rock splash definition |
+| `rotwire` | damage type | 2 | Brute rock splash and contaminated-rain definitions |
 | `rotwire` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
 | `rotwire` | Lost Cities | 94 | Handcrafted palettes, articulated tower exteriors, stair retrofits, and custom buildings |
 | `rotwire` | Patchouli book definition | 1 | field manual book-level data |
@@ -52,7 +52,7 @@ added or removed.
 | `rotwire` | blockstates | 1 | transmitter facing variants |
 | `rotwire` | language | 1 | item, block, entity, message, tooltip, and screen strings |
 | `rotwire` | models | 7 | one block and six item models |
-| `rotwire` | Patchouli content | 21 | categories, entries, and guide images |
+| `rotwire` | Patchouli content | 23 | categories, entries, and guide images |
 | `rotwire` | textures | 10 | block layers, items, Brute, and guide images |
 | `ftbquests` | language/theme | 2 | Survivor Network quest-book presentation |
 
@@ -99,10 +99,11 @@ the medicine tooltips require `tooltip.rotwire.<id>` plus `.detail`.
 - `assets/rotwire/textures/entity/brute.png` supplies the renderer texture.
 - `data/rotwire/loot_table/entities/brute.json` is the entity loot table
   selected through the standard entity ID convention.
-- `data/rotwire/damage_type/brute_rock_splash.json` defines the registered
-  damage type.
-- `data/minecraft/tags/damage_type/no_anger.json` includes the splash damage so
-  affected mobs do not acquire anger from the anonymous area hit.
+- `data/rotwire/damage_type/brute_rock_splash.json` and
+  `data/rotwire/damage_type/contaminated_rain.json` define the registered
+  damage types.
+- `data/minecraft/tags/damage_type/no_anger.json` includes both damage types so
+  affected mobs do not acquire anger from anonymous area or weather damage.
 - Entity name and death-message translations live in `en_us.json` as required
   by the damage type's message ID.
 
@@ -261,7 +262,8 @@ Categories:
 Entries:
 
 - first day;
-- base equipment, hydration, and temperature;
+- base equipment, hydration, temperature, weather forecasts, contaminated
+  precipitation, stealth/load, and sleep;
 - Brute, horde events, and infested buildings;
 - portable travel and Waystones;
 - using guns;
@@ -270,6 +272,10 @@ Entries:
 The field manual is player-facing product documentation. Whenever gameplay,
 config defaults, recipes, or progression change, check whether the matching
 entry now lies. JSON validity alone cannot detect stale advice.
+
+The book definition currently declares content version `2`, including the
+weather entry. Increment that value for later substantial manual revisions so
+Patchouli can recognize that the packaged guide changed.
 
 Guide-specific images are under the book's `images` directory and referenced by
 resource location from entry pages. Renaming them requires updating every page
@@ -414,7 +420,7 @@ Three Minecraft-namespace tags integrate Rotwire with standard mechanics:
 |---|---|
 | `minecraft:mineable/pickaxe` | transmitter is efficiently mined with pickaxes |
 | `minecraft:needs_stone_tool` | transmitter drop/tool tier requirement |
-| `minecraft:no_anger` damage type | Brute rock splash does not cause anger |
+| `minecraft:no_anger` damage type | Brute rock splash and contaminated rain do not cause anger |
 
 Check each file's `replace` field before editing. A mistaken `replace: true`
 under the Minecraft namespace could erase contributions from vanilla or other
@@ -453,6 +459,7 @@ participate in city scaling, stealth awareness, both, or neither.
 - `screen.rotwire.courier_choice.*`;
 - `screen.rotwire.radio_horde.*`;
 - `hud.rotwire.encumbrance.*` and `hud.rotwire.stealth.*`;
+- `screen.rotwire.weather.*` and `hud.rotwire.weather.*`;
 - `tooltip.rotwire.encumbrance.*`;
 - damage/death-message keys required by the damage type.
 

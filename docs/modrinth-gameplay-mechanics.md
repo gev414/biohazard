@@ -22,3 +22,7 @@ Combat and scavenging can pull danger toward you even before you are seen. Suppr
 ## Radio Horde Watch
 
 A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor Network interface, confirming whether the current day is a horde day, whether a horde is active, and the current world time in 24-hour format. The display intentionally avoids an unreliable countdown and leaves Rotwire's existing pre-horde fog warnings fully intact.
+
+## Weather forecast and contaminated storms
+
+A calibrated Radio Transmitter now provides a two-day weather forecast so expeditions can be planned around clear skies, rain, storms, and their contaminated variants. Ordinary wet weather masks sight and sound from infected, while direct exposure to contaminated precipitation gives a short dirty-green vignette warning before shifting to a pulsing red-orange hazard that damages survivors until they find a roof; the warning stays readable without adding a countdown bar.

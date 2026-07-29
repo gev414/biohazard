@@ -94,10 +94,10 @@ by `ModEntityEvents` and `ClientModEvents` respectively.
 
 Source: [`ModDamageTypes.java`](../src/main/java/io/github/gev414/rotwire/damage/ModDamageTypes.java)
 
-Declares the resource key `rotwire:brute_rock_splash`. The actual damage type
-is data-backed by `data/rotwire/damage_type/brute_rock_splash.json` and is
-added to Minecraft's `no_anger` damage-type tag. The projectile resolves the
-holder from the active registry at impact time.
+Declares the resource keys `rotwire:brute_rock_splash` and
+`rotwire:contaminated_rain`. Both damage types are data-backed and included in
+Minecraft's `no_anger` damage-type tag. Callers resolve the holder from the
+active registry when damage is applied.
 
 ## 3. Configuration services
 
@@ -145,8 +145,19 @@ Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/rotwire
 
 Defines `rotwire-survival.toml`: weight categories and tier thresholds,
 movement penalties, progressive visual-awareness tuning, alert memory, loud
-action grace, attention radii, and ZombieTactics marker replacement. All
-values are read live and the specification is initialized idempotently.
+action grace, attention radii, ZombieTactics marker replacement, and incoming
+knockback retention for zombies and players. All values are read live and the
+specification is initialized idempotently.
+
+### `WeatherConfig`
+
+Source: [`WeatherConfig.java`](../src/main/java/io/github/gev414/rotwire/config/WeatherConfig.java)
+
+Defines `rotwire-weather.toml`: scheduler enablement, optional seasonal
+weighting, daily outcome weights, event duration ranges, contaminated exposure
+grace/damage, and ordinary-weather suspicion/attention multipliers. Its
+`generationRules()` helper snapshots the plan-generation values used for a new
+day.
 
 ## 4. Event adapters
 
@@ -764,13 +775,15 @@ normal collection already ran before status is requested.
 
 Source: [`ModPayloads.java`](../src/main/java/io/github/gev414/rotwire/network/ModPayloads.java)
 
-Registers protocol version string `3` and five play-phase payloads:
+Registers protocol version string `5` and seven play-phase payloads:
 
 | Payload ID | Direction | Handler |
 |---|---|---|
 | `rotwire:horde_atmosphere` | server to client | update transient fog state |
 | `rotwire:city_status` | server to client | update the radio-linked QuestScreen panel |
 | `rotwire:survival_status` | server to client | update load and stealth HUD state |
+| `rotwire:weather_forecast` | server to client | update the radio `WX` drawer |
+| `rotwire:weather_exposure` | server to client | update the contaminated-weather warning |
 | `rotwire:courier_choice_open` | server to client | open choice screen |
 | `rotwire:courier_choice_select` | client to server | validate and apply choice |
 
@@ -817,6 +830,18 @@ server tier boundaries, and all three non-Light speed penalties. Including
 configuration values keeps the inventory tooltip authoritative on dedicated
 servers.
 
+### `WeatherForecastPayload` and `WeatherExposurePayload`
+
+Sources: [`WeatherForecastPayload.java`](../src/main/java/io/github/gev414/rotwire/network/WeatherForecastPayload.java),
+[`WeatherExposurePayload.java`](../src/main/java/io/github/gev414/rotwire/network/WeatherExposurePayload.java)
+
+The forecast payload is sent when a calibrated Overworld transmitter opens the
+Survivor Network. It carries availability, today/tomorrow type and window
+ordinals, season, and optional forced-condition/expiry fields for an operator
+test override. The exposure payload is a deduplicated four-boolean snapshot:
+contaminated, storm, exposed, and harmful. Neither lets the client generate
+schedules, time grace, or decide damage.
+
 ### `CourierChoiceSelectPayload`
 
 Source: [`CourierChoiceSelectPayload.java`](../src/main/java/io/github/gev414/rotwire/network/CourierChoiceSelectPayload.java)
@@ -837,8 +862,8 @@ Client-only automatic event subscriber. It:
 - registers `BruteRenderer`;
 - registers a small `ThrownItemRenderer` for the Brute rock;
 - tints the suppressant's base model layer regeneration pink (`0xCD5CAB`);
-- renders the survival HUD and radio Horde Watch panel and clears their
-  transient state at logout/screen close.
+- renders the survival HUD, radio Horde Watch, weather drawer, and contaminated
+  vignette, and clears transient state at logout/screen close.
 
 Its `Dist.CLIENT` restriction prevents dedicated-server classloading failures.
 
@@ -914,6 +939,21 @@ full-width narrow-screen recipe book. `RadioHordeStatusClient` renders
 only while a radio-opened FTB Quests session owns a city-status snapshot. It
 uses the existing authoritative horde snapshot and `RadioClock`'s pure
 Minecraft-tick-to-24-hour conversion; it does not calculate a countdown.
+
+### Weather presentation clients
+
+Sources: [`WeatherForecastClient.java`](../src/main/java/io/github/gev414/rotwire/client/WeatherForecastClient.java),
+[`WeatherExposureClient.java`](../src/main/java/io/github/gev414/rotwire/client/WeatherExposureClient.java)
+
+`WeatherForecastClient` owns the second collapsible right-edge radio tab and
+renders current state, transition, today/tomorrow windows, and season. It and
+`CityStatusClient` collapse each other so only one drawer occupies the screen.
+`WeatherExposureClient` renders code-native layered edge gradients: dirty green
+during grace and pulsing red-orange after the server marks exposure harmful.
+It displays a seek-shelter message and intentionally has no countdown bar.
+The presentation is source-tuned rather than configured: 14 three-pixel layers
+give the current inward reach, peak alpha 110 controls strength, and separate
+pulse/fade constants control movement and response speed.
 
 ## 13. Survival gameplay domain
 
@@ -999,7 +1039,55 @@ it. The caller uses that return to stop encounter lock processing. Adding a
 Handcrafted storage ID requires confirming that its block entity implements
 `Container`; otherwise it will be recognized but not filled.
 
-## 16. Dependency-by-service summary
+## 16. Weather forecast and exposure domain
+
+### Schedule model and generation
+
+Sources: [`ScheduledWeather.java`](../src/main/java/io/github/gev414/rotwire/weather/ScheduledWeather.java),
+[`WeatherSeason.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherSeason.java),
+[`WeatherDayPlan.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherDayPlan.java),
+[`WeatherOverride.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherOverride.java),
+[`WeatherGenerationRules.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherGenerationRules.java),
+[`WeatherScheduleGenerator.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherScheduleGenerator.java)
+
+The enums define five schedule outcomes and five season modes. A day plan
+contains its zero-based day, weather type, and start/end tick and supplies
+window/transition helpers plus NBT serialization. The pure generator selects a
+deterministic plan from seed, day, season, previous outcome, Horde-day status,
+and an immutable config snapshot. It enforces the new-world, consecutive
+contamination, Horde-day, seasonal, and daily-window safeguards and is covered
+by unit tests. `WeatherOverride` models a saturated, monotonic game-time
+deadline and its NBT representation.
+
+### Schedule persistence and runtime authority
+
+Sources: [`WeatherScheduleSavedData.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherScheduleSavedData.java),
+[`WeatherManager.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherManager.java),
+[`WeatherCommands.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherCommands.java),
+[`SereneSeasonsWeather.java`](../src/main/java/io/github/gev414/rotwire/weather/SereneSeasonsWeather.java)
+
+Saved data retains the rolling plans and optional test override under
+`rotwire_weather_schedule`.
+`WeatherManager` refreshes the Overworld rain/thunder state every five ticks,
+sends radio forecasts, exposes ordinary-weather stealth multipliers, and
+clears transient state on server stop. The class-isolated optional Serene
+Seasons adapter maps its current season into Rotwire's local enum; absence or
+API failure falls back to temperate weights. `WeatherCommands` registers the
+permission-level-2 force, status, and clear branches and accepts vanilla time
+arguments without modifying the underlying day plans.
+
+### `WeatherExposureManager`
+
+Source: [`WeatherExposureManager.java`](../src/main/java/io/github/gev414/rotwire/weather/WeatherExposureManager.java)
+
+Server-only per-player exposure service. Every five ticks it checks current
+contamination and whether vanilla precipitation reaches the player. Shelter
+clears progress. After the configured rain/storm grace it applies
+`rotwire:contaminated_rain` damage at the configured interval and sends only
+deduplicated presentation state. Creative, spectator, dead, non-Overworld, and
+offline players do not retain exposure.
+
+## 17. Dependency-by-service summary
 
 | Service family | Minecraft/NeoForge | Lost Cities | FTB Quests/Architectury | The Hordes/Atlas | Handcrafted | Rotwire data |
 |---|---:|---:|---:|---:|---:|---:|
@@ -1011,5 +1099,6 @@ Handcrafted storage ID requires confirming that its block entity implements
 | Courier delivery | yes | via neither | direct reward hook | no | no | manifests/translations |
 | Horde atmosphere | yes | no | no | direct API | no | translations not required |
 | Stealth/encumbrance | targets, attributes, sound/block/damage events | no | radio screen context | horde capability bypass | no | entity/item tags, HUD translations |
+| Weather forecast/hazard | Overworld weather, damage, `SavedData` | no | radio screen context | deterministic horde-day guard | no | damage type, translations |
 | Infection medicine | yes | no | no | direct API/packet | no | models, translations, loot |
 | Handcrafted storage loot | yes | generated placement context | no | no | block IDs/entities | chest loot table |

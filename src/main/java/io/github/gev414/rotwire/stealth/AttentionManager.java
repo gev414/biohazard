@@ -1,6 +1,7 @@
 package io.github.gev414.rotwire.stealth;
 
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
+import io.github.gev414.rotwire.weather.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -47,12 +48,17 @@ public final class AttentionManager {
         if (!SurvivalSystemsConfig.ENABLED.get() || range <= 0.0D) {
             return;
         }
+        double effectiveRange = range
+                * WeatherManager.attentionMultiplier(level);
+        if (effectiveRange <= 0.0D) {
+            return;
+        }
         AwarenessManager.markNoisy(source);
         long expiry = level.getGameTime() + Math.max(
                 60L,
-                Math.round(range * 2.0D)
+                Math.round(effectiveRange * 2.0D)
         );
-        AABB area = new AABB(position, position).inflate(range);
+        AABB area = new AABB(position, position).inflate(effectiveRange);
         for (Mob mob : level.getEntitiesOfClass(
                 Mob.class,
                 area,
@@ -73,7 +79,7 @@ public final class AttentionManager {
             }
         }
         if (createTacticsMarker) {
-            spawnTacticsMarker(level, position, range);
+            spawnTacticsMarker(level, position, effectiveRange);
         }
     }
 

@@ -27,6 +27,11 @@
       "images": ["rotwire:patchouli_books/field_manual/en_us/images/survivor-network-panel.png"],
       "title": "Network Contacts",
       "text": "Dr. Mara Voss, the Medic, provides medicine. Elias Ward, the Quartermaster, provides ammunition. Rook provides recovered guns. Nadia Vale provides transport and route-support utility. Complete their work and claim the resulting courier deliveries through the transmitter."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Weather Service",
+      "text": "The same screen carries a collapsible WX tab. Check it for the current condition and stable forecasts for today and tomorrow. Contaminated rain and storms require overhead shelter; consult Weather and Forecasts in the Survival section before traveling."
     }
   ]
 }

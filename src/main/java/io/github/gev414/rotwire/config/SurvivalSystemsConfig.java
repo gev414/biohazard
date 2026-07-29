@@ -48,6 +48,10 @@ public final class SurvivalSystemsConfig {
     public static ModConfigSpec.DoubleValue BLOCK_BREAK_ATTENTION_RANGE;
     public static ModConfigSpec.BooleanValue REPLACE_ZOMBIE_TACTICS_MARKERS;
 
+    public static ModConfigSpec.BooleanValue KNOCKBACK_ENABLED;
+    public static ModConfigSpec.DoubleValue ZOMBIE_KNOCKBACK_RETENTION;
+    public static ModConfigSpec.DoubleValue PLAYER_KNOCKBACK_RETENTION;
+
     public static ModConfigSpec.BooleanValue SLEEP_SURVIVAL_ENABLED;
     public static ModConfigSpec.IntValue SLEEP_EFFECT_DURATION_TICKS;
     public static ModConfigSpec.IntValue SLEEP_EFFECT_PULSE_INTERVAL_TICKS;
@@ -210,6 +214,27 @@ public final class SurvivalSystemsConfig {
                         "Rotwire create markers only for configured loud events."
                 )
                 .define("replaceZombieTacticsMarkers", true);
+        BUILDER.pop();
+
+        BUILDER.push("knockback");
+        KNOCKBACK_ENABLED = BUILDER
+                .comment(
+                        "Reduce incoming knockback for zombies and players.",
+                        "This changes knockback strength, not damage."
+                )
+                .define("enabled", true);
+        ZOMBIE_KNOCKBACK_RETENTION = BUILDER
+                .comment(
+                        "Fraction of normal knockback retained by zombies.",
+                        "Applies to Zombie subclasses, including husks,",
+                        "drowned, zombie villagers, and Rotwire brutes."
+                )
+                .defineInRange("zombieRetention", 0.15D, 0.0D, 1.0D);
+        PLAYER_KNOCKBACK_RETENTION = BUILDER
+                .comment(
+                        "Fraction of normal knockback retained by players."
+                )
+                .defineInRange("playerRetention", 0.30D, 0.0D, 1.0D);
         BUILDER.pop();
 
         BUILDER.push("sleepSurvival");

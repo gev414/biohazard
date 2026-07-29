@@ -108,6 +108,12 @@ public final class ClientModEvents {
                 event.getScreen(),
                 event.getGuiGraphics()
         );
+        WeatherForecastClient.render(
+                event.getScreen(),
+                event.getGuiGraphics(),
+                event.getMouseX(),
+                event.getMouseY()
+        );
         if (event.getScreen() instanceof InventoryScreen inventory) {
             InventoryEncumbranceClient.render(
                     inventory,
@@ -121,6 +127,7 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void renderSurvivalStatus(RenderGuiEvent.Post event) {
         SurvivalStatusClient.render(event.getGuiGraphics());
+        WeatherExposureClient.render(event.getGuiGraphics());
     }
 
     private static void onLoggingOut(
@@ -128,6 +135,8 @@ public final class ClientModEvents {
     ) {
         SurvivalStatusClient.reset();
         CityStatusClient.clear();
+        WeatherForecastClient.clear();
+        WeatherExposureClient.reset();
     }
 
     @SubscribeEvent
@@ -141,6 +150,15 @@ public final class ClientModEvents {
                 event.getButton()
         )) {
             event.setCanceled(true);
+            return;
+        }
+        if (WeatherForecastClient.handleMouseClick(
+                event.getScreen(),
+                event.getMouseX(),
+                event.getMouseY(),
+                event.getButton()
+        )) {
+            event.setCanceled(true);
         }
     }
 
@@ -148,6 +166,7 @@ public final class ClientModEvents {
     public static void closeCityStatus(ScreenEvent.Closing event) {
         if (CityStatusClient.isQuestScreen(event.getScreen())) {
             CityStatusClient.clear();
+            WeatherForecastClient.clear();
         }
     }
 

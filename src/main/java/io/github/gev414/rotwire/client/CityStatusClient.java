@@ -29,6 +29,10 @@ public final class CityStatusClient {
         expanded = false;
     }
 
+    public static void collapse() {
+        expanded = false;
+    }
+
     public static boolean hasRadioSnapshot() {
         return status != null;
     }
@@ -219,6 +223,9 @@ public final class CityStatusClient {
         }
 
         expanded = !expanded;
+        if (expanded) {
+            WeatherForecastClient.collapse();
+        }
         return true;
     }
 
