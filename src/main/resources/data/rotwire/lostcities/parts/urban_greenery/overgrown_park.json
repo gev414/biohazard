@@ -1,0 +1,100 @@
+{
+  "xsize": 16,
+  "zsize": 16,
+  "palette": {
+    "palette": [
+      {
+        "char": "s",
+        "block": "minecraft:mossy_stone_brick_slab[type=bottom,waterlogged=false]"
+      },
+      {
+        "char": "d",
+        "block": "minecraft:dirt"
+      },
+      {
+        "char": "g",
+        "blocks": [
+          {
+            "random": 32,
+            "block": "minecraft:short_grass"
+          },
+          {
+            "random": 16,
+            "block": "minecraft:fern"
+          },
+          {
+            "random": 8,
+            "block": "minecraft:dead_bush"
+          },
+          {
+            "random": 1000,
+            "block": "minecraft:air"
+          }
+        ]
+      },
+      {
+        "char": "P",
+        "blocks": [
+          {
+            "random": 34,
+            "block": "minecraft:oak_sapling[stage=1]"
+          },
+          {
+            "random": 30,
+            "block": "minecraft:birch_sapling[stage=1]"
+          },
+          {
+            "random": 30,
+            "block": "minecraft:cherry_sapling[stage=1]"
+          },
+          {
+            "random": 26,
+            "block": "minecraft:spruce_sapling[stage=1]"
+          },
+          {
+            "random": 8,
+            "block": "minecraft:air"
+          }
+        ]
+      }
+    ]
+  },
+  "slices": [
+    [
+      "                ",
+      "                ",
+      "   sss    sss   ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "   sss    sss   ",
+      "                ",
+      "                ",
+      "   sss    sss   ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "   sss    sss   ",
+      "                ",
+      "                "
+    ],
+    [
+      "                ",
+      "                ",
+      "                ",
+      "   ggg    ggg   ",
+      "   gPg    gPg   ",
+      "   ggg    ggg   ",
+      "                ",
+      "                ",
+      "                ",
+      "                ",
+      "   ggg    ggg   ",
+      "   gPg    gPg   ",
+      "   ggg    ggg   ",
+      "                ",
+      "                ",
+      "                "
+    ]
+  ]
+}

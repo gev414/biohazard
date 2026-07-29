@@ -153,6 +153,14 @@ Adds custom hostile entities and survival gameplay content for the Rotwire modpa
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="dynamictrees"
+    type="optional"
+    reason="Rotwire generates mature biome-appropriate Dynamic Trees in open Lost Cities chunks"
+    versionRange="[${dynamic_trees_version},1.8)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="waystones"
     type="required"
     reason="Rotwire's travel progression and Brute rewards use Waystones"

@@ -1,5 +1,6 @@
 package io.github.gev414.rotwire;
 
+import io.github.gev414.rotwire.attachment.ModAttachments;
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
 import io.github.gev414.rotwire.city.CityStreetZombieSpawner;
@@ -20,6 +21,7 @@ import io.github.gev414.rotwire.event.ModCreativeTabEvents;
 import io.github.gev414.rotwire.event.SurvivalSystemsEvents;
 import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.lostcities.LostCitiesIntegration;
+import io.github.gev414.rotwire.lostcities.LostCitiesOvergrowth;
 import io.github.gev414.rotwire.loot.HandcraftedStorageLoot;
 import io.github.gev414.rotwire.network.ModPayloads;
 import io.github.gev414.rotwire.quest.FTBQuestsIntegration;
@@ -44,6 +46,7 @@ public final class Rotwire {
 
     public Rotwire(IEventBus modEventBus, ModContainer modContainer) {
         ModBlocks.BLOCKS.register(modEventBus);
+        ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
@@ -93,6 +96,7 @@ public final class Rotwire {
         FTBQuestsIntegration.initialize();
 
         LostCitiesIntegration.initialize(modEventBus);
+        LostCitiesOvergrowth.initialize();
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onServerTick);
         NeoForge.EVENT_BUS.addListener(
                 EventPriority.LOWEST,

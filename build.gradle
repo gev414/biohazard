@@ -52,6 +52,13 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven {
+        name = "CurseMaven"
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 base {
@@ -179,6 +186,9 @@ dependencies {
     // Optional seasonal weighting for Rotwire's authoritative daily weather
     // forecast. The scheduler has a temperate fallback when it is absent.
     compileOnly "maven.modrinth:e0bNACJD:${serene_seasons_modrinth_version}"
+    // Optional city-tree integration. Rotwire uses Dynamic Trees' public
+    // species generation API when present and keeps a vanilla fallback.
+    compileOnly "curse.maven:dynamictrees-252818:${dynamic_trees_curseforge_file}"
     // Required survival integration. Rotwire's sleep effects update Tough As
     // Nails thirst through its public API.
     compileOnly "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
@@ -253,6 +263,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             ftb_quests_version     : ftb_quests_version,
             travelersbackpack_version: travelersbackpack_version,
             serene_seasons_version : serene_seasons_version,
+            dynamic_trees_version   : dynamic_trees_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

@@ -31,18 +31,18 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 | `rotwire` | advancement | 1 | starter loadout trigger |
 | `rotwire` | damage type | 2 | Brute rock splash and contaminated-rain definitions |
 | `rotwire` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
-| `rotwire` | Lost Cities | 94 | Handcrafted palettes, articulated tower exteriors, stair retrofits, and custom buildings |
+| `rotwire` | Lost Cities | 98 | Handcrafted palettes, articulated towers, stair retrofits, custom buildings, and biome-aware overgrown parks |
 | `rotwire` | Patchouli book definition | 1 | field manual book-level data |
 | `rotwire` | recipe | 1 | Radio Transmitter crafting recipe |
 | `rotwire` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
-| `lcmt` | Lost Cities | 23 | targeted optional LCMT part, building, and city-style overrides |
-| `lostcities` | Lost Cities | 52 | base palettes, variants, conditions, city styles, and stair-building overrides |
+| `lcmt` | Lost Cities | 31 | targeted optional LCMT part, palette, building, street, and city-style overrides |
+| `lostcities` | Lost Cities | 59 | base palettes, variants, conditions, city styles, street greenery, and stair-building overrides |
 | `minecraft` | tags | 3 | mining/tool and damage behavior integration |
 | `pointblank` | recipes | 8 | PointBlank recipe replacements/definitions |
 | `waystones` | advancements | 4 | recipe unlock alignment for overridden recipes |
 | `waystones` | recipes | 4 | portable travel recipe overrides |
 
-Counts describe the 1.1.4 repository and should be updated when families are
+Counts describe the current repository and should be updated when families are
 added or removed.
 
 ### Client asset inventory
@@ -297,8 +297,11 @@ These resources target IDs owned by base Lost Cities:
   rubble alternatives;
 - building families 1 through 8 override the vanilla definitions with
   Rotwire's furnished, consistently stair-connected floors and roof exits;
+- all seven base street shapes retain their road footprint while adding four
+  ruined dirt-planter candidates, with a 93.75% tree roll at each planter;
 - `citystyle_standard.json` and `citystyle_desert.json` append Rotwire's
-  standalone and multibuilding selectors to the base style inheritance chain.
+  standalone, multibuilding, and biome-appropriate overgrown-park selectors to
+  the base style inheritance chain.
 
 Because these IDs are in `lostcities:`, they override or extend resources by
 exact ID. When upgrading Lost Cities, compare upstream copies and schemas. Do
@@ -314,15 +317,18 @@ These target optional Lost Cities Modern Tweaks IDs:
   stair-connected ground, furnished, and roof parts;
 - selected town, cafeteria, factory, shop, center/civic, library, and railway
   part overrides;
+- a pinned copy of LCMT's street palette with reserved dirt and sapling
+  markers, plus the seven `street_*_base` part variants using those markers;
 - pinned copies of LCMT's standard, desert, jungle, and snowy child city styles
-  that retain their 2.0.7-specific fields and append Rotwire's selectors.
+  that retain their 2.0.7-specific fields and append Rotwire's building and
+  biome-appropriate park selectors.
 
 If LCMT is absent, Lost Cities has no reason to resolve these IDs. If present,
 the mod metadata constrains supported LCMT versions to 2.0.7 through below 2.1.
 
 ### `data/rotwire/lostcities`
 
-Rotwire-owned content consists of six palettes, 79 building parts, seven
+Rotwire-owned content consists of six palettes, 83 building parts, seven
 custom building definitions, and two multibuilding definitions:
 
 - `handcrafted_cafeteria`;
@@ -337,6 +343,8 @@ custom building definitions, and two multibuilding definitions:
   for all eight inherited tower families;
 - `parts/custom_buildings` with three standalone tower families and four
   connected hospital quadrants;
+- `parts/urban_greenery` with temperate, arid, jungle, and snowy abandoned
+  planter parks;
 - `buildings/custom_buildings` with forced multi-floor, no-cellar definitions;
 - `multibuildings/custom_buildings/quarantine_hospital`, a connected 2x2
   hospital with stair cores in opposite corners;
@@ -360,6 +368,30 @@ and roofs repeat the family's footprint/material language. The custom solo
 towers use three additional silhouettes, while hospital shaping is restricted
 to true external edges so the four connected chunks remain open internally.
 
+Street and park greenery deliberately uses staged vanilla sapling block states
+instead of hard-coded trunks and leaf cubes. Lost Cities schedules those
+saplings through its normal post-generation growth path. With Dynamic Trees
+installed, its grow-feature event replaces them with the matching dynamic
+species; without Dynamic Trees they remain a vanilla-compatible fallback.
+Each palette fills Lost Cities' 128-entry random table with 120 tree rolls and
+8 empty rolls, so ruined planters remain irregular without becoming scarce.
+
+`LostCitiesOvergrowth` runs after chunks are fully available. It persists a
+per-chunk completion attachment and adds up to three mature trees to safe
+positions in each new non-building city chunk. Chunks marked by the previous
+two-tree pass receive one additional tree once. It prefers existing dirt, can
+cut a small dirt tree pit into an unobstructed stone sidewalk, and calls
+Dynamic Trees' biome species API when that optional mod is present. The
+vanilla sapling-growth fallback keeps the feature functional without Dynamic
+Trees. The same service revisits loaded building borders and generates
+deterministic, broken vertical vine runners on every exposed face. It reads
+`VINE_CHANCE` and the world style's directional vine states directly, closing
+the east/south generation-order holes without replacing the profile setting.
+Even high profile chances preserve visible facade material, and the
+reconciliation pass removes excess vines left by the earlier dense algorithm.
+Generated trees and vines remain ordinary world foliage for Serene Seasons and
+Immersive Snow to tint or cover.
+
 Custom-building JSON is generated deterministically by
 `tools/generate_custom_buildings.py`; edit the generator and rerun it instead of
 hand-editing those 31 generated resources. The decorated ladder-family
@@ -375,7 +407,9 @@ retrofits and their 16 building overrides are generated by
    usable.
 5. Treat foreign-namespace files as maintained forks: record upstream version
    and re-diff on upgrade.
-6. Test new chunks. Existing generated chunks will not be retroactively rebuilt.
+6. Test new chunks for part changes. Existing chunks are not rebuilt, although
+   the persisted overgrowth pass can add its one-time tree upgrade and
+   reconcile facade vines whenever their borders load.
 7. Test both with and without optional LCMT to confirm graceful resource
    selection.
 8. Verify every referenced Handcrafted block ID and state exists in the pinned
@@ -384,6 +418,12 @@ retrofits and their 16 building overrides are generated by
    ladder palette entry or the lowercase `l` ladder marker.
 10. Keep façade recesses and projections inside the owning 16x16 chunk, and
     never close an internal multibuilding seam.
+11. Keep urban tree markers on dirt support, use vanilla `stage=1` saplings,
+    fill all 128 palette rolls, and reserve at most 16 rolls for air.
+12. Re-diff the pinned LCMT `streets` palette and all seven `street_*_base`
+    overrides when upgrading LCMT.
+13. Keep the Dynamic Trees dependency optional and preserve the vanilla
+    fallback in `LostCitiesOvergrowth`.
 
 ## 8. Cross-mod recipe and advancement overrides
 

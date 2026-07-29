@@ -68,6 +68,10 @@
       {
         "factor": 1.0,
         "value": "lcmt:park/park_desert_fountain_huge_1"
+      },
+      {
+        "factor": 1.0,
+        "value": "rotwire:urban_greenery/overgrown_park_arid"
       }
     ]
   }
