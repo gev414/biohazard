@@ -61,17 +61,34 @@ final class DynamicTreesUrbanTreeGenerator implements UrbanTreeGenerator {
         }
 
         Direction facing = Direction.from2DDataValue(random.nextInt(4));
-        DynamicTreeGenerationContext context =
-                new DynamicTreeGenerationContext(
-                        levelContext,
-                        species,
-                        rootPos,
-                        rootPos.mutable(),
-                        biome,
-                        facing,
-                        URBAN_TREE_RADIUS,
-                        true
-                );
+        DynamicTreeGenerationContext context = createGenerationContext(
+                levelContext,
+                species,
+                rootPos,
+                biome,
+                facing
+        );
         return species.generate(context);
+    }
+
+    static DynamicTreeGenerationContext createGenerationContext(
+            LevelContext levelContext,
+            Species species,
+            BlockPos rootPos,
+            Holder<Biome> biome,
+            Direction facing
+    ) {
+        return new DynamicTreeGenerationContext(
+                levelContext,
+                species,
+                rootPos,
+                rootPos.mutable(),
+                biome,
+                facing,
+                URBAN_TREE_RADIUS,
+                // The chunk is already live; Dynamic Trees must notify clients
+                // when it places and ages the leaves.
+                false
+        );
     }
 }
