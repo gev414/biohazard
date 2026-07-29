@@ -166,6 +166,20 @@ recessed, ribbed, and balcony silhouettes; the hospital uses an articulated
 child-city-style overrides append the new selectors to base Lost Cities and
 LCMT styles while preserving the pinned upstream biome-specific selectors.
 
+Lost Cities streets and parks also carry post-collapse greenery. Base street
+shapes and LCMT's matching base variants keep their road lanes and street
+furniture, but add scattered dirt planters whose tree roll is 93.75%. Four new
+park layouts select temperate, arid, jungle, or snowy saplings to suit the
+active city style. A persisted completion pass adds up to three mature trees
+to safe positions in every new open city chunk, including small dirt cuts in
+clear sidewalk locations; chunks completed by the earlier pass receive one
+additional tree. Dynamic Trees supplies biome-appropriate species and its own
+tree forms when installed; vanilla growth remains the fallback. The same pass
+completes every exposed building face using broken vertical vine runners. It
+still scales with the active Lost Cities profile's `vineChance`, but preserves
+visible facade materials and prunes earlier solid-green walls when they load.
+Serene Seasons and Immersive Snow remain free to handle the resulting foliage.
+
 ## Patchouli Documentation
 
 The in-game Survivor's Field Manual is treated as part of the project itself rather than external documentation.

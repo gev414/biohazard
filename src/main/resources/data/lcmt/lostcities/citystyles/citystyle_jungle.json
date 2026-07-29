@@ -50,6 +50,10 @@
       {
         "factor": 1.0,
         "value": "lcmt:park/park_pool_ex_3"
+      },
+      {
+        "factor": 1.5,
+        "value": "rotwire:urban_greenery/overgrown_park_jungle"
       }
     ]
   }

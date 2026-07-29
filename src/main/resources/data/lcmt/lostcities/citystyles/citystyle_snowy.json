@@ -34,6 +34,10 @@
       {
         "factor": 0.5,
         "value": "lcmt:park/park_stone_flower_garden_1"
+      },
+      {
+        "factor": 1.5,
+        "value": "rotwire:urban_greenery/overgrown_park_snowy"
       }
     ]
   }

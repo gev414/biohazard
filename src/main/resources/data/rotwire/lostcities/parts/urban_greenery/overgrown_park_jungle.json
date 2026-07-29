@@ -1,0 +1,92 @@
+{
+  "xsize": 16,
+  "zsize": 16,
+  "palette": {
+    "palette": [
+      {
+        "char": "s",
+        "block": "minecraft:mossy_cobblestone_slab[type=bottom,waterlogged=false]"
+      },
+      {
+        "char": "d",
+        "block": "minecraft:dirt"
+      },
+      {
+        "char": "g",
+        "blocks": [
+          {
+            "random": 48,
+            "block": "minecraft:fern"
+          },
+          {
+            "random": 32,
+            "block": "minecraft:short_grass"
+          },
+          {
+            "random": 1000,
+            "block": "minecraft:air"
+          }
+        ]
+      },
+      {
+        "char": "P",
+        "blocks": [
+          {
+            "random": 60,
+            "block": "minecraft:jungle_sapling[stage=1]"
+          },
+          {
+            "random": 30,
+            "block": "minecraft:oak_sapling[stage=1]"
+          },
+          {
+            "random": 30,
+            "block": "minecraft:acacia_sapling[stage=1]"
+          },
+          {
+            "random": 8,
+            "block": "minecraft:air"
+          }
+        ]
+      }
+    ]
+  },
+  "slices": [
+    [
+      "                ",
+      "                ",
+      "   sss    sss   ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "   sss    sss   ",
+      "                ",
+      "                ",
+      "   sss    sss   ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "  sddds  sddds  ",
+      "   sss    sss   ",
+      "                ",
+      "                "
+    ],
+    [
+      "                ",
+      "                ",
+      "                ",
+      "   ggg    ggg   ",
+      "   gPg    gPg   ",
+      "   ggg    ggg   ",
+      "                ",
+      "                ",
+      "                ",
+      "                ",
+      "   ggg    ggg   ",
+      "   gPg    gPg   ",
+      "   ggg    ggg   ",
+      "                ",
+      "                ",
+      "                "
+    ]
+  ]
+}

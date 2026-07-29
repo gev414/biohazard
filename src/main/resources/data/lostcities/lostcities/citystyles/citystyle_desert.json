@@ -25,6 +25,12 @@
         "factor": 0.08,
         "value": "rotwire:custom_buildings/emergency_block"
       }
+    ],
+    "parks": [
+      {
+        "factor": 1.0,
+        "value": "rotwire:urban_greenery/overgrown_park_arid"
+      }
     ]
   }
 }
