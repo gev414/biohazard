@@ -189,6 +189,7 @@ dependencies {
     // Optional city-tree integration. Rotwire uses Dynamic Trees' public
     // species generation API when present and keeps a vanilla fallback.
     compileOnly "curse.maven:dynamictrees-252818:${dynamic_trees_curseforge_file}"
+    testImplementation "curse.maven:dynamictrees-252818:${dynamic_trees_curseforge_file}"
     // Required survival integration. Rotwire's sleep effects update Tough As
     // Nails thirst through its public API.
     compileOnly "maven.modrinth:ge1sOdFH:${toughasnails_modrinth_version}"
