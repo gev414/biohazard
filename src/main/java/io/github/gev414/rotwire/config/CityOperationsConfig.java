@@ -21,6 +21,8 @@ public final class CityOperationsConfig {
     public static ModConfigSpec.BooleanValue STREET_SPAWNS_ENABLED;
     public static ModConfigSpec.IntValue STREET_SPAWN_INTERVAL_TICKS;
     public static ModConfigSpec.DoubleValue STREET_SPAWN_CHANCE;
+    public static ModConfigSpec.DoubleValue
+            STREET_NIGHTTIME_CHANCE_MULTIPLIER;
     public static ModConfigSpec.IntValue STREET_ZOMBIE_CAP;
     public static ModConfigSpec.IntValue STREET_ZOMBIE_CAP_RADIUS;
     public static ModConfigSpec.IntValue STREET_MINIMUM_SPAWN_DISTANCE;
@@ -102,6 +104,17 @@ public final class CityOperationsConfig {
         STREET_SPAWN_CHANCE = BUILDER
                 .comment("Chance that each player's interval roll attempts one spawn.")
                 .defineInRange("chance", 0.15D, 0.0D, 1.0D);
+        STREET_NIGHTTIME_CHANCE_MULTIPLIER = BUILDER
+                .comment(
+                        "Multiplier applied to the street spawn chance at night.",
+                        "The resulting chance is capped at 1.0."
+                )
+                .defineInRange(
+                        "nighttimeChanceMultiplier",
+                        3.0D,
+                        1.0D,
+                        16.0D
+                );
         STREET_ZOMBIE_CAP = BUILDER
                 .comment(
                         "Maximum Rotwire street zombies near a player.",

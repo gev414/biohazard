@@ -160,6 +160,7 @@ Section: `[cityOperations]`, with sub-sections `[cityOperations.survey]`,
 | `streetSpawns.enabled` | boolean | `true` | Enables uncommon non-encounter zombies on outdoor Lost Cities streets |
 | `streetSpawns.intervalTicks` | 20 to 72,000 | `200` | Live delay between one spawn roll per eligible player |
 | `streetSpawns.chance` | 0.0 to 1.0 | `0.15` | Live chance that an interval roll searches for one spawn position |
+| `streetSpawns.nighttimeChanceMultiplier` | 1.0 to 16.0 | `3.0` | Live multiplier for the chance at night; effective chance is capped at 1.0 |
 | `streetSpawns.nearbyCap` | 0 to 128 | `4` | Live cap on Rotwire street zombies near each player; zero disables spawning |
 | `streetSpawns.nearbyCapRadius` | 16 to 256 | `96` | Live horizontal radius used for the nearby cap |
 | `streetSpawns.minimumDistance` | 1 to 128 | `28` | Live minimum horizontal distance from every non-spectating player |
@@ -321,6 +322,7 @@ Sections: `[mobSpawning.undergroundRestrictions]` and
 | `wildernessZombies.enabled` | boolean | `true` | Enables scarce surface zombies outside Lost Cities |
 | `wildernessZombies.intervalTicks` | 20 to 72,000 | `200` | Delay between one wilderness roll per eligible player |
 | `wildernessZombies.chance` | 0.0 to 1.0 | `0.025` | Chance that an interval roll searches for one spawn position |
+| `wildernessZombies.nighttimeChanceMultiplier` | 1.0 to 16.0 | `3.0` | Multiplier for the chance at night; effective chance is capped at 1.0 |
 | `wildernessZombies.nearbyCap` | 0 to 128 | `2` | Maximum Rotwire wilderness zombies within the cap radius; zero disables spawning |
 | `wildernessZombies.nearbyCapRadius` | 16 to 256 | `128` | Horizontal radius used for the wilderness population cap |
 | `wildernessZombies.minimumDistance` | 1 to 128 | `32` | Minimum horizontal spawn distance from every non-spectating player |
@@ -351,15 +353,19 @@ the vanilla zombie spawn predicate. It samples the
 position, solid footing, loaded chunks, world-border containment, and
 collision clearance. Forest-floor candidates may sit beneath foliage, but
 underground positions are never sampled. It deliberately omits the darkness
-check, so the same rule runs during every part of the day and night. Candidates
-in Lost Cities city chunks are rejected by this tier; those remain owned by
-the denser `cityOperations.streetSpawns` settings.
+check, so the rule can run during every part of the day and night. At night,
+the configured multiplier raises the roll chance from `0.025` to `0.075` by
+default. Candidates in Lost Cities city chunks are rejected by this tier;
+those remain owned by the denser `cityOperations.streetSpawns` settings,
+whose default nighttime chance similarly rises from `0.15` to `0.45`.
 
 With both default intervals, the wilderness `0.025` chance is one sixth of the
 city-street `0.15` chance. This averages one successful wilderness roll roughly
 every six to seven minutes per eligible player before position failures, with
 at most two marked wanderers nearby. The mobs use ordinary despawning and do
-not count as building encounters or persist indefinitely.
+not count as building encounters or persist indefinitely. These surface rolls
+do not alter the vanilla zombie spawn predicate, mob cap, or placement checks;
+natural zombies therefore continue spawning underground normally.
 
 The required Hordes configuration controls sunlight ignition independently.
 The Biohazard profile uses `hordes-common.toml` with `zombiesBurn = false`, so

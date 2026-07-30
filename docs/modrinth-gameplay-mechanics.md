@@ -33,4 +33,4 @@ Skeletons and creepers no longer emerge naturally across the surface: their ordi
 
 ## Daylight surface wanderers
 
-Zombies can roam every outdoor region by day or night, but danger remains concentrated in the ruined cities. Beyond the city limits, only occasional wilderness wanderers appear, with a much lower spawn chance and smaller nearby population cap than their urban counterparts.
+Zombies can roam every outdoor region by day or night, but danger remains concentrated in the ruined cities. Their outdoor spawn chance triples after nightfall, while vanilla underground zombie spawning remains unchanged. Beyond the city limits, only occasional wilderness wanderers appear, with a much lower spawn chance and smaller nearby population cap than their urban counterparts.

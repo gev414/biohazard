@@ -20,6 +20,8 @@ public final class MobSpawnConfig {
     public static ModConfigSpec.BooleanValue WILDERNESS_ZOMBIES_ENABLED;
     public static ModConfigSpec.IntValue WILDERNESS_SPAWN_INTERVAL_TICKS;
     public static ModConfigSpec.DoubleValue WILDERNESS_SPAWN_CHANCE;
+    public static ModConfigSpec.DoubleValue
+            WILDERNESS_NIGHTTIME_CHANCE_MULTIPLIER;
     public static ModConfigSpec.IntValue WILDERNESS_ZOMBIE_CAP;
     public static ModConfigSpec.IntValue WILDERNESS_ZOMBIE_CAP_RADIUS;
     public static ModConfigSpec.IntValue WILDERNESS_MINIMUM_SPAWN_DISTANCE;
@@ -100,6 +102,17 @@ public final class MobSpawnConfig {
                         "six to seven minutes per eligible player."
                 )
                 .defineInRange("chance", 0.025D, 0.0D, 1.0D);
+        WILDERNESS_NIGHTTIME_CHANCE_MULTIPLIER = BUILDER
+                .comment(
+                        "Multiplier applied to the wilderness spawn chance at night.",
+                        "The resulting chance is capped at 1.0."
+                )
+                .defineInRange(
+                        "nighttimeChanceMultiplier",
+                        3.0D,
+                        1.0D,
+                        16.0D
+                );
         WILDERNESS_ZOMBIE_CAP = BUILDER
                 .comment(
                         "Maximum Rotwire wilderness zombies near a player.",

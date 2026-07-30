@@ -93,8 +93,10 @@ Rotwire and configured in `rotwire-mobs.toml`; it does not require In Control.
 Zombies remain the surface threat. Rotwire's existing daylight-capable city
 street population is joined by rare wilderness wanderers: by default
 their spawn roll is one sixth as likely as the city roll and no more than two
-remain nearby. The required Hordes configuration keeps zombies from igniting
-in sunlight without granting general fire immunity.
+remain nearby. At night, both outdoor populations use three times their
+daylight spawn chance while preserving vanilla underground zombie spawning.
+The required Hordes configuration keeps zombies from igniting in sunlight
+without granting general fire immunity.
 
 ## Stealth, attention, and encumbrance
 

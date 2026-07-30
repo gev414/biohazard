@@ -266,10 +266,12 @@ retain the existing street-only population, while players outside city chunks
 receive a separate wilderness roll with one-sixth the default city chance and
 a smaller independent cap. Both paths sample loaded surface positions, bypass
 darkness so they work in daylight, and enforce horizontal player distance and
-population caps. City candidates require open sky, while wilderness terrain
-beneath foliage remains eligible. Spawned zombies carry only an origin marker
-used for the appropriate transient cap and otherwise use ordinary mob
-despawning.
+population caps. At night, each path applies its configured chance multiplier
+(three by default) before clamping the roll chance to 1.0. City candidates
+require open sky, while wilderness terrain beneath foliage remains eligible.
+Spawned zombies carry only an origin marker used for the appropriate transient
+cap and otherwise use ordinary mob despawning. Vanilla zombie placement is
+never replaced or rejected, so natural underground spawning remains intact.
 
 ### 5.6 Weather schedule state
 

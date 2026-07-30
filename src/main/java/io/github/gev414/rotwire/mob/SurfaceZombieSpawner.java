@@ -69,6 +69,8 @@ public final class SurfaceZombieSpawner {
         return new SpawnSettings(
                 SpawnRegion.CITY_STREET,
                 CityOperationsConfig.STREET_SPAWN_CHANCE.get(),
+                CityOperationsConfig
+                        .STREET_NIGHTTIME_CHANCE_MULTIPLIER.get(),
                 CityOperationsConfig.STREET_ZOMBIE_CAP.get(),
                 CityOperationsConfig.STREET_ZOMBIE_CAP_RADIUS.get(),
                 CityOperationsConfig.minimumStreetSpawnDistance(),
@@ -89,6 +91,8 @@ public final class SurfaceZombieSpawner {
         return new SpawnSettings(
                 SpawnRegion.WILDERNESS,
                 MobSpawnConfig.WILDERNESS_SPAWN_CHANCE.get(),
+                MobSpawnConfig
+                        .WILDERNESS_NIGHTTIME_CHANCE_MULTIPLIER.get(),
                 MobSpawnConfig.WILDERNESS_ZOMBIE_CAP.get(),
                 MobSpawnConfig.WILDERNESS_ZOMBIE_CAP_RADIUS.get(),
                 MobSpawnConfig.minimumWildernessSpawnDistance(),
@@ -103,6 +107,17 @@ public final class SurfaceZombieSpawner {
 
     static boolean passesSpawnRoll(double roll, double chance) {
         return roll < Math.clamp(chance, 0.0D, 1.0D);
+    }
+
+    static double effectiveSpawnChance(
+            double baseChance,
+            double nighttimeMultiplier,
+            boolean isNight
+    ) {
+        double multiplier = isNight
+                ? Math.max(1.0D, nighttimeMultiplier)
+                : 1.0D;
+        return Math.clamp(baseChance * multiplier, 0.0D, 1.0D);
     }
 
     private static void trySpawnFor(
@@ -120,7 +135,12 @@ public final class SurfaceZombieSpawner {
         }
 
         RandomSource random = level.getRandom();
-        if (!passesSpawnRoll(random.nextDouble(), settings.chance())) {
+        double chance = effectiveSpawnChance(
+                settings.chance(),
+                settings.nighttimeChanceMultiplier(),
+                level.isNight()
+        );
+        if (!passesSpawnRoll(random.nextDouble(), chance)) {
             return;
         }
 
@@ -320,6 +340,7 @@ public final class SurfaceZombieSpawner {
     private record SpawnSettings(
             SpawnRegion region,
             double chance,
+            double nighttimeChanceMultiplier,
             int cap,
             int capRadius,
             int minimumDistance,
