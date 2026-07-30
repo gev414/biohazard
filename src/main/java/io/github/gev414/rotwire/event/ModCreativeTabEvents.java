@@ -9,6 +9,7 @@ public final class ModCreativeTabEvents {
     public static void buildContents(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.RADIO_TRANSMITTER.get());
+            event.accept(ModItems.TARP.get());
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.DOCUMENTS.get());

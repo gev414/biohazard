@@ -9,7 +9,7 @@ Everything you carry now matters: stackable supplies contribute linearly by per-
 
 ## Sleep survival
 
-A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp with a lit campfire and a nearby deployed backpack containing more than 5 nutrition consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
 
 ## Stealth and progressive detection
 

@@ -11,6 +11,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "A Rested Camp",
+      "text": "Avoid Restless Sleep by resting beneath a complete deployed tarp, with a lit campfire and a deployed Traveler's Backpack within six blocks. The backpack must hold food worth more than 5 nutrition. When dawn advances, the smallest qualifying ration is consumed; waking early costs nothing."
+    },
+    {
+      "type": "patchouli:text",
       "title": "New Dawn",
       "text": "Endure an entire night awake and New Dawn restores one full hunger icon and one full thirst icon every ten seconds for fifty seconds. You must be present from dusk to dawn. Sleeping, dying, leaving the dimension, logging in late, or another survivor skipping the night forfeits the reward."
     }

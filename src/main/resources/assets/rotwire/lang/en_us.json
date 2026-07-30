@@ -1,5 +1,7 @@
 {
   "block.rotwire.radio_transmitter": "Radio Transmitter",
+  "block.rotwire.deployed_tarp": "Deployed Tarp",
+  "item.rotwire.tarp": "Tarp",
   "item.rotwire.documents": "Documents",
   "item.rotwire.research_data": "Research Data",
   "item.rotwire.encrypted_intel": "Encrypted Intel",
@@ -13,6 +15,7 @@
   "effect.rotwire.restless_sleep": "Restless Sleep",
   "effect.rotwire.new_dawn": "New Dawn",
   "message.rotwire.restless_sleep": "Your sleep was restless. Hunger and thirst set in...",
+  "message.rotwire.rested_campsite": "Your prepared campsite provided a restful night.",
   "message.rotwire.new_dawn": "You endured the night. A new dawn restores you.",
   "death.attack.rotwire.brute_rock_splash": "%1$s was crushed by a rock blast",
   "death.attack.rotwire.brute_rock_splash.player": "%1$s was crushed by a rock blast while fighting %2$s",

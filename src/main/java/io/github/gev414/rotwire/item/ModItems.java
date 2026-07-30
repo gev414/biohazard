@@ -22,6 +22,13 @@ public final class ModItems {
                             new Item.Properties()
                     )
             );
+    public static final Supplier<TarpItem> TARP = ITEMS.register(
+            "tarp",
+            () -> new TarpItem(
+                    ModBlocks.DEPLOYED_TARP.get(),
+                    new Item.Properties().stacksTo(1)
+            )
+    );
 
     public static final Supplier<Item> DOCUMENTS = ITEMS.registerSimpleItem(
             "documents",

@@ -4,6 +4,7 @@ import io.github.gev414.rotwire.Rotwire;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -23,6 +24,21 @@ public final class ModBlocks {
                             .sound(SoundType.METAL)
                             .noOcclusion()
                             .requiresCorrectToolForDrops()
+            );
+
+    public static final Supplier<TarpBlock> DEPLOYED_TARP =
+            BLOCKS.registerBlock(
+                    "deployed_tarp",
+                    TarpBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_GREEN)
+                            .strength(0.4F)
+                            .sound(SoundType.WOOL)
+                            .noCollission()
+                            .noOcclusion()
+                            .pushReaction(PushReaction.DESTROY)
+                            .ignitedByLava()
+                            .noLootTable()
             );
 
     private ModBlocks() {

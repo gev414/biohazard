@@ -114,7 +114,9 @@ world clock without changing the existing pre-horde fog. See
 ## Sleep survival
 
 Skipping the night in a Traveler's Backpack sleeping bag applies Restless
-Sleep, while remaining awake through a complete natural night grants New Dawn.
+Sleep. A complete tarp camp with a lit campfire and prepared food in a deployed
+backpack consumes a ration instead and provides a rested night. Remaining awake
+through a complete natural night grants New Dawn.
 For 50 seconds, either effect changes one full hunger icon and one full thirst
 icon every ten seconds in the harmful or beneficial direction. See
 [Sleep survival](docs/sleep-survival.md).
