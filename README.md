@@ -82,6 +82,20 @@ the screen-edge vignette shifts from dirty green to pulsing red-orange and
 prompts the player to seek shelter, without adding a countdown bar. See
 [Weather forecast and contaminated precipitation](docs/weather-forecast-and-hazards.md).
 
+## Surface zombies, underground skeletons and creepers
+
+Natural creeper and vanilla skeleton-family spawns are confined to deeper
+underground areas in configured dimensions. The default Overworld policy
+allows them at Y 47 or lower, while spawners, commands, spawn eggs, structure
+triggers, and Rotwire encounters remain untouched. This behavior is owned by
+Rotwire and configured in `rotwire-mobs.toml`; it does not require In Control.
+
+Zombies remain the surface threat. Rotwire's existing daylight-capable city
+street population is joined by rare wilderness wanderers: by default
+their spawn roll is one sixth as likely as the city roll and no more than two
+remain nearby. The required Hordes configuration keeps zombies from igniting
+in sunlight without granting general fire immunity.
+
 ## Stealth, attention, and encumbrance
 
 Carried equipment now forms a second survival constraint: inventory, armor,

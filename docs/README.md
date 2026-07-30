@@ -29,6 +29,7 @@ Choose the path that matches the work you are doing:
 | Understand or tune city progression | [City operations](city-operations.md) | [Configuration and operations](configuration-and-operations.md#4-city-operations-config) |
 | Tune stealth, noise, or carried weight | [Stealth and encumbrance](stealth-attention-and-encumbrance.md) | [Configuration and operations](configuration-and-operations.md#5-survival-systems-config) |
 | Tune forecasts or contaminated weather | [Weather forecast and hazards](weather-forecast-and-hazards.md) | [Configuration and operations](configuration-and-operations.md#6-weather-forecast-and-hazard-config) |
+| Tune surface zombies or underground threats | [Configuration and operations](configuration-and-operations.md#7-mob-spawning-config) | [Service reference](service-reference.md#mobspawnrestrictions) |
 | Tune portable sleep or New Dawn | [Sleep survival](sleep-survival.md) | [Configuration and operations](configuration-and-operations.md#5-survival-systems-config) |
 | Build, test, release, or upgrade | [Development and maintenance](development-and-maintenance.md) | [Dependency matrix](architecture.md#external-dependency-map) |
 | Investigate a broken save or delivery | [Configuration and operations](configuration-and-operations.md#diagnostics-and-recovery) | [State ownership](architecture.md#state-ownership-and-persistence) |
@@ -100,6 +101,7 @@ rotwire/
 |   |-- item/                        Item registration and infection medicine
 |   |-- loot/                        Handcrafted storage stocking
 |   |-- lostcities/                  Lost Cities API adapter
+|   |-- mob/                         Surface populations and depth restrictions
 |   |-- network/                     Custom payload protocol
 |   |-- stealth/                     Awareness and noise investigation
 |   |-- weather/                     Forecast schedule and exposure authority

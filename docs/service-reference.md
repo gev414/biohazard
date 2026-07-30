@@ -131,6 +131,20 @@ Defines client-side `rotwire-client.toml`: enabled flag, pre-event fade
 duration, and target near/far fog planes. It affects only presentation and is
 consumed by `HordeAtmosphereClientEvents`.
 
+### `MobSpawnConfig`
+
+Source: [`MobSpawnConfig.java`](../src/main/java/io/github/gev414/rotwire/config/MobSpawnConfig.java)
+
+Defines server-side `rotwire-mobs.toml`. The `undergroundRestrictions`
+section contains the master switch, individual skeleton-family and creeper
+switches, minimum depth below the active dimension's sea level, and a
+dimension-ID allowlist. The `wildernessZombies` section controls its own
+enablement, interval, chance, cap/radius, player distances, position attempts,
+and dimension allowlist. Dimension entries are validated as resource
+locations. All settings are read live and the feature owns no durable state.
+
+Consumed by: `MobSpawnRestrictions`, `SurfaceZombieSpawner`.
+
 ### `RadioQuestConfig`
 
 Source: [`RadioQuestConfig.java`](../src/main/java/io/github/gev414/rotwire/config/RadioQuestConfig.java)
@@ -217,6 +231,47 @@ Source: [`ModEntityEvents.java`](../src/main/java/io/github/gev414/rotwire/event
 Binds the Brute entity type to the attributes produced by
 `BruteEntity.createAttributes()`. Missing this binding normally produces an
 entity registration/runtime failure.
+
+### `MobSpawnRestrictions`
+
+Source: [`MobSpawnRestrictions.java`](../src/main/java/io/github/gev414/rotwire/mob/MobSpawnRestrictions.java)
+
+Handles NeoForge's early `MobSpawnEvent.SpawnPlacementCheck`. For enabled
+dimensions it rejects `NATURAL` spawn attempts above the configured
+sea-level-relative maximum for creepers and the vanilla skeleton family
+(skeleton, stray, bogged, and wither skeleton). Other entity types and spawn
+sources retain NeoForge's default result, including spawners, commands, spawn
+eggs, structure triggers, and Rotwire `EVENT` encounters.
+
+The cutoff is inclusive: `sea level - minimumDepthBelowSeaLevel` is allowed;
+the next Y position is rejected. The check intentionally avoids sky and
+heightmap tests so covered Lost Cities surface structures are not mistaken
+for underground space.
+
+### `SurfaceZombieSpawner`
+
+Source: [`SurfaceZombieSpawner.java`](../src/main/java/io/github/gev414/rotwire/mob/SurfaceZombieSpawner.java)
+
+Unifies Rotwire's bounded outdoor zombie population. On each due interval it
+classifies a player from Lost Cities chunk metadata:
+
+- city players retain the existing city-street chance, cap, distances, and
+  street-only candidate rule from `CityOperationsConfig`;
+- non-city players use the much lower wilderness chance and independent cap
+  from `MobSpawnConfig`.
+
+Successful candidates come from the loaded
+`MOTION_BLOCKING_NO_LEAVES` surface and require no fluid, sturdy footing,
+world-border containment, distance from every player, collision clearance,
+and normal obstruction checks. The city-street tier additionally requires
+open sky; wilderness terrain beneath foliage remains eligible. No darkness
+test is applied, so the same path functions during daylight. City and
+wilderness entities carry separate transient origin markers for their
+respective nearby caps and otherwise despawn normally.
+
+The spawner honors Peaceful difficulty and `doMobSpawning`. The Biohazard
+profile's required Hordes configuration disables zombie sunlight ignition;
+Rotwire does not cancel ordinary fire or lava damage.
 
 ### `SurvivalSystemsEvents` and `SurvivalStatusSync`
 

@@ -1,6 +1,7 @@
-package io.github.gev414.rotwire.city;
+package io.github.gev414.rotwire.mob;
 
 import io.github.gev414.rotwire.config.CityOperationsConfig;
+import io.github.gev414.rotwire.config.MobSpawnConfig;
 import io.github.gev414.rotwire.lostcities.LostCitiesCityResolver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,31 +21,94 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import javax.annotation.Nullable;
 
-public final class CityStreetZombieSpawner {
+public final class SurfaceZombieSpawner {
 
     private static final String STREET_SPAWN_TAG =
             "rotwire_city_street_spawn";
+    private static final String WILDERNESS_SPAWN_TAG =
+            "rotwire_wilderness_surface_spawn";
 
     public static void onServerTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
-        if (!CityOperationsConfig.ENABLED.get()
-                || !CityOperationsConfig.STREET_SPAWNS_ENABLED.get()
-                || CityOperationsConfig.STREET_ZOMBIE_CAP.get() <= 0) {
-            return;
-        }
-
-        int interval =
-                CityOperationsConfig.STREET_SPAWN_INTERVAL_TICKS.get();
-        if (server.overworld().getGameTime() % interval != 0L) {
+        long gameTime = server.overworld().getGameTime();
+        SpawnSettings citySettings = citySettings(gameTime);
+        SpawnSettings wildernessSettings = wildernessSettings(gameTime);
+        if (citySettings == null && wildernessSettings == null) {
             return;
         }
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            trySpawnFor(player);
+            ServerLevel level = player.serverLevel();
+            boolean inCity = LostCitiesCityResolver.isCityChunk(
+                    level,
+                    player.chunkPosition().x,
+                    player.chunkPosition().z
+            );
+            if (inCity && citySettings != null) {
+                trySpawnFor(player, citySettings);
+            } else if (!inCity
+                    && wildernessSettings != null
+                    && MobSpawnConfig.wildernessZombiesApplyTo(
+                            level.dimension().location()
+                    )) {
+                trySpawnFor(player, wildernessSettings);
+            }
         }
     }
 
-    private static void trySpawnFor(ServerPlayer player) {
+    @Nullable
+    private static SpawnSettings citySettings(long gameTime) {
+        int interval =
+                CityOperationsConfig.STREET_SPAWN_INTERVAL_TICKS.get();
+        if (!CityOperationsConfig.ENABLED.get()
+                || !CityOperationsConfig.STREET_SPAWNS_ENABLED.get()
+                || CityOperationsConfig.STREET_ZOMBIE_CAP.get() <= 0
+                || !isSpawnTick(gameTime, interval)) {
+            return null;
+        }
+        return new SpawnSettings(
+                SpawnRegion.CITY_STREET,
+                CityOperationsConfig.STREET_SPAWN_CHANCE.get(),
+                CityOperationsConfig.STREET_ZOMBIE_CAP.get(),
+                CityOperationsConfig.STREET_ZOMBIE_CAP_RADIUS.get(),
+                CityOperationsConfig.minimumStreetSpawnDistance(),
+                CityOperationsConfig.maximumStreetSpawnDistance(),
+                CityOperationsConfig.STREET_SPAWN_POSITION_ATTEMPTS.get()
+        );
+    }
+
+    @Nullable
+    private static SpawnSettings wildernessSettings(long gameTime) {
+        int interval =
+                MobSpawnConfig.WILDERNESS_SPAWN_INTERVAL_TICKS.get();
+        if (!MobSpawnConfig.WILDERNESS_ZOMBIES_ENABLED.get()
+                || MobSpawnConfig.WILDERNESS_ZOMBIE_CAP.get() <= 0
+                || !isSpawnTick(gameTime, interval)) {
+            return null;
+        }
+        return new SpawnSettings(
+                SpawnRegion.WILDERNESS,
+                MobSpawnConfig.WILDERNESS_SPAWN_CHANCE.get(),
+                MobSpawnConfig.WILDERNESS_ZOMBIE_CAP.get(),
+                MobSpawnConfig.WILDERNESS_ZOMBIE_CAP_RADIUS.get(),
+                MobSpawnConfig.minimumWildernessSpawnDistance(),
+                MobSpawnConfig.maximumWildernessSpawnDistance(),
+                MobSpawnConfig.WILDERNESS_SPAWN_POSITION_ATTEMPTS.get()
+        );
+    }
+
+    static boolean isSpawnTick(long gameTime, int intervalTicks) {
+        return intervalTicks > 0 && gameTime % intervalTicks == 0L;
+    }
+
+    static boolean passesSpawnRoll(double roll, double chance) {
+        return roll < Math.clamp(chance, 0.0D, 1.0D);
+    }
+
+    private static void trySpawnFor(
+            ServerPlayer player,
+            SpawnSettings settings
+    ) {
         ServerLevel level = player.serverLevel();
         if (!player.isAlive()
                 || player.isSpectator()
@@ -56,13 +120,11 @@ public final class CityStreetZombieSpawner {
         }
 
         RandomSource random = level.getRandom();
-        if (random.nextDouble()
-                >= CityOperationsConfig.STREET_SPAWN_CHANCE.get()) {
+        if (!passesSpawnRoll(random.nextDouble(), settings.chance())) {
             return;
         }
 
-        int capRadius =
-                CityOperationsConfig.STREET_ZOMBIE_CAP_RADIUS.get();
+        int capRadius = settings.capRadius();
         AABB nearbyArea = new AABB(
                 player.getX() - capRadius,
                 level.getMinBuildHeight(),
@@ -71,13 +133,12 @@ public final class CityStreetZombieSpawner {
                 level.getMaxBuildHeight(),
                 player.getZ() + capRadius
         );
-        int nearbyStreetZombies = level.getEntitiesOfClass(
+        int nearbySurfaceZombies = level.getEntitiesOfClass(
                 Zombie.class,
                 nearbyArea,
-                CityStreetZombieSpawner::isStreetSpawn
+                zombie -> isSpawnFrom(zombie, settings.region())
         ).size();
-        if (nearbyStreetZombies
-                >= CityOperationsConfig.STREET_ZOMBIE_CAP.get()) {
+        if (nearbySurfaceZombies >= settings.cap()) {
             return;
         }
 
@@ -90,7 +151,8 @@ public final class CityStreetZombieSpawner {
                 level,
                 player,
                 zombie,
-                random
+                random,
+                settings
         );
         if (spawnPosition == null) {
             zombie.discard();
@@ -104,7 +166,10 @@ public final class CityStreetZombieSpawner {
                 MobSpawnType.NATURAL,
                 null
         );
-        zombie.getPersistentData().putBoolean(STREET_SPAWN_TAG, true);
+        zombie.getPersistentData().putBoolean(
+                settings.region().spawnTag(),
+                true
+        );
         if (!level.tryAddFreshEntityWithPassengers(zombie)) {
             zombie.discard();
         }
@@ -115,18 +180,14 @@ public final class CityStreetZombieSpawner {
             ServerLevel level,
             ServerPlayer anchor,
             Zombie zombie,
-            RandomSource random
+            RandomSource random,
+            SpawnSettings settings
     ) {
-        int minimumDistance =
-                CityOperationsConfig.minimumStreetSpawnDistance();
-        int maximumDistance =
-                CityOperationsConfig.maximumStreetSpawnDistance();
+        int minimumDistance = settings.minimumDistance();
+        int maximumDistance = settings.maximumDistance();
 
         for (int attempt = 0;
-             attempt
-                     < CityOperationsConfig
-                     .STREET_SPAWN_POSITION_ATTEMPTS
-                     .get();
+             attempt < settings.positionAttempts();
              attempt++) {
             double angle = random.nextDouble() * Math.TAU;
             double distance = minimumDistance
@@ -155,7 +216,8 @@ public final class CityStreetZombieSpawner {
                     level,
                     candidate,
                     zombie,
-                    minimumDistance
+                    minimumDistance,
+                    settings.region()
             )) {
                 zombie.moveTo(
                         candidate.getX() + 0.5D,
@@ -174,16 +236,14 @@ public final class CityStreetZombieSpawner {
             ServerLevel level,
             BlockPos position,
             Zombie zombie,
-            int minimumDistance
+            int minimumDistance,
+            SpawnRegion region
     ) {
         if (!level.isAreaLoaded(position, 1)
                 || !level.getWorldBorder().isWithinBounds(position)
-                || !LostCitiesCityResolver.isStreetChunk(
-                level,
-                position.getX() >> 4,
-                position.getZ() >> 4
-        )
-                || !level.canSeeSky(position)
+                || !isRequiredRegion(level, position, region)
+                || (region == SpawnRegion.CITY_STREET
+                        && !level.canSeeSky(position))
                 || !level.getFluidState(position).isEmpty()
                 || !level.getBlockState(position.below())
                 .isFaceSturdy(level, position.below(), Direction.UP)
@@ -204,6 +264,27 @@ public final class CityStreetZombieSpawner {
         );
         return level.noCollision(zombie)
                 && zombie.checkSpawnObstruction(level);
+    }
+
+    private static boolean isRequiredRegion(
+            ServerLevel level,
+            BlockPos position,
+            SpawnRegion region
+    ) {
+        int chunkX = position.getX() >> 4;
+        int chunkZ = position.getZ() >> 4;
+        if (region == SpawnRegion.CITY_STREET) {
+            return LostCitiesCityResolver.isStreetChunk(
+                    level,
+                    chunkX,
+                    chunkZ
+            );
+        }
+        return !LostCitiesCityResolver.isCityChunk(
+                level,
+                chunkX,
+                chunkZ
+        );
     }
 
     private static boolean isTooCloseToAnyPlayer(
@@ -227,12 +308,41 @@ public final class CityStreetZombieSpawner {
         return false;
     }
 
-    private static boolean isStreetSpawn(Zombie zombie) {
+    private static boolean isSpawnFrom(
+            Zombie zombie,
+            SpawnRegion region
+    ) {
         return zombie.isAlive()
                 && zombie.getPersistentData()
-                .getBoolean(STREET_SPAWN_TAG);
+                .getBoolean(region.spawnTag());
     }
 
-    private CityStreetZombieSpawner() {
+    private record SpawnSettings(
+            SpawnRegion region,
+            double chance,
+            int cap,
+            int capRadius,
+            int minimumDistance,
+            int maximumDistance,
+            int positionAttempts
+    ) {
+    }
+
+    private enum SpawnRegion {
+        CITY_STREET(STREET_SPAWN_TAG),
+        WILDERNESS(WILDERNESS_SPAWN_TAG);
+
+        private final String spawnTag;
+
+        SpawnRegion(String spawnTag) {
+            this.spawnTag = spawnTag;
+        }
+
+        private String spawnTag() {
+            return spawnTag;
+        }
+    }
+
+    private SurfaceZombieSpawner() {
     }
 }

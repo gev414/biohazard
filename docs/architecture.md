@@ -20,6 +20,9 @@ Rotwire owns:
   noise-driven investigation;
 - deterministic persisted weather plans, two-day radio forecasts, and
   contaminated-precipitation exposure;
+- natural-spawn depth restrictions for skeleton-family mobs and creepers;
+- bounded daylight-capable surface zombies with separate urban and wilderness
+  population tiers;
 - radio Horde Watch presentation derived from the same horde snapshot;
 - one-time stocking of selected world-generated Handcrafted storage blocks;
 - packaged quest defaults, loot, world-generation data, recipes, and in-game
@@ -84,17 +87,19 @@ with `@Mod("rotwire")`. Its constructor wires the system in this order:
    bus.
 2. Attach creative-tab population, entity attributes, and network payload
    registration to the mod event bus.
-3. Build and register the encounter, radio, city-operations, survival, and
-   weather server configs plus the horde-atmosphere client config.
+3. Build and register the encounter, radio, city-operations, mob-spawning,
+   survival, and weather server configs plus the horde-atmosphere client
+   config.
 4. Install the bundled FTB Quests defaults if the target quest directory is
    absent or empty.
 5. Register FTB Quests custom task and reward callbacks.
 6. Request the Lost Cities API during common setup using inter-mod
    communication.
 7. Attach gameplay listeners to the NeoForge event bus: encounter ticks and
-   deaths, ambient city-street spawning, container interactions, Handcrafted
-   placement, horde state sync, delivery ticks, stealth/attention signals,
-   encumbrance updates, and server-stop cleanup.
+   deaths, ambient city/wilderness surface spawning, natural-spawn
+   restrictions, container interactions, Handcrafted placement, horde state
+   sync, delivery ticks, stealth/attention signals, encumbrance updates, and
+   server-stop cleanup.
 
 ### The two event buses
 
@@ -255,11 +260,16 @@ highest applied danger is also stored in its persistent data, while a named
 permanent maximum-health modifier makes the upgrade survive unloading and
 prevents leaving a city from weakening it.
 
-Ambient street zombies do not use this saved-data layer. A throttled server
-tick samples loaded Lost Cities chunks around players, accepts only city
-chunks without building metadata and open-sky spawn surfaces, and enforces a
-small horizontal population cap. Spawned zombies carry only a marker used for
-that transient cap and otherwise use ordinary mob despawning.
+Ambient surface zombies do not use this saved-data layer. A throttled server
+tick classifies players through Lost Cities chunk metadata. City players
+retain the existing street-only population, while players outside city chunks
+receive a separate wilderness roll with one-sixth the default city chance and
+a smaller independent cap. Both paths sample loaded surface positions, bypass
+darkness so they work in daylight, and enforce horizontal player distance and
+population caps. City candidates require open sky, while wilderness terrain
+beneath foliage remains eligible. Spawned zombies carry only an origin marker
+used for the appropriate transient cap and otherwise use ordinary mob
+despawning.
 
 ### 5.6 Weather schedule state
 

@@ -58,6 +58,17 @@ maps the surrounding zone. It honors Peaceful difficulty and the
 check, so daylight does not prevent these zombies from appearing; disabling
 sunburn therefore lets them continue roaming during the day.
 
+The same Rotwire spawner also permits occasional outdoor wanderers beyond
+Lost Cities. Wilderness candidates must remain outside city chunks and use a
+separate default 2.5% roll every 200 ticks, with no more than two within 128
+blocks. The comparable city roll is 15%, making a wilderness attempt one sixth
+as likely before position checks. Wilderness balance and dimensions are in
+`rotwire-mobs.toml`; city-street balance remains here for compatibility.
+
+The Biohazard profile's required Hordes setting `zombiesBurn = false` keeps
+both populations roaming under daylight without making them immune to ordinary
+fire or lava.
+
 ## Danger and infected scaling
 
 By default, every five unique cleared encounter buildings increase the city's

@@ -6,13 +6,14 @@ the persistent files that must be protected during upgrades or recovery.
 
 ## 1. Configuration file ownership
 
-Rotwire registers six NeoForge configuration files:
+Rotwire registers seven NeoForge configuration files:
 
 | File | NeoForge type | Effective location | Authority |
 |---|---|---|---|
 | `rotwire-encounters.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-mobs.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-survival.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-weather.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-client.toml` | client | instance `config` directory | each client |
@@ -301,7 +302,70 @@ constants in `WeatherExposureClient`; they are not exposed in
 `rotwire-client.toml`. Changing them requires rebuilding and distributing the
 client JAR, but does not alter server hazard balance.
 
-## 7. Client horde-atmosphere config
+## 7. Mob spawning config
+
+File: `rotwire-mobs.toml`
+
+Sections: `[mobSpawning.undergroundRestrictions]` and
+`[mobSpawning.wildernessZombies]`
+
+| Key | Type/range | Default | Effect |
+|---|---|---:|---|
+| `undergroundRestrictions.enabled` | boolean | `true` | Master restriction switch, read live for every eligible spawn-placement check |
+| `undergroundRestrictions.restrictSkeletons` | boolean | `true` | Restricts natural skeleton, stray, bogged, and wither-skeleton spawns |
+| `undergroundRestrictions.restrictCreepers` | boolean | `true` | Restricts natural creeper spawns |
+| `undergroundRestrictions.minimumDepthBelowSeaLevel` | integer, 0 to 384 | `16` | Restricted mobs may spawn naturally only at or below `sea level - depth` |
+| `undergroundRestrictions.dimensions` | list of dimension IDs | `minecraft:overworld` | Applies the depth rule only in listed dimensions |
+| `wildernessZombies.enabled` | boolean | `true` | Enables scarce surface zombies outside Lost Cities |
+| `wildernessZombies.intervalTicks` | 20 to 72,000 | `200` | Delay between one wilderness roll per eligible player |
+| `wildernessZombies.chance` | 0.0 to 1.0 | `0.025` | Chance that an interval roll searches for one spawn position |
+| `wildernessZombies.nearbyCap` | 0 to 128 | `2` | Maximum Rotwire wilderness zombies within the cap radius; zero disables spawning |
+| `wildernessZombies.nearbyCapRadius` | 16 to 256 | `128` | Horizontal radius used for the wilderness population cap |
+| `wildernessZombies.minimumDistance` | 1 to 128 | `32` | Minimum horizontal spawn distance from every non-spectating player |
+| `wildernessZombies.maximumDistance` | 1 to 256 | `72` | Maximum horizontal spawn distance from the anchor player |
+| `wildernessZombies.positionAttempts` | 1 to 128 | `24` | Candidate outdoor positions tested after a successful roll |
+| `wildernessZombies.dimensions` | list of dimension IDs | `minecraft:overworld` | Dimensions where wilderness surface zombies may appear |
+
+At the vanilla Overworld sea level of 63, the default depth produces a maximum
+natural-spawn position of Y 47. Y 47 is allowed and Y 48 is rejected. This
+absolute vertical rule deliberately does not use sky visibility or a heightmap:
+Lost Cities roofs and skyscraper floors therefore cannot make surface-level
+interiors count as caves.
+
+Only `MobSpawnType.NATURAL` is rejected. Mob spawners, commands, spawn eggs,
+structure or trigger spawns, and Rotwire's scripted `EVENT` encounter mobs
+retain their normal behavior at every height. The default dimension list also
+leaves Nether wither-skeleton spawning unchanged. Adding
+`"minecraft:the_nether"` applies the same sea-level-relative rule there.
+
+All values are read live for future spawn attempts and create no persistent
+state. Setting `minimumDepthBelowSeaLevel` to zero still rejects natural
+spawns above sea level; disable the feature or an individual mob switch to
+restore unrestricted vertical spawning.
+
+Wilderness zombies use Rotwire's bounded ambient spawner rather than replacing
+the vanilla zombie spawn predicate. It samples the
+`MOTION_BLOCKING_NO_LEAVES` surface heightmap and requires an empty non-fluid
+position, solid footing, loaded chunks, world-border containment, and
+collision clearance. Forest-floor candidates may sit beneath foliage, but
+underground positions are never sampled. It deliberately omits the darkness
+check, so the same rule runs during every part of the day and night. Candidates
+in Lost Cities city chunks are rejected by this tier; those remain owned by
+the denser `cityOperations.streetSpawns` settings.
+
+With both default intervals, the wilderness `0.025` chance is one sixth of the
+city-street `0.15` chance. This averages one successful wilderness roll roughly
+every six to seven minutes per eligible player before position failures, with
+at most two marked wanderers nearby. The mobs use ordinary despawning and do
+not count as building encounters or persist indefinitely.
+
+The required Hordes configuration controls sunlight ignition independently.
+The Biohazard profile uses `hordes-common.toml` with `zombiesBurn = false`, so
+daylight surface zombies continue roaming while retaining ordinary fire and
+lava vulnerability. Changing that setting to true makes open-sky zombies burn
+normally after spawning.
+
+## 8. Client horde-atmosphere config
 
 File: `rotwire-client.toml`
 
@@ -322,7 +386,7 @@ This config does not change The Hordes schedule. Server payloads use The Hordes'
 `dayLength`, `hordeStartTime`, enabled state, command-only mode, and per-player
 horde state.
 
-## 8. Persistent files
+## 9. Persistent files
 
 Back up the world before changing or recovering these files.
 
@@ -392,7 +456,7 @@ It is installed from the JAR only when absent/empty. Back it up separately from
 the world when it contains server-authored changes. Team/player quest progress
 is owned by FTB Quests and follows that mod's own persistence rules.
 
-## 9. Backup and upgrade procedure
+## 10. Backup and upgrade procedure
 
 Before a Rotwire or required-mod upgrade:
 
@@ -410,7 +474,7 @@ Before a Rotwire or required-mod upgrade:
 Do not test world-generation compatibility only in old chunks. Generate fresh
 Lost Cities terrain in staging.
 
-## 10. Operational smoke test
+## 11. Operational smoke test
 
 After installation or upgrade, verify at least:
 
@@ -445,8 +509,16 @@ After installation or upgrade, verify at least:
 20. `/rotwire weather force contaminated_storm 30s` immediately updates actual
     weather, the radio's test-override line, vignette, and open-sky damage;
     `/rotwire weather clear` resumes the unchanged daily plan.
+21. At Y 48 in the Overworld, natural skeleton-family and creeper spawns are
+    rejected while another natural hostile type remains unaffected.
+22. At Y 47, restricted natural spawns are allowed; above the cutoff, a dungeon
+    spawner or spawn egg can still create the same mob.
+23. During daylight, a wilderness player eventually receives an outdoor
+    Rotwire zombie while city chunks remain excluded from the wilderness tier.
+24. Wilderness ambient zombies stop at two within 128 blocks by default and
+    remain substantially less frequent than city-street zombies.
 
-## 11. Diagnostics and recovery
+## 12. Diagnostics and recovery
 
 ### Encounter does not start
 
@@ -595,7 +667,7 @@ excluded. Confirm the block entity implements `Container`, lacks the
 player-placed and stocked flags, and that
 `rotwire:chests/handcrafted_storage` produces loot for the context.
 
-## 12. Recovery principles
+## 13. Recovery principles
 
 - Work on a backup or cloned world first.
 - Prefer correcting config/resources and restoring a clean backup over editing

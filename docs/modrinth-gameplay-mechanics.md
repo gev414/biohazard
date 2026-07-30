@@ -26,3 +26,11 @@ A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor 
 ## Weather forecast and contaminated storms
 
 A calibrated Radio Transmitter now provides a two-day weather forecast so expeditions can be planned around clear skies, rain, storms, and their contaminated variants. Ordinary wet weather masks sight and sound from infected, while direct exposure to contaminated precipitation gives a short dirty-green vignette warning before shifting to a pulsing red-orange hazard that damages survivors until they find a roof; the warning stays readable without adding a countdown bar.
+
+## Underground skeletons and creepers
+
+Skeletons and creepers no longer emerge naturally across the surface: their ordinary spawns are pushed into deeper caves, making underground exploration more dangerous while keeping outdoor threats focused on the infected. Deliberate encounters such as dungeon spawners and scripted events remain intact.
+
+## Daylight surface wanderers
+
+Zombies can roam every outdoor region by day or night, but danger remains concentrated in the ruined cities. Beyond the city limits, only occasional wilderness wanderers appear, with a much lower spawn chance and smaller nearby population cap than their urban counterparts.
