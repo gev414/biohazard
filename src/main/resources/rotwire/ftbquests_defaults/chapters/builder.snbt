@@ -177,6 +177,35 @@
 			x: 6.0d
 			y: 2.0d
 		}
+		{
+			can_repeat: true
+			dependencies: ["6100000000000001"]
+			icon: { id: "rotwire:field_workshop_module" }
+			id: "6100000000000009"
+			repeat_cooldown: 6000
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "rotwire:field_workshop_module" }
+				id: "6190000000000009"
+				tags: [
+					"rotwire_radio_delivery"
+					"rotwire_manifest_camp_workshop_module"
+					"rotwire_category_equipment"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "6191000000000001" tags: ["rotwire_radio_accept"] type: "custom" }
+				{ consume_items: false count: 2L id: "6191000000000002" item: { count: 1, id: "rotwire:research_data" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false count: 4L id: "6191000000000003" item: { count: 1, id: "minecraft:copper_ingot" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false count: 2L id: "6191000000000004" item: { count: 1, id: "minecraft:iron_ingot" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false id: "6191000000000005" item: { count: 1, id: "minecraft:anvil" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "6191000000000006" tags: ["rotwire_radio_complete"] type: "custom" }
+			]
+			x: 0.0d
+			y: 4.0d
+		}
 	]
 	require_sequential_tasks: false
 }

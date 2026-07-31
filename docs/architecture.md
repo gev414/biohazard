@@ -238,10 +238,13 @@ therefore need save-compatibility consideration.
 
 Each Radio Transmitter owns a `RadioTransmitterBlockEntity`. It persists its
 `ready_at` game-time value, whether its city survey completed, and its optional
-`CityZoneKey`. Placement or first load without state starts calibration at
-`current game time + configured calibration ticks` and starts a paced city
-survey. The radio connects only when both are complete. Moving the block
-creates a new block entity and therefore recalibrates and surveys again.
+`CityZoneKey`. A sheltered radio additionally persists a camp UUID, owner UUID,
+sanitized installed-module bitmask, and twenty-seven cache slots. Placement or
+first load without state starts calibration at `current game time + configured
+calibration ticks` and starts a paced city survey. The radio connects only when
+both are complete. Moving the block creates a new block entity and therefore
+recalibrates and surveys again, while block removal drops module and cache
+contents before the old identity disappears.
 
 ### 5.5 City-zone world state
 
@@ -484,7 +487,8 @@ failed turn-in.
    notified and sends a message. Offline owners are notified after they are
    online and a later update runs.
 7. Interacting with a calibrated transmitter first inserts all ready standard
-   deliveries. Remainders that do not fit stay persisted.
+   deliveries. An owned Quartermaster Cache receives items before the player
+   inventory; remainders that fit neither destination stay persisted.
 8. If a ready choice exists, the server sends its UUID and item IDs to the
    client and stops before opening the quest book.
 9. The choice screen sends the selected index. The server validates all
@@ -493,7 +497,25 @@ failed turn-in.
 10. If no choice screen opens, the transmitter reports mailbox status and
     opens the standard FTB quest book.
 
-### 6.5 Horde atmosphere synchronization
+### 6.5 Camp establishment and module use
+
+1. The radio's server tick or an interaction searches for a complete Rotwire
+   Tarp or supported SimplyTents structure at the transmitter position.
+2. The first successful shelter check assigns a camp UUID while placement
+   records the owner UUID.
+3. Interacting with an established camp opens `CampRadioMenu`; once per second
+   it synchronizes the authoritative shelter checklist and network state.
+4. Using a module item asks the block entity to verify owner, active campsite,
+   connected radio, and absence of that module before consuming the item.
+5. Storage opens a persistent 3x9 item handler. Workshop repair verifies a
+   damaged main-hand item and Field Repair Kit before applying quarter-maximum
+   repair. Operations telemetry is populated only while both camp and radio
+   remain online.
+6. The Operations Relay broadens radio lookup to the active campsite radius;
+   ordinary transmitters continue using the configured interaction radius.
+7. Dismantling the radio drops all cached stacks and installed module items.
+
+### 6.6 Horde atmosphere synchronization
 
 ```mermaid
 flowchart LR
@@ -516,7 +538,7 @@ closer; it never expands fog distance imposed by Minecraft, another mod, or the
 environment. The handler applies only to terrain fog with no fluid fog in the
 Overworld.
 
-### 6.6 Handcrafted storage stocking
+### 6.7 Handcrafted storage stocking
 
 Selected Handcrafted containers do not carry vanilla loot-table metadata, so
 Rotwire fills them lazily on first server-side interaction:
@@ -536,7 +558,7 @@ Rotwire fills them lazily on first server-side interaction:
 This ordering is deliberate and should be revisited explicitly if handcrafted
 storage is ever intended to respect haunted-building locks.
 
-### 6.7 Infection medicine
+### 6.8 Infection medicine
 
 Both medicines subclass `PotionItem`, so Minecraft owns consumption animation,
 stack use, and the returned bottle behavior.
@@ -554,7 +576,7 @@ Direct imports from The Hordes and Atlas Lib make this a compile-time
 compatibility hotspot even though those artifacts are not published
 transitively by Rotwire.
 
-### 6.8 Encumbrance, stealth, and attention
+### 6.9 Encumbrance, stealth, and attention
 
 ```mermaid
 flowchart LR
@@ -585,7 +607,7 @@ the only Rotwire-approved ZombieTactics marker. Melee and durable block
 breaks use their own bounded ranges. Rotwire skips marker creation when
 ZombieTactics' configured marker range would exceed the current event radius.
 
-### 6.9 Weather scheduling, forecast, and exposure
+### 6.10 Weather scheduling, forecast, and exposure
 
 At a throttled server tick, `WeatherManager` loads or generates the Overworld
 plan and applies its current rain/thunder state. Generation is deterministic
@@ -626,6 +648,7 @@ present.
 |---|---|---|
 | Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Rotwire supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
 | Traveler's Backpack 10.1.36 to <10.2 | optional, load after | Equipped and stored backpack contents, tools, upgrades, and fluids contribute to weight. The integration class is loaded only when present. |
+| SimplyTents 4.6+ | optional, load after | Tunnel, Wall, Canopy, Zip-Up, Duo, Large, Tipi, and Yurt structures become rested-camp and Camp Radio shelters; selected recipes appear in the Field Manual. |
 | ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Rotwire emits an approved marker for unsuppressed fire only. |
 | Serene Seasons 10.1.0.3 | optional, load after | The current season adjusts Rotwire's daily weather weights. Disable its independent weather-frequency changes while Rotwire scheduling is enabled. |
 | Lost Souls | incompatible, any version | Both mods manage Lost Cities building encounters, so metadata prevents a conflicting installation. |

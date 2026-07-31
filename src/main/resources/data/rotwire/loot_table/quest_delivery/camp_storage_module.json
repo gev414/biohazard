@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rotwire:quartermaster_cache_module"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "rotwire:quest_delivery/camp_storage_module"
+}

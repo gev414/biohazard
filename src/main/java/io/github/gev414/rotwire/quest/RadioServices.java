@@ -25,7 +25,7 @@ public final class RadioServices {
             player.closeContainer();
         }
 
-        DeliveryManager.collectReady(player);
+        DeliveryManager.collectReady(player, radioPosition);
         if (DeliveryManager.openReadyChoice(player)) {
             return true;
         }

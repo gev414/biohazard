@@ -10,11 +10,15 @@ public final class ModCreativeTabEvents {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.RADIO_TRANSMITTER.get());
             event.accept(ModItems.TARP.get());
+            event.accept(ModItems.QUARTERMASTER_CACHE_MODULE.get());
+            event.accept(ModItems.FIELD_WORKSHOP_MODULE.get());
+            event.accept(ModItems.OPERATIONS_RELAY_MODULE.get());
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.DOCUMENTS.get());
             event.accept(ModItems.RESEARCH_DATA.get());
             event.accept(ModItems.ENCRYPTED_INTEL.get());
+            event.accept(ModItems.FIELD_REPAIR_KIT.get());
         }
         if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
             event.accept(ModItems.ANTIVIRAL_SUPPRESSANT.get());

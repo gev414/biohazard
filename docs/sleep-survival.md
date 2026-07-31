@@ -34,6 +34,12 @@ never smaller than the physical shelter: compact tents require at least three
 blocks, duo tents and tipis four, large tents five, and the yurt six. The
 configured radius can increase these values but cannot reduce them.
 
+Supported SimplyTents families include Tunnel, Wall, Canopy, and Zip-Up tents;
+their Duo and Large variants; Small Tipi, Tipi, and Yurt tents. Canvas Walls
+can partition a Canopy camp, but the shelter identity comes from the tent
+itself. The Field Manual's Base Equipment entry contains recipes for the
+Zip-Up Tent, Large Tent, Canopy Tent, and Canvas Walls.
+
 While every requirement is satisfied, players inside the campsite radius
 receive the beneficial `rotwire:prepared_shelter` notifier. Its campfire icon
 disappears within about one second after the player leaves the radius or the

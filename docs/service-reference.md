@@ -67,14 +67,26 @@ Registers:
 | Registry id | Java type | Stack size | Purpose |
 |---|---|---:|---|
 | `rotwire:radio_transmitter` | `BlockItem` | default | Places the radio block |
+| `rotwire:tarp` | `TarpItem` | 1 | Deploys the multi-block campsite tarp |
 | `rotwire:documents` | `Item` | 64 | Quest evidence/currency |
 | `rotwire:research_data` | `Item` | 32 | Quest evidence/currency |
 | `rotwire:encrypted_intel` | `Item` | 16 | High-tier quest evidence |
+| `rotwire:quartermaster_cache_module` | `CampModuleItem(STORAGE)` | 1 | Installs secure camp storage |
+| `rotwire:field_workshop_module` | `CampModuleItem(CRAFTING)` | 1 | Installs kit-based field repair |
+| `rotwire:operations_relay_module` | `CampModuleItem(OPERATIONS)` | 1 | Installs camp telemetry and extended radio access |
+| `rotwire:field_repair_kit` | `Item` | 16 | Consumable workshop repair input |
 | `rotwire:infection_cure` | `InfectionMedicineItem(FULL_CURE)` | 4 | Removes The Hordes infection; epic rarity |
 | `rotwire:antiviral_suppressant` | `InfectionMedicineItem(SUPPRESSANT)` | 8 | Delays infection/grants immunity; rare rarity |
 
 Resource models, textures, translations, creative tabs, loot, and recipes refer
 to these stable IDs.
+
+### `ModMenus`
+
+Source: [`ModMenus.java`](../src/main/java/io/github/gev414/rotwire/menu/ModMenus.java)
+
+Registers the server-backed `rotwire:camp_radio` and `rotwire:camp_storage`
+menu types. Client screens are bound separately by `ClientModEvents`.
 
 ### `ModEntities`
 
@@ -629,14 +641,12 @@ Horizontal, non-full-cube block with four direction-specific voxel shapes and a
 block entity. Placement faces the player and begins calibration server-side.
 Rotation and mirror operations preserve correct facing.
 
-Server interaction order:
-
-1. If uncalibrated, show rounded-up seconds remaining and stop.
-2. Collect ready non-choice deliveries.
-3. If a ready choice delivery exists, send/open its screen and stop.
-4. Report remaining mailbox status.
-5. Use Architectury/FTB's `OpenQuestBookMessage` to open the standard quest
-   book.
+Server interaction first refreshes camp identity. A sheltered radio opens the
+Camp Hub even when its campsite later becomes incomplete. An ordinary radio
+continues through calibration/survey feedback and then opens the established
+Survivor Network flow. Using a `CampModuleItem` on an online owned Camp Radio
+installs its typed extension and consumes the item outside creative mode.
+Removing the block drops installed modules and all cached stacks.
 
 The client returns success immediately to provide normal interaction feedback;
 all meaningful work remains on the server.
@@ -648,10 +658,17 @@ Direct dependencies: FTB Quests and Architectury networking, `RadioNetwork`,
 
 Source: [`RadioTransmitterBlockEntity.java`](../src/main/java/io/github/gev414/rotwire/block/entity/RadioTransmitterBlockEntity.java)
 
-Persists one absolute `ready_at` game time. `beginCalibration` applies the
-current server config and marks the block entity dirty. `onLoad` initializes
-legacy/missing state. `isConnected` and `ticksUntilConnected` compare against
-the level's current game time.
+Persists the absolute `ready_at` game time, city survey state/key, camp UUID,
+owner UUID, sanitized module bitmask, and twenty-seven-slot cache. Its
+once-per-second server tick establishes identity whenever the radio becomes
+sheltered and advances the city survey.
+
+It authorizes owner-only module installation, cache access, and workshop use.
+Installation requires an active campsite and connected radio. The workshop
+also requires a damaged main-hand item and one Field Repair Kit, then restores
+`max(1, maxDurability / 4)` damage and consumes the kit outside creative mode.
+Cache access remains available while camp readiness is offline. Block removal
+empties the cache and returns one item for every installed module.
 
 Because the absolute deadline is saved, changing `calibrationTicks` does not
 retroactively change a transmitter that already has `ready_at`.
@@ -660,11 +677,25 @@ retroactively change a transmitter that already has `ready_at`.
 
 Source: [`RadioNetwork.java`](../src/main/java/io/github/gev414/rotwire/quest/RadioNetwork.java)
 
-Server proximity service. `findConnectedTransmitter` scans all block positions
-in the configured cube around the player's block position, rejects points
-outside radius `range + 0.5`, skips unloaded positions, requires the registered
-block, then requires a connected block entity. The first match is returned;
-there is no nearest-radio sorting because callers need only proof of connection.
+Server proximity service. `findConnectedTransmitter` scans the larger of the
+configured transmitter and campsite radii, skips unloaded or disconnected
+radios, and accepts the ordinary spherical transmitter range. A connected
+radio with an Operations Relay is also accepted anywhere inside its currently
+active campsite radius. The first match is returned; callers need only proof
+of connection.
+
+### `CampRadioMenu` and `CampStorageMenu`
+
+Sources: [`CampRadioMenu.java`](../src/main/java/io/github/gev414/rotwire/menu/CampRadioMenu.java),
+[`CampStorageMenu.java`](../src/main/java/io/github/gev414/rotwire/menu/CampStorageMenu.java)
+
+`CampRadioMenu` synchronizes shelter requirements, nutrition, calibration,
+ownership, installed modules, and—while the Operations Relay is active—weather,
+nearby hostiles, mapped danger, and ready/pending courier counts once per
+second. Its validated buttons open contracts, storage, or perform a repair.
+`CampStorageMenu` exposes the persistent 3x9 cache plus player inventory and
+supports shift-click transfer in both directions. Both remain valid only while
+the same radio exists within eight blocks.
 
 Complexity grows cubically with configured range. The allowed maximum of 32 can
 mean scanning up to 65 cubed positions per button press. Keep this in mind if
@@ -807,10 +838,11 @@ but not zero.
 online, marks them notified, sends a category message, and dirties the
 repository.
 
-**Collection.** Iterates ready, owned, non-choice deliveries. Inventory insertion
-mutates a copied stack; leftover amounts replace persisted contents. Fully
-inserted deliveries are removed. The player is told how many whole delivery
-records were collected, not how many stacks.
+**Collection.** Iterates ready, owned, non-choice deliveries. When collection
+originates from an owned radio with the Quartermaster Cache, insertion targets
+that cache first and the player inventory second. Leftover amounts replace
+persisted contents. Fully inserted deliveries are removed. The player is told
+how many whole delivery records were collected, not how many stacks.
 
 **Choice opening.** Sends the first ready owned choice delivery. Only registry
 item IDs are sent, not count or components; current manifests use one-item
@@ -916,11 +948,23 @@ Client-only automatic event subscriber. It:
 - attaches fog rendering and logout cleanup at client setup;
 - registers `BruteRenderer`;
 - registers a small `ThrownItemRenderer` for the Brute rock;
+- binds the Camp Hub and Quartermaster Cache menu screens;
 - tints the suppressant's base model layer regeneration pink (`0xCD5CAB`);
 - renders the survival HUD, radio Horde Watch, weather drawer, and contaminated
   vignette, and clears transient state at logout/screen close.
 
 Its `Dist.CLIENT` restriction prevents dedicated-server classloading failures.
+
+### `CampRadioScreen` and `CampStorageScreen`
+
+Sources: [`CampRadioScreen.java`](../src/main/java/io/github/gev414/rotwire/client/CampRadioScreen.java),
+[`CampStorageScreen.java`](../src/main/java/io/github/gev414/rotwire/client/CampStorageScreen.java)
+
+The Camp Hub renders live campsite readiness, module controls, network state,
+and Operations Relay telemetry from synchronized menu data. Buttons remain
+disabled unless their server-enforced requirements are met. The storage screen
+renders the 27 cache slots and player inventory in the same field-terminal
+visual language; neither screen makes authorization or gameplay decisions.
 
 ### `HordeAtmosphereState`
 
@@ -1048,6 +1092,17 @@ approved ZombieTactics marker, and only when its configured marker range does
 not exceed the Rotwire event radius.
 
 ## 14. Item behavior
+
+### `CampModuleItem`, `CampModuleType`, and `CampWorkshopRules`
+
+Sources: [`CampModuleItem.java`](../src/main/java/io/github/gev414/rotwire/item/CampModuleItem.java),
+[`CampModuleType.java`](../src/main/java/io/github/gev414/rotwire/camp/CampModuleType.java),
+[`CampWorkshopRules.java`](../src/main/java/io/github/gev414/rotwire/camp/CampWorkshopRules.java)
+
+`CampModuleItem` carries one of the three extension types. `CampModuleType`
+assigns stable bit positions and strips unknown persisted bits during load.
+`CampWorkshopRules` clamps malformed durability input and calculates the
+quarter-maximum repair amount as a pure, unit-tested function.
 
 ### `InfectionMedicineItem`
 

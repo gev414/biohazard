@@ -111,6 +111,10 @@ public final class ClientModEvents {
                 ModMenus.CAMP_RADIO.get(),
                 CampRadioScreen::new
         );
+        event.register(
+                ModMenus.CAMP_STORAGE.get(),
+                CampStorageScreen::new
+        );
     }
 
     @SubscribeEvent

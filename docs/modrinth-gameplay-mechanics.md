@@ -9,7 +9,11 @@ Everything you carry now matters: stackable supplies contribute linearly by per-
 
 ## Sleep survival
 
-A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp with a lit campfire and a nearby deployed backpack containing more than 5 nutrition consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp or inside a supported SimplyTents shelter with a lit campfire and a nearby deployed backpack containing more than 5 nutrition consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+
+## Camp Radio and extensions
+
+A Radio Transmitter sheltered beneath a Rotwire Tarp or inside SimplyTents becomes a persistent Camp Radio with a live campsite checklist and direct Survivor Network access. Repeatable contracts unlock a 27-slot Quartermaster Cache that receives courier deliveries first, a Field Workshop that spends repair kits to restore 25% of an item's maximum durability, and an Operations Relay that reports weather, hostiles, mapped city danger, and courier traffic while extending radio access across the active camp. The first radio setup shipment includes a Tarp, and dismantling the radio safely returns every module and cached item.
 
 ## Stealth and progressive detection
 

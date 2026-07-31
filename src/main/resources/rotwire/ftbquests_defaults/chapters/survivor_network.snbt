@@ -16,11 +16,11 @@
 	quests: [{
 		id: "1100000000000001"
 		require_sequential_tasks: false
-		rewards: [{
-			auto: "enabled"
-			icon: {
-				id: "minecraft:bread"
-			}
+			rewards: [{
+				auto: "enabled"
+				icon: {
+					id: "rotwire:tarp"
+				}
 			id: "1190000000000001"
 			tags: [
 				"rotwire_radio_delivery"

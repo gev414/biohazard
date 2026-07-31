@@ -2,32 +2,47 @@ package io.github.gev414.rotwire.menu;
 
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
+import io.github.gev414.rotwire.camp.CampModuleType;
+import io.github.gev414.rotwire.city.CityZoneManager;
 import io.github.gev414.rotwire.quest.RadioNetwork;
 import io.github.gev414.rotwire.quest.RadioServices;
+import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
 import io.github.gev414.rotwire.sleep.CampInspector;
 import io.github.gev414.rotwire.sleep.CampStatus;
+import io.github.gev414.rotwire.weather.ScheduledWeather;
+import io.github.gev414.rotwire.weather.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
 
 public final class CampRadioMenu extends AbstractContainerMenu {
 
     public static final int CONTRACTS_BUTTON = 0;
+    public static final int STORAGE_BUTTON = 1;
+    public static final int WORKSHOP_BUTTON = 2;
 
     private static final int SHELTER_DATA = 0;
     private static final int RADIUS_DATA = 1;
     private static final int FLAGS_DATA = 2;
     private static final int NUTRITION_DATA = 3;
     private static final int CONNECTION_SECONDS_DATA = 4;
-    private static final int DATA_COUNT = 5;
+    private static final int MODULES_DATA = 5;
+    private static final int HOSTILES_DATA = 6;
+    private static final int WEATHER_DATA = 7;
+    private static final int CITY_DANGER_DATA = 8;
+    private static final int DELIVERY_READY_DATA = 9;
+    private static final int DELIVERY_PENDING_DATA = 10;
+    private static final int DATA_COUNT = 11;
 
     private static final int ESTABLISHED_FLAG = 1;
     private static final int SLEEPING_BAG_FLAG = 1 << 1;
@@ -36,6 +51,8 @@ public final class CampRadioMenu extends AbstractContainerMenu {
     private static final int RATION_FLAG = 1 << 4;
     private static final int CONNECTED_FLAG = 1 << 5;
     private static final int ACTIVE_FLAG = 1 << 6;
+    private static final int OWNER_FLAG = 1 << 7;
+    private static final int OPERATIONS_ACTIVE_FLAG = 1 << 8;
 
     private final BlockPos radioPosition;
     private final Inventory playerInventory;
@@ -102,15 +119,21 @@ public final class CampRadioMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (id != CONTRACTS_BUTTON
-                || !(player instanceof ServerPlayer serverPlayer)
-                || !stillValid(player)) {
+        if (!(player instanceof ServerPlayer serverPlayer)
+                || !stillValid(player)
+                || !(player.level().getBlockEntity(radioPosition)
+                instanceof RadioTransmitterBlockEntity radio)) {
             return false;
         }
-        return RadioServices.openNetwork(
-                serverPlayer,
-                radioPosition
-        );
+        return switch (id) {
+            case CONTRACTS_BUTTON -> RadioServices.openNetwork(
+                    serverPlayer,
+                    radioPosition
+            );
+            case STORAGE_BUTTON -> radio.openStorage(serverPlayer);
+            case WORKSHOP_BUTTON -> radio.repairHeldItem(serverPlayer);
+            default -> false;
+        };
     }
 
     @Override
@@ -168,6 +191,38 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         return flag(ACTIVE_FLAG);
     }
 
+    public boolean owner() {
+        return flag(OWNER_FLAG);
+    }
+
+    public boolean operationsActive() {
+        return flag(OPERATIONS_ACTIVE_FLAG);
+    }
+
+    public boolean hasModule(CampModuleType type) {
+        return (data.get(MODULES_DATA) & type.mask()) != 0;
+    }
+
+    public int nearbyHostiles() {
+        return data.get(HOSTILES_DATA);
+    }
+
+    public ScheduledWeather weather() {
+        return ScheduledWeather.fromNetwork(data.get(WEATHER_DATA));
+    }
+
+    public int cityDanger() {
+        return data.get(CITY_DANGER_DATA);
+    }
+
+    public int readyDeliveries() {
+        return data.get(DELIVERY_READY_DATA);
+    }
+
+    public int pendingDeliveries() {
+        return data.get(DELIVERY_PENDING_DATA);
+    }
+
     private boolean flag(int flag) {
         return (data.get(FLAGS_DATA) & flag) != 0;
     }
@@ -185,9 +240,11 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         lastRefresh = gameTime;
 
         BlockEntity blockEntity = level.getBlockEntity(radioPosition);
-        boolean established =
-                blockEntity instanceof RadioTransmitterBlockEntity radio
-                        && radio.hasCampIdentity();
+        RadioTransmitterBlockEntity radio =
+                blockEntity instanceof RadioTransmitterBlockEntity value
+                        ? value
+                        : null;
+        boolean established = radio != null && radio.hasCampIdentity();
         CampStatus status = CampInspector.inspectRadio(
                 level,
                 player,
@@ -205,11 +262,20 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         flags |= status.rationReady() ? RATION_FLAG : 0;
         flags |= connected ? CONNECTED_FLAG : 0;
         flags |= status.active() ? ACTIVE_FLAG : 0;
+        flags |= radio != null && radio.canManage(player) ? OWNER_FLAG : 0;
+
+        int modules = radio == null ? 0 : radio.installedModuleMask();
+        boolean operationsActive = radio != null
+                && radio.hasModule(CampModuleType.OPERATIONS)
+                && status.active()
+                && connected;
+        flags |= operationsActive ? OPERATIONS_ACTIVE_FLAG : 0;
 
         data.set(SHELTER_DATA, status.shelter().ordinal());
         data.set(RADIUS_DATA, status.radius());
         data.set(FLAGS_DATA, flags);
         data.set(NUTRITION_DATA, status.availableNutrition());
+        data.set(MODULES_DATA, modules);
         data.set(
                 CONNECTION_SECONDS_DATA,
                 connected
@@ -221,6 +287,46 @@ public final class CampRadioMenu extends AbstractContainerMenu {
                                         radioPosition
                                 )
                         )
+        );
+
+        if (!operationsActive) {
+            data.set(HOSTILES_DATA, 0);
+            data.set(WEATHER_DATA, ScheduledWeather.CLEAR.ordinal());
+            data.set(CITY_DANGER_DATA, 0);
+            data.set(DELIVERY_READY_DATA, 0);
+            data.set(DELIVERY_PENDING_DATA, 0);
+            return;
+        }
+
+        AABB campBounds = new AABB(status.center()).inflate(status.radius());
+        int hostiles = level.getEntitiesOfClass(
+                Monster.class,
+                campBounds,
+                monster -> monster.isAlive()
+                        && status.center().distSqr(monster.blockPosition())
+                        <= (double) status.radius() * status.radius()
+        ).size();
+        data.set(HOSTILES_DATA, Math.min(Short.MAX_VALUE, hostiles));
+        data.set(WEATHER_DATA, WeatherManager.current(level).ordinal());
+
+        int danger = radio.cityZone() == null
+                ? 0
+                : CityZoneManager.status(
+                        player.getServer(),
+                        radio.cityZone()
+                ).map(statusValue -> statusValue.dangerLevel())
+                        .orElse(0);
+        data.set(CITY_DANGER_DATA, danger);
+
+        DeliveryManager.DeliveryStatus deliveries =
+                DeliveryManager.status(player);
+        data.set(
+                DELIVERY_READY_DATA,
+                Math.min(Short.MAX_VALUE, deliveries.ready())
+        );
+        data.set(
+                DELIVERY_PENDING_DATA,
+                Math.min(Short.MAX_VALUE, deliveries.pending())
         );
     }
 }

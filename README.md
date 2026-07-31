@@ -131,8 +131,14 @@ icon every ten seconds in the harmful or beneficial direction. See
 A Radio Transmitter placed under a complete tarp or inside SimplyTents becomes
 a persistent Camp Radio. Its Camp Hub reports shelter, sleeping bag, fire,
 backpack, ration, coverage, and network status, then provides a Contracts
-handoff to the existing Survivor Network. The server-backed menu also reserves
-locked extension points for future storage, crafting, and operations modules.
+handoff to the existing Survivor Network. Owner-installed extensions add a
+secure courier cache, kit-based field repairs, and a live operations relay
+that reports weather, nearby hostiles, city danger, and delivery traffic while
+extending radio access across the active campsite. Installed modules and
+cached equipment drop safely if the radio is dismantled. Repeatable contracts
+from Ward, Reed, and Vale deliver replacement modules through the courier
+network. The first Survivor Network setup shipment now includes a Tarp so a
+new survivor always has an obtainable route into the campsite loop.
 See [Camp Radio](docs/camp-radio.md).
 
 Entity System
@@ -217,7 +223,8 @@ The in-game Survivor's Field Manual is treated as part of the project itself rat
 Patchouli pages are maintained alongside the source code, allowing gameplay
 documentation to evolve together with implementation. Its Survival section
 includes the radio WX forecast, ordinary-weather cover, contaminated exposure,
-warning vignette, and shelter timing.
+warning vignette, shelter timing, Camp Hub operation, modular upgrades, and
+live recipes for Zip-Up, Large, and Canopy tents plus Canvas Walls.
 
 ## Data-Driven Resources
 

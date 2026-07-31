@@ -2,6 +2,7 @@ package io.github.gev414.rotwire.item;
 
 import io.github.gev414.rotwire.Rotwire;
 import io.github.gev414.rotwire.block.ModBlocks;
+import io.github.gev414.rotwire.camp.CampModuleType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -42,6 +43,26 @@ public final class ModItems {
             "encrypted_intel",
             new Item.Properties().stacksTo(16)
     );
+    public static final Supplier<CampModuleItem> QUARTERMASTER_CACHE_MODULE =
+            module(
+                    "quartermaster_cache_module",
+                    CampModuleType.STORAGE
+            );
+    public static final Supplier<CampModuleItem> FIELD_WORKSHOP_MODULE =
+            module(
+                    "field_workshop_module",
+                    CampModuleType.CRAFTING
+            );
+    public static final Supplier<CampModuleItem> OPERATIONS_RELAY_MODULE =
+            module(
+                    "operations_relay_module",
+                    CampModuleType.OPERATIONS
+            );
+    public static final Supplier<Item> FIELD_REPAIR_KIT =
+            ITEMS.registerSimpleItem(
+                    "field_repair_kit",
+                    new Item.Properties().stacksTo(16)
+            );
     public static final Supplier<Item> INFECTION_CURE = ITEMS.register(
             "infection_cure",
             () -> new InfectionMedicineItem(
@@ -56,6 +77,27 @@ public final class ModItems {
                     new Item.Properties().stacksTo(8).rarity(Rarity.RARE)
             )
     );
+
+    public static Item moduleItem(CampModuleType type) {
+        return switch (type) {
+            case STORAGE -> QUARTERMASTER_CACHE_MODULE.get();
+            case CRAFTING -> FIELD_WORKSHOP_MODULE.get();
+            case OPERATIONS -> OPERATIONS_RELAY_MODULE.get();
+        };
+    }
+
+    private static Supplier<CampModuleItem> module(
+            String name,
+            CampModuleType type
+    ) {
+        return ITEMS.register(
+                name,
+                () -> new CampModuleItem(
+                        type,
+                        new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
+                )
+        );
+    }
 
     private ModItems() {
     }

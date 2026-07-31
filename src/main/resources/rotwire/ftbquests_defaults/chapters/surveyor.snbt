@@ -122,6 +122,36 @@
 			x: 2.0d
 			y: 0.0d
 		}
+		{
+			can_repeat: true
+			dependencies: ["1100000000000001"]
+			icon: { id: "rotwire:operations_relay_module" }
+			id: "5100000000000004"
+			repeat_cooldown: 6000
+			require_sequential_tasks: false
+			rewards: [{
+				auto: "enabled"
+				icon: { id: "rotwire:operations_relay_module" }
+				id: "5190000000000004"
+				tags: [
+					"rotwire_radio_delivery"
+					"rotwire_manifest_camp_operations_module"
+					"rotwire_category_equipment"
+				]
+				type: "custom"
+			}]
+			tasks: [
+				{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "5140000000000001" tags: ["rotwire_radio_accept"] type: "custom" }
+				{ consume_items: false id: "5140000000000002" item: { count: 1, id: "rotwire:encrypted_intel" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false count: 4L id: "5140000000000003" item: { count: 1, id: "minecraft:redstone" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false count: 2L id: "5140000000000004" item: { count: 1, id: "minecraft:copper_ingot" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false id: "5140000000000005" item: { count: 1, id: "minecraft:compass" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ consume_items: false id: "5140000000000006" item: { count: 1, id: "minecraft:spyglass" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+				{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "5140000000000007" tags: ["rotwire_radio_complete"] type: "custom" }
+			]
+			x: 4.0d
+			y: 0.0d
+		}
 	]
 	require_sequential_tasks: false
 }

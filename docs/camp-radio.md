@@ -12,9 +12,10 @@ to the radio block entity if the shelter is temporarily dismantled, allowing
 the Camp Hub to report an inactive camp without erasing future progression.
 Breaking and replacing the radio creates a new camp identity.
 
-The saved identity is the stable foundation for later team ownership,
-progression, and modular extensions. It does not currently grant exclusive
-access or install upgrades.
+The saved identity owns modular progression and private infrastructure. The
+placing player is the camp owner: only that player can install modules, use the
+workshop, or open the Quartermaster Cache. Breaking the radio removes the camp
+identity but safely drops every installed module and cached item.
 
 ## Camp Hub
 
@@ -37,8 +38,60 @@ The Contracts button becomes available after radio calibration. It preserves
 the existing radio workflow: ready deliveries are collected, city and weather
 status are synchronized, and the FTB Quests Survivor Network opens.
 
-Storage, crafting, and operations slots are visible as locked extension points.
-They are intentionally placeholders for later module progression.
+The first Survivor Network setup contract schedules the Starter Signal Cache
+as a supplies delivery. In addition to food, water, and ammunition, that cache
+contains one Rotwire Tarp. The normal supplies delay applies (120 seconds by
+default), giving every new player an obtainable shelter for establishing a
+Camp Radio and unlocking the trader network.
+
+## Modular extensions
+
+An established camp can install one extension in each of three categories.
+Installation is performed by using the module item on the Camp Radio. Only
+the player recorded as the camp owner can install or operate private camp
+infrastructure, and installation requires both a complete campsite and a
+calibrated Survivor Network connection.
+
+- The **Quartermaster Cache** adds twenty-seven secure storage slots. Ready
+  courier deliveries are inserted into the cache before the player's
+  inventory. The cache remains accessible if the fire goes out or another
+  campsite requirement becomes unavailable, so stored equipment is never
+  trapped by an offline camp.
+- The **Field Workshop** consumes one Field Repair Kit to restore one quarter
+  of the maximum durability of the damaged item held in the owner's main
+  hand. Repairs require the camp to remain online.
+- The **Operations Relay** adds live weather, nearby hostile, mapped city
+  danger, and courier counts to the Camp Hub. It also extends Survivor
+  Network access from the transmitter's short interaction range to the
+  complete active campsite radius.
+
+Modules are permanent for the lifetime of the camp identity. Breaking the
+radio creates a new identity as before, but every installed module and every
+item in the Quartermaster Cache is dropped for recovery.
+
+Repeatable Survivor Network contracts provide replacement modules through the
+normal equipment-courier flow:
+
+- Ward's **Camp Logistics** contract provides the Quartermaster Cache;
+- Reed's **Field Workshop** contract provides the workshop hardware; and
+- Vale's **Signal Uplink** contract provides the Operations Relay.
+
+Each commission consumes recovered Documents, Research Data, or Encrypted
+Intel alongside ordinary construction materials, so city exploration feeds
+directly into camp development. The contracts repeat after a five-minute
+cooldown, allowing destroyed or otherwise lost modules to be replaced.
+
+## Supported field shelters
+
+The Camp Radio recognizes a complete Rotwire Tarp and the SimplyTents Tunnel,
+Wall, Canopy, Zip-Up, Small Tipi, Duo, Large, Tipi, and Yurt families. Variant
+sizes establish a minimum effective campsite radius large enough to cover the
+physical shelter. The radio and sleeping bag must resolve to the same shelter;
+equipment merely placed beside a tent does not count as sheltered equipment.
+
+The Patchouli Base Equipment entry shows the Zip-Up Tent, Large Tent, Canopy
+Tent, and Canvas Wall recipes. The Sleep and Dawn and Radio Transmitter entries
+provide illustrated setup and Camp Hub instructions.
 
 ## Ordinary radios
 

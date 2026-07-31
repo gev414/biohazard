@@ -2,8 +2,12 @@ package io.github.gev414.rotwire.quest;
 
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
+import io.github.gev414.rotwire.camp.CampModuleType;
 import io.github.gev414.rotwire.city.CityZoneKey;
 import io.github.gev414.rotwire.config.RadioQuestConfig;
+import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
+import io.github.gev414.rotwire.sleep.CampInspector;
+import io.github.gev414.rotwire.sleep.CampStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -18,21 +22,41 @@ public final class RadioNetwork {
         Level level = player.level();
         BlockPos center = player.blockPosition();
         int range = RadioQuestConfig.TRANSMITTER_RANGE.get();
+        int searchRange = Math.max(
+                range,
+                SurvivalSystemsConfig.SLEEP_CAMPSITE_RADIUS.get()
+        );
         double maximumDistanceSquared = (range + 0.5D) * (range + 0.5D);
 
         for (BlockPos position : BlockPos.betweenClosed(
-                center.offset(-range, -range, -range),
-                center.offset(range, range, range)
+                center.offset(-searchRange, -searchRange, -searchRange),
+                center.offset(searchRange, searchRange, searchRange)
         )) {
-            if (center.distSqr(position) > maximumDistanceSquared
-                    || !level.isLoaded(position)
+            if (!level.isLoaded(position)
                     || !level.getBlockState(position).is(
                     ModBlocks.RADIO_TRANSMITTER.get()
             )) {
                 continue;
             }
-            if (isConnected(level, position)) {
+            if (!isConnected(level, position)) {
+                continue;
+            }
+            if (center.distSqr(position) <= maximumDistanceSquared) {
                 return Optional.of(position.immutable());
+            }
+            if (level.getBlockEntity(position)
+                    instanceof RadioTransmitterBlockEntity transmitter
+                    && transmitter.hasModule(CampModuleType.OPERATIONS)) {
+                CampStatus status = CampInspector.inspectRadio(
+                        player.serverLevel(),
+                        player,
+                        position
+                );
+                if (status.active()
+                        && status.center().distSqr(center)
+                        <= (double) status.radius() * status.radius()) {
+                    return Optional.of(position.immutable());
+                }
             }
         }
 

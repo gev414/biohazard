@@ -20,6 +20,13 @@ public final class ModMenus {
                             CampRadioMenu::new
                     )
             );
+    public static final Supplier<MenuType<CampStorageMenu>> CAMP_STORAGE =
+            MENU_TYPES.register(
+                    "camp_storage",
+                    () -> IMenuTypeExtension.create(
+                            CampStorageMenu::new
+                    )
+            );
 
     private ModMenus() {
     }

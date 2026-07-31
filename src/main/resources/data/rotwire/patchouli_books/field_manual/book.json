@@ -1,7 +1,7 @@
 {
   "name": "Survivor's Field Manual",
   "landing_text": "The city is hostile, water is precious, and every loud mistake carries. This manual records the systems that keep a survivor moving.",
-  "version": "2",
+  "version": "3",
   "model": "patchouli:book_red",
   "creative_tab": "minecraft:tools_and_utilities",
   "show_progress": false,
