@@ -211,7 +211,7 @@ Root section: `[survivalSystems]`
 | `sleepSurvival.effectDurationTicks` | `1000` | Both effects last 50 seconds |
 | `sleepSurvival.pulseIntervalTicks` | `200` | Change hunger and thirst every 10 seconds |
 | `sleepSurvival.meterPointsPerPulse` | `2` | Change one full HUD icon per pulse |
-| `sleepSurvival.campsiteRadius` | `6` | Maximum sleeping-bag distance to the lit campfire and deployed backpack |
+| `sleepSurvival.campsiteRadius` | `12` | Maximum shelter-center distance to the lit campfire and deployed backpack; SimplyTents enforces footprint-sized minimums |
 | `sleepSurvival.campsiteFoodNutritionThreshold` | `5` | Backpack food must total strictly more than this; the smallest qualifying ration is consumed |
 
 The `[survivalSystems.encumbrance.weights]` section controls per-item category

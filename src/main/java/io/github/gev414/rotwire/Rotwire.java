@@ -23,6 +23,7 @@ import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.lostcities.LostCitiesIntegration;
 import io.github.gev414.rotwire.lostcities.LostCitiesOvergrowth;
 import io.github.gev414.rotwire.loot.HandcraftedStorageLoot;
+import io.github.gev414.rotwire.menu.ModMenus;
 import io.github.gev414.rotwire.mob.MobSpawnRestrictions;
 import io.github.gev414.rotwire.mob.SurfaceZombieSpawner;
 import io.github.gev414.rotwire.network.ModPayloads;
@@ -53,6 +54,7 @@ public final class Rotwire {
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModEffects.MOB_EFFECTS.register(modEventBus);
+        ModMenus.MENU_TYPES.register(modEventBus);
         modEventBus.addListener(ModCreativeTabEvents::buildContents);
         modEventBus.addListener(ModEntityEvents::registerAttributes);
         modEventBus.addListener(ModPayloads::register);

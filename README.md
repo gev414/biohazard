@@ -116,12 +116,24 @@ world clock without changing the existing pre-horde fog. See
 ## Sleep survival
 
 Skipping the night in a Traveler's Backpack sleeping bag applies Restless
-Sleep. A complete tarp camp with a lit campfire and prepared food in a deployed
-backpack consumes a ration instead and provides a rested night. Remaining awake
-through a complete natural night grants New Dawn.
+Sleep. A complete tarp camp or a sleeping bag sheltered inside SimplyTents,
+with a lit campfire and prepared food in a deployed backpack, consumes a ration
+instead and provides a rested night. SimplyTents checks are centered on each
+tent and expand to cover large variants and yurts. Prepared Shelter appears
+while the player is inside a campsite that currently meets every requirement.
+Remaining awake through a complete natural night grants New Dawn.
 For 50 seconds, either effect changes one full hunger icon and one full thirst
 icon every ten seconds in the harmful or beneficial direction. See
 [Sleep survival](docs/sleep-survival.md).
+
+## Camp Radio
+
+A Radio Transmitter placed under a complete tarp or inside SimplyTents becomes
+a persistent Camp Radio. Its Camp Hub reports shelter, sleeping bag, fire,
+backpack, ration, coverage, and network status, then provides a Contracts
+handoff to the existing Survivor Network. The server-backed menu also reserves
+locked extension points for future storage, crafting, and operations modules.
+See [Camp Radio](docs/camp-radio.md).
 
 Entity System
 

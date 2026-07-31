@@ -56,6 +56,57 @@ final class TravelersBackpackSleepIntegration {
         return false;
     }
 
+    static boolean hasCampRations(
+            ServerLevel level,
+            ServerPlayer player,
+            BlockPos origin,
+            int radius,
+            int nutritionThreshold
+    ) {
+        return inspectCampSupplies(
+                level,
+                player,
+                origin,
+                radius,
+                nutritionThreshold
+        ).rationReady();
+    }
+
+    static CampSupplyStatus inspectCampSupplies(
+            ServerLevel level,
+            ServerPlayer player,
+            BlockPos origin,
+            int radius,
+            int nutritionThreshold
+    ) {
+        boolean backpackPresent = false;
+        boolean rationReady = false;
+        int availableNutrition = 0;
+
+        for (BackpackCandidate candidate
+                : findBackpacks(level, origin, radius)) {
+            backpackPresent = true;
+            ItemStackHandler storage =
+                    candidate.backpack().getWrapper().getStorage();
+            List<CampRationPlanner.FoodStack> foods =
+                    inspectFood(storage, player);
+            availableNutrition = Math.max(
+                    availableNutrition,
+                    totalNutrition(foods)
+            );
+            rationReady |= CampRationPlanner.select(
+                    foods,
+                    nutritionThreshold
+            ).isPresent();
+        }
+
+        return new CampSupplyStatus(
+                backpackPresent,
+                rationReady,
+                availableNutrition
+        );
+    }
+
     private static List<BackpackCandidate> findBackpacks(
             ServerLevel level,
             BlockPos origin,
@@ -171,6 +222,26 @@ final class TravelersBackpackSleepIntegration {
             }
         }
         return null;
+    }
+
+    private static int totalNutrition(
+            List<CampRationPlanner.FoodStack> foods
+    ) {
+        long total = 0L;
+        for (CampRationPlanner.FoodStack food : foods) {
+            total += (long) food.nutrition() * food.count();
+            if (total >= Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        return (int) total;
+    }
+
+    record CampSupplyStatus(
+            boolean backpackPresent,
+            boolean rationReady,
+            int availableNutrition
+    ) {
     }
 
     private record BackpackCandidate(

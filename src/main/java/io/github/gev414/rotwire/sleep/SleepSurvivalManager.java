@@ -40,6 +40,7 @@ public final class SleepSurvivalManager {
             return;
         }
 
+        CampsiteReadinessManager.onServerTick(event);
         for (ServerLevel level : event.getServer().getAllLevels()) {
             updateLevel(level);
         }
@@ -292,6 +293,7 @@ public final class SleepSurvivalManager {
                 : event.getServer().getPlayerList().getPlayers()) {
             player.removeEffect(ModEffects.RESTLESS_SLEEP);
             player.removeEffect(ModEffects.NEW_DAWN);
+            player.removeEffect(ModEffects.PREPARED_SHELTER);
         }
     }
 

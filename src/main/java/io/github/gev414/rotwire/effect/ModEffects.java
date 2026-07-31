@@ -32,6 +32,15 @@ public final class ModEffects {
                     )
             );
 
+    public static final DeferredHolder<MobEffect, MobEffect>
+            PREPARED_SHELTER = MOB_EFFECTS.register(
+                    "prepared_shelter",
+                    () -> new NotifierEffect(
+                            MobEffectCategory.BENEFICIAL,
+                            0x708B48
+                    )
+            );
+
     private ModEffects() {
     }
 }

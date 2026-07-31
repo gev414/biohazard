@@ -185,6 +185,14 @@ Adds custom hostile entities and survival gameplay content for the Rotwire modpa
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="simplytents"
+    type="optional"
+    reason="Rotwire recognizes SimplyTents structures as rested campsite shelters"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="zombie_tactics"
     type="optional"
     reason="Rotwire can use ZombieTactics investigation markers for loud attention events"

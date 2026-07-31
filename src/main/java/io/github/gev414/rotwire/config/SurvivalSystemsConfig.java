@@ -268,10 +268,12 @@ public final class SurvivalSystemsConfig {
                 .defineInRange("meterPointsPerPulse", 2, 1, 20);
         SLEEP_CAMPSITE_RADIUS = BUILDER
                 .comment(
-                        "Maximum distance from the sleeping bag to the lit",
-                        "campfire and deployed Traveler's Backpack."
+                        "Maximum distance from a campsite shelter center to",
+                        "the lit campfire and deployed Traveler's Backpack.",
+                        "SimplyTents shelters enforce a size-based minimum",
+                        "so the radius always covers their full footprint."
                 )
-                .defineInRange("campsiteRadius", 6, 1, 32);
+                .defineInRange("campsiteRadius", 12, 1, 32);
         SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD = BUILDER
                 .comment(
                         "A campsite backpack must contain food totaling",
