@@ -2,6 +2,7 @@ package io.github.gev414.rotwire.sleep;
 
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import io.github.gev414.rotwire.effect.ModEffects;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +32,7 @@ public final class SleepSurvivalManager {
     private static final Map<ResourceKey<Level>, NightState> NIGHT_STATES =
             new HashMap<>();
     private static final Set<UUID> RESTLESS_ON_WAKE = new HashSet<>();
+    private static final Set<UUID> RESTED_ON_WAKE = new HashSet<>();
 
     public static void onServerTick(ServerTickEvent.Post event) {
         if (!enabled()) {
@@ -37,6 +40,7 @@ public final class SleepSurvivalManager {
             return;
         }
 
+        CampsiteReadinessManager.onServerTick(event);
         for (ServerLevel level : event.getServer().getAllLevels()) {
             updateLevel(level);
         }
@@ -62,24 +66,40 @@ public final class SleepSurvivalManager {
         if (!TRAVELERS_BACKPACK_LOADED) {
             return;
         }
-        for (ServerPlayer player : level.players()) {
-            if (!player.isSleeping()) {
-                continue;
-            }
-            player.getSleepingPos().ifPresent(pos -> {
-                if (TravelersBackpackSleepIntegration.isSleepingBag(
-                        level.getBlockState(pos)
-                )) {
-                    RESTLESS_ON_WAKE.add(player.getUUID());
-                }
-            });
-        }
+        level.players().stream()
+                .filter(ServerPlayer::isSleeping)
+                .sorted(Comparator.comparing(ServerPlayer::getUUID))
+                .forEach(player -> player.getSleepingPos()
+                        .ifPresent(pos -> recordSleepOutcome(
+                                level,
+                                player,
+                                pos
+                        )));
     }
 
     public static void onPlayerWakeUp(PlayerWakeUpEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || !RESTLESS_ON_WAKE.remove(player.getUUID())
-                || !enabled()) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        UUID playerId = player.getUUID();
+        boolean rested = RESTED_ON_WAKE.remove(playerId);
+        boolean restless = RESTLESS_ON_WAKE.remove(playerId);
+        if (!enabled()) {
+            return;
+        }
+
+        if (rested) {
+            player.removeEffect(ModEffects.RESTLESS_SLEEP);
+            player.displayClientMessage(
+                    Component.translatable(
+                            "message.rotwire.rested_campsite"
+                    ),
+                    true
+            );
+            return;
+        }
+        if (!restless) {
             return;
         }
         applyEffect(
@@ -95,6 +115,7 @@ public final class SleepSurvivalManager {
     ) {
         UUID playerId = event.getEntity().getUUID();
         RESTLESS_ON_WAKE.remove(playerId);
+        RESTED_ON_WAKE.remove(playerId);
         NIGHT_STATES.values().forEach(
                 state -> state.eligiblePlayers.remove(playerId)
         );
@@ -103,6 +124,32 @@ public final class SleepSurvivalManager {
     public static void onServerStopped(ServerStoppedEvent event) {
         NIGHT_STATES.clear();
         RESTLESS_ON_WAKE.clear();
+        RESTED_ON_WAKE.clear();
+    }
+
+    private static void recordSleepOutcome(
+            ServerLevel level,
+            ServerPlayer player,
+            BlockPos sleepingPosition
+    ) {
+        if (!TravelersBackpackSleepIntegration.isSleepingBag(
+                level.getBlockState(sleepingPosition)
+        )) {
+            return;
+        }
+
+        UUID playerId = player.getUUID();
+        if (CampsiteManager.tryPayForRest(
+                level,
+                player,
+                sleepingPosition
+        )) {
+            RESTLESS_ON_WAKE.remove(playerId);
+            RESTED_ON_WAKE.add(playerId);
+        } else {
+            RESTED_ON_WAKE.remove(playerId);
+            RESTLESS_ON_WAKE.add(playerId);
+        }
     }
 
     private static void updateLevel(ServerLevel level) {
@@ -241,10 +288,12 @@ public final class SleepSurvivalManager {
     private static void clear(ServerTickEvent.Post event) {
         NIGHT_STATES.clear();
         RESTLESS_ON_WAKE.clear();
+        RESTED_ON_WAKE.clear();
         for (ServerPlayer player
                 : event.getServer().getPlayerList().getPlayers()) {
             player.removeEffect(ModEffects.RESTLESS_SLEEP);
             player.removeEffect(ModEffects.NEW_DAWN);
+            player.removeEffect(ModEffects.PREPARED_SHELTER);
         }
     }
 

@@ -1,8 +1,11 @@
 package io.github.gev414.rotwire.quest.delivery;
 
 import io.github.gev414.rotwire.Rotwire;
+import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
+import io.github.gev414.rotwire.camp.CampModuleType;
 import io.github.gev414.rotwire.network.CourierChoiceOpenPayload;
 import io.github.gev414.rotwire.quest.RadioNetwork;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +21,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -163,6 +168,22 @@ public final class DeliveryManager {
     }
 
     public static void collectReady(ServerPlayer player) {
+        collectReady(player, null);
+    }
+
+    public static void collectReady(
+            ServerPlayer player,
+            BlockPos radioPosition
+    ) {
+        ItemStackHandler campCache = null;
+        if (radioPosition != null
+                && player.level().getBlockEntity(radioPosition)
+                instanceof RadioTransmitterBlockEntity radio
+                && radio.hasModule(CampModuleType.STORAGE)
+                && radio.canManage(player)) {
+            campCache = radio.cache();
+        }
+
         MinecraftServer server = player.getServer();
         long gameTime = server.overworld().getGameTime();
         DeliverySavedData data = DeliverySavedData.get(server);
@@ -181,6 +202,13 @@ public final class DeliveryManager {
             List<ItemStack> remaining = new ArrayList<>();
             for (ItemStack savedStack : delivery.items()) {
                 ItemStack toInsert = savedStack.copy();
+                if (campCache != null) {
+                    toInsert = ItemHandlerHelper.insertItemStacked(
+                            campCache,
+                            toInsert,
+                            false
+                    );
+                }
                 player.getInventory().add(toInsert);
                 if (!toInsert.isEmpty()) {
                     remaining.add(toInsert);
@@ -282,6 +310,26 @@ public final class DeliveryManager {
     }
 
     public static void sendStatus(ServerPlayer player) {
+        DeliveryStatus status = status(player);
+        if (status.ready() > 0) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.delivery.inventory_full",
+                    status.ready()
+            ));
+        } else if (status.pending() > 0) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.delivery.pending",
+                    status.pending(),
+                    status.nextSeconds()
+            ));
+        } else {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.delivery.none"
+            ));
+        }
+    }
+
+    public static DeliveryStatus status(ServerPlayer player) {
         MinecraftServer server = player.getServer();
         long gameTime = server.overworld().getGameTime();
         int ready = 0;
@@ -300,24 +348,14 @@ public final class DeliveryManager {
                 nextReadyAt = Math.min(nextReadyAt, delivery.readyAt());
             }
         }
-
-        if (ready > 0) {
-            player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.delivery.inventory_full",
-                    ready
-            ));
-        } else if (pending > 0) {
-            long seconds = (nextReadyAt - gameTime + 19L) / 20L;
-            player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.delivery.pending",
-                    pending,
-                    seconds
-            ));
-        } else {
-            player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.delivery.none"
-            ));
-        }
+        long nextSeconds = pending == 0
+                ? 0L
+                : Math.max(0L, (nextReadyAt - gameTime + 19L) / 20L);
+        return new DeliveryStatus(
+                ready,
+                pending,
+                (int) Math.min(Integer.MAX_VALUE, nextSeconds)
+        );
     }
 
     private static List<ItemStack> generateManifest(
@@ -373,5 +411,12 @@ public final class DeliveryManager {
     }
 
     private DeliveryManager() {
+    }
+
+    public record DeliveryStatus(
+            int ready,
+            int pending,
+            int nextSeconds
+    ) {
     }
 }

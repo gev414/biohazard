@@ -30,10 +30,10 @@ the `lostcities`, `lcmt`, `pointblank`, and `waystones` trees.
 |---|---|---:|---|
 | `rotwire` | advancement | 1 | starter loadout trigger |
 | `rotwire` | damage type | 2 | Brute rock splash and contaminated-rain definitions |
-| `rotwire` | loot tables | 30 | blocks, chests, entity, starter loadout, courier manifests |
+| `rotwire` | loot tables | 41 | blocks, chests, entity, starter loadout, courier manifests |
 | `rotwire` | Lost Cities | 98 | Handcrafted palettes, articulated towers, stair retrofits, custom buildings, and biome-aware overgrown parks |
 | `rotwire` | Patchouli book definition | 1 | field manual book-level data |
-| `rotwire` | recipe | 1 | Radio Transmitter crafting recipe |
+| `rotwire` | recipe | 2 | Radio Transmitter and Field Repair Kit recipes |
 | `rotwire` | tags | 9 | city scaling, stealth targeting, and encumbrance weight overrides |
 | `lcmt` | Lost Cities | 31 | targeted optional LCMT part, palette, building, street, and city-style overrides |
 | `lostcities` | Lost Cities | 59 | base palettes, variants, conditions, city styles, street greenery, and stair-building overrides |
@@ -49,11 +49,11 @@ added or removed.
 
 | Namespace | Resource kind | File count | Purpose |
 |---|---|---:|---|
-| `rotwire` | blockstates | 1 | transmitter facing variants |
+| `rotwire` | blockstates | 2 | transmitter and deployed-tarp variants |
 | `rotwire` | language | 1 | item, block, entity, message, tooltip, and screen strings |
-| `rotwire` | models | 7 | one block and six item models |
-| `rotwire` | Patchouli content | 23 | categories, entries, and guide images |
-| `rotwire` | textures | 10 | block layers, items, Brute, and guide images |
+| `rotwire` | models | 14 | block and item models, including camp modules and repair kit |
+| `rotwire` | Patchouli content | 26 | categories, entries, and guide images |
+| `rotwire` | textures | 12 | block layers, items, Brute, and guide images |
 | `ftbquests` | language/theme | 2 | Survivor Network quest-book presentation |
 
 ## 3. Rotwire registry-resource contracts
@@ -158,7 +158,7 @@ must match the filename exactly without `.json`.
 
 | Manifest | Intended use |
 |---|---|
-| `starter_signal_cache` | first-contact/starter shipment |
+| `starter_signal_cache` | first-contact supplies plus the starter Tarp |
 | `basic_ammunition` | general ammunition shipment |
 | `medical_resupply` | standard medical shipment |
 | `advanced_medical` | higher-tier medical shipment |
@@ -169,6 +169,9 @@ must match the filename exactly without `.json`.
 | `attachments_random` | random PointBlank attachment |
 | `weapons_choice` | broad weapon pool rolled repeatedly into distinct choices |
 | `weapons_random` | broad weapon pool rolled once as normal delivery |
+| `camp_storage_module` | Quartermaster Cache module from Ward |
+| `camp_workshop_module` | Field Workshop module from Reed |
+| `camp_operations_module` | Operations Relay module from Vale |
 | `ward_12gauge_resupply` | 12-gauge ammunition |
 | `ward_45acp_resupply` | .45 ACP ammunition |
 | `ward_545_resupply` | 5.45 ammunition |
@@ -177,10 +180,11 @@ must match the filename exactly without `.json`.
 | `ward_762_resupply` | 7.62 ammunition |
 | `ward_9mm_resupply` | 9mm ammunition |
 
-The first eleven are asserted by `QuestDefaultsResourceTest` because the
-original default quest set references them. Keep the test list synchronized
-with every shipped default manifest; newer Ward manifests should also be added
-to that contract if their quests are part of installed defaults.
+Every manifest referenced by the installed defaults is asserted by
+`QuestDefaultsResourceTest`. Keep that list synchronized whenever a shipped
+quest gains or changes a courier manifest. The same test verifies that the
+starter cache still contains its Tarp and that all three module contracts stay
+repeatable.
 
 #### Manifest execution semantics
 
@@ -262,20 +266,22 @@ Categories:
 Entries:
 
 - first day;
-- base equipment, hydration, temperature, weather forecasts, contaminated
-  precipitation, stealth/load, and sleep;
+- base equipment with SimplyTents recipes, hydration, temperature, weather
+  forecasts, contaminated precipitation, stealth/load, and illustrated camp
+  setup/sleep guidance;
 - Brute, horde events, and infested buildings;
 - portable travel and Waystones;
 - using guns;
-- Radio Transmitter.
+- Radio Transmitter, Camp Hub, and modular extension guidance.
 
 The field manual is player-facing product documentation. Whenever gameplay,
 config defaults, recipes, or progression change, check whether the matching
 entry now lies. JSON validity alone cannot detect stale advice.
 
-The book definition currently declares content version `2`, including the
-weather entry. Increment that value for later substantial manual revisions so
-Patchouli can recognize that the packaged guide changed.
+The book definition currently declares content version `3`, including the
+illustrated campsite, tent recipes, Camp Hub, and module entries. Increment
+that value for later substantial manual revisions so Patchouli can recognize
+that the packaged guide changed.
 
 Guide-specific images are under the book's `images` directory and referenced by
 resource location from entry pages. Renaming them requires updating every page

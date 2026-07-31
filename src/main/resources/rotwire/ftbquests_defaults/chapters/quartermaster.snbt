@@ -227,6 +227,34 @@
 		x: 2.0d
 		y: 4.0d
 	}
+	{
+		can_repeat: true
+		dependencies: ["3100000000000001"]
+		icon: { id: "rotwire:quartermaster_cache_module" }
+		id: "3100000000000002"
+		repeat_cooldown: 6000
+		require_sequential_tasks: false
+		rewards: [{
+			auto: "enabled"
+			icon: { id: "rotwire:quartermaster_cache_module" }
+			id: "3190000000000002"
+			tags: [
+				"rotwire_radio_delivery"
+				"rotwire_manifest_camp_storage_module"
+				"rotwire_category_equipment"
+			]
+			type: "custom"
+		}]
+		tasks: [
+			{ icon: { components: { "ftbquests:icon": "ftbteams:textures/add.png" }, id: "ftbquests:custom_icon" } id: "3120000000000001" tags: ["rotwire_radio_accept"] type: "custom" }
+			{ consume_items: false count: 4L id: "3120000000000002" item: { count: 1, id: "rotwire:documents" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false count: 4L id: "3120000000000003" item: { count: 1, id: "minecraft:iron_ingot" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+			{ consume_items: false id: "3120000000000004" item: { count: 1, id: "minecraft:chest" } tags: ["rotwire_radio_submit"] only_from_crafting: true type: "item" }
+			{ icon: { components: { "ftbquests:icon": "ftblibrary:icons/check" }, id: "ftbquests:custom_icon" } id: "3120000000000005" tags: ["rotwire_radio_complete"] type: "custom" }
+		]
+		x: 4.0d
+		y: 0.0d
+	}
 	]
 	require_sequential_tasks: false
 }

@@ -5,6 +5,7 @@ import io.github.gev414.rotwire.entity.ModEntities;
 import io.github.gev414.rotwire.client.renderer.BruteRenderer;
 import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.effect.ModEffects;
+import io.github.gev414.rotwire.menu.ModMenus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +25,9 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
@@ -94,6 +97,38 @@ public final class ClientModEvents {
                 new ItemEffectIcon(Items.COOKED_BEEF),
                 ModEffects.NEW_DAWN
         );
+        event.registerMobEffect(
+                new ItemEffectIcon(Items.CAMPFIRE),
+                ModEffects.PREPARED_SHELTER
+        );
+    }
+
+    @SubscribeEvent
+    public static void registerMenuScreens(
+            RegisterMenuScreensEvent event
+    ) {
+        event.register(
+                ModMenus.CAMP_RADIO.get(),
+                CampRadioScreen::new
+        );
+        event.register(
+                ModMenus.CAMP_STORAGE.get(),
+                CampStorageScreen::new
+        );
+    }
+
+    @SubscribeEvent
+    public static void addEffectLore(
+            GatherEffectScreenTooltipsEvent event
+    ) {
+        if (event.getEffectInstance().getEffect().value()
+                == ModEffects.PREPARED_SHELTER.get()) {
+            event.getTooltip().add(
+                    net.minecraft.network.chat.Component.translatable(
+                            "effect.rotwire.prepared_shelter.description"
+                    ).withStyle(net.minecraft.ChatFormatting.GRAY)
+            );
+        }
     }
 
     @SubscribeEvent

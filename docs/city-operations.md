@@ -45,18 +45,32 @@ lock containers, carry encounter markers, count toward encounter kills, or
 persist indefinitely.
 
 Each player receives one configurable spawn roll every 200 ticks by default,
-with a 15% success chance. A successful roll can add only one zombie, and no
-more than four Rotwire street zombies are kept within 96 horizontal blocks of
-a player. Candidates must be in a loaded Lost Cities city chunk that has no
-building ID, stand on a solid outdoor surface with open sky, and remain at
-least 28 horizontal blocks from every player. Normal despawning removes
-zombies that are no longer near survivors.
+with a 15% daylight success chance and a 45% nighttime chance. A successful
+roll can add only one zombie, and no more than four Rotwire street zombies are
+kept within 96 horizontal blocks of a player. Candidates must be in a loaded
+Lost Cities city chunk that has no building ID, stand on a solid outdoor
+surface with open sky, and remain at least 28 horizontal blocks from every
+player. Normal despawning removes zombies that are no longer near survivors.
 
 Street spawning works in recognized Lost Cities streets even before a radio
 maps the surrounding zone. It honors Peaceful difficulty and the
 `doMobSpawning` game rule. It deliberately does not apply the vanilla darkness
 check, so daylight does not prevent these zombies from appearing; disabling
 sunburn therefore lets them continue roaming during the day.
+
+The same Rotwire spawner also permits occasional outdoor wanderers beyond
+Lost Cities. Wilderness candidates must remain outside city chunks and use a
+separate default 2.5% roll every 200 ticks, with no more than two within 128
+blocks. The comparable city roll is 15%, making a wilderness attempt one sixth
+as likely before position checks. Both chances are tripled at night by default,
+making the wilderness roll 7.5%. Wilderness balance and dimensions are in
+`rotwire-mobs.toml`; city-street balance remains here for compatibility. This
+bounded surface spawner does not replace or reject vanilla zombie placement,
+so natural underground zombies continue spawning normally.
+
+The Biohazard profile's required Hordes setting `zombiesBurn = false` keeps
+both populations roaming under daylight without making them immune to ordinary
+fire or lava.
 
 ## Danger and infected scaling
 

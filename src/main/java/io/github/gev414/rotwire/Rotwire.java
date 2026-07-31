@@ -3,12 +3,12 @@ package io.github.gev414.rotwire;
 import io.github.gev414.rotwire.attachment.ModAttachments;
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
-import io.github.gev414.rotwire.city.CityStreetZombieSpawner;
 import io.github.gev414.rotwire.city.InfectedCityScaling;
 import io.github.gev414.rotwire.combat.KnockbackManager;
 import io.github.gev414.rotwire.config.CityOperationsConfig;
 import io.github.gev414.rotwire.config.EncounterConfig;
 import io.github.gev414.rotwire.config.HordeAtmosphereConfig;
+import io.github.gev414.rotwire.config.MobSpawnConfig;
 import io.github.gev414.rotwire.config.RadioQuestConfig;
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import io.github.gev414.rotwire.config.WeatherConfig;
@@ -23,6 +23,9 @@ import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.lostcities.LostCitiesIntegration;
 import io.github.gev414.rotwire.lostcities.LostCitiesOvergrowth;
 import io.github.gev414.rotwire.loot.HandcraftedStorageLoot;
+import io.github.gev414.rotwire.menu.ModMenus;
+import io.github.gev414.rotwire.mob.MobSpawnRestrictions;
+import io.github.gev414.rotwire.mob.SurfaceZombieSpawner;
 import io.github.gev414.rotwire.network.ModPayloads;
 import io.github.gev414.rotwire.quest.FTBQuestsIntegration;
 import io.github.gev414.rotwire.quest.QuestDefaultsInstaller;
@@ -51,6 +54,7 @@ public final class Rotwire {
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModEffects.MOB_EFFECTS.register(modEventBus);
+        ModMenus.MENU_TYPES.register(modEventBus);
         modEventBus.addListener(ModCreativeTabEvents::buildContents);
         modEventBus.addListener(ModEntityEvents::registerAttributes);
         modEventBus.addListener(ModPayloads::register);
@@ -66,6 +70,12 @@ public final class Rotwire {
                 ModConfig.Type.SERVER,
                 CityOperationsConfig.SPEC,
                 "rotwire-city-operations.toml"
+        );
+        MobSpawnConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                MobSpawnConfig.SPEC,
+                "rotwire-mobs.toml"
         );
         HordeAtmosphereConfig.initialize();
         modContainer.registerConfig(
@@ -107,7 +117,10 @@ public final class Rotwire {
                 InfectedCityScaling::onEntityJoinLevel
         );
         NeoForge.EVENT_BUS.addListener(
-                CityStreetZombieSpawner::onServerTick
+                SurfaceZombieSpawner::onServerTick
+        );
+        NeoForge.EVENT_BUS.addListener(
+                MobSpawnRestrictions::onSpawnPlacementCheck
         );
         NeoForge.EVENT_BUS.addListener(
                 HandcraftedStorageLoot::onBlockPlaced

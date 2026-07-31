@@ -24,6 +24,36 @@
     },
     {
       "type": "patchouli:image",
+      "images": ["rotwire:patchouli_books/field_manual/en_us/images/campsite.png"],
+      "title": "Camp Hub",
+      "text": "The Camp Radio hub is your campsite dashboard. It reports shelter readiness, nutrition, the survivor network, courier traffic, and any modules installed on the transmitter."
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["rotwire:patchouli_books/field_manual/en_us/images/campsite2.png"],
+      "title": "Install Extensions",
+      "text": "Use a module item on an online Camp Radio to install it. Quartermaster Cache adds storage, Field Workshop adds repairs, and Operations Relay adds the expanded operations readout and relay range. Modules are removable: breaking the radio returns installed modules and cached items."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "rotwire:quartermaster_cache_module",
+      "title": "Quartermaster Cache",
+      "text": "Ward's repeatable Camp Logistics contract supplies this module by courier. Use it on an online Camp Radio to add 27 secure slots. Ready courier deliveries enter the cache first, and the owner can retrieve its contents even while camp readiness is offline."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "rotwire:field_repair_kit",
+      "title": "Field Workshop",
+      "text": "Reed's repeatable Field Workshop contract supplies the module. While camp is online, it consumes one Field Repair Kit to restore one quarter of the maximum durability of the item held in the owner's main hand."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "rotwire:operations_relay_module",
+      "title": "Operations Relay",
+      "text": "Vale's repeatable Signal Uplink contract supplies the relay. It reports weather, nearby infected, city danger, and courier traffic, then carries Survivor Network service across the active campsite. Breaking the radio returns every module and cached item."
+    },
+    {
+      "type": "patchouli:image",
       "images": ["rotwire:patchouli_books/field_manual/en_us/images/survivor-network-panel.png"],
       "title": "Network Contacts",
       "text": "Dr. Mara Voss, the Medic, provides medicine. Elias Ward, the Quartermaster, provides ammunition. Rook provides recovered guns. Nadia Vale provides transport and route-support utility. Complete their work and claim the resulting courier deliveries through the transmitter."

@@ -82,6 +82,22 @@ the screen-edge vignette shifts from dirty green to pulsing red-orange and
 prompts the player to seek shelter, without adding a countdown bar. See
 [Weather forecast and contaminated precipitation](docs/weather-forecast-and-hazards.md).
 
+## Surface zombies, underground skeletons and creepers
+
+Natural creeper and vanilla skeleton-family spawns are confined to deeper
+underground areas in configured dimensions. The default Overworld policy
+allows them at Y 47 or lower, while spawners, commands, spawn eggs, structure
+triggers, and Rotwire encounters remain untouched. This behavior is owned by
+Rotwire and configured in `rotwire-mobs.toml`; it does not require In Control.
+
+Zombies remain the surface threat. Rotwire's existing daylight-capable city
+street population is joined by rare wilderness wanderers: by default
+their spawn roll is one sixth as likely as the city roll and no more than two
+remain nearby. At night, both outdoor populations use three times their
+daylight spawn chance while preserving vanilla underground zombie spawning.
+The required Hordes configuration keeps zombies from igniting in sunlight
+without granting general fire immunity.
+
 ## Stealth, attention, and encumbrance
 
 Carried equipment now forms a second survival constraint: inventory, armor,
@@ -100,10 +116,30 @@ world clock without changing the existing pre-horde fog. See
 ## Sleep survival
 
 Skipping the night in a Traveler's Backpack sleeping bag applies Restless
-Sleep, while remaining awake through a complete natural night grants New Dawn.
+Sleep. A complete tarp camp or a sleeping bag sheltered inside SimplyTents,
+with a lit campfire and prepared food in a deployed backpack, consumes a ration
+instead and provides a rested night. SimplyTents checks are centered on each
+tent and expand to cover large variants and yurts. Prepared Shelter appears
+while the player is inside a campsite that currently meets every requirement.
+Remaining awake through a complete natural night grants New Dawn.
 For 50 seconds, either effect changes one full hunger icon and one full thirst
 icon every ten seconds in the harmful or beneficial direction. See
 [Sleep survival](docs/sleep-survival.md).
+
+## Camp Radio
+
+A Radio Transmitter placed under a complete tarp or inside SimplyTents becomes
+a persistent Camp Radio. Its Camp Hub reports shelter, sleeping bag, fire,
+backpack, ration, coverage, and network status, then provides a Contracts
+handoff to the existing Survivor Network. Owner-installed extensions add a
+secure courier cache, kit-based field repairs, and a live operations relay
+that reports weather, nearby hostiles, city danger, and delivery traffic while
+extending radio access across the active campsite. Installed modules and
+cached equipment drop safely if the radio is dismantled. Repeatable contracts
+from Ward, Reed, and Vale deliver replacement modules through the courier
+network. The first Survivor Network setup shipment now includes a Tarp so a
+new survivor always has an obtainable route into the campsite loop.
+See [Camp Radio](docs/camp-radio.md).
 
 Entity System
 
@@ -187,7 +223,8 @@ The in-game Survivor's Field Manual is treated as part of the project itself rat
 Patchouli pages are maintained alongside the source code, allowing gameplay
 documentation to evolve together with implementation. Its Survival section
 includes the radio WX forecast, ordinary-weather cover, contaminated exposure,
-warning vignette, and shelter timing.
+warning vignette, shelter timing, Camp Hub operation, modular upgrades, and
+live recipes for Zip-Up, Large, and Canopy tents plus Canvas Walls.
 
 ## Data-Driven Resources
 

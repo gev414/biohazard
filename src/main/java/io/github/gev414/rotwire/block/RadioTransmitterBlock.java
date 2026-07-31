@@ -1,19 +1,18 @@
 package io.github.gev414.rotwire.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.architectury.networking.NetworkManager;
-import dev.ftb.mods.ftbquests.net.OpenQuestBookMessage;
 import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
-import io.github.gev414.rotwire.city.CityZoneManager;
+import io.github.gev414.rotwire.item.CampModuleItem;
 import io.github.gev414.rotwire.quest.RadioNetwork;
-import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
-import io.github.gev414.rotwire.weather.WeatherManager;
+import io.github.gev414.rotwire.quest.RadioServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -101,6 +100,13 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
                 && level.getBlockEntity(position)
                 instanceof RadioTransmitterBlockEntity transmitter) {
             transmitter.beginCalibration(level.getGameTime());
+            if (placer instanceof ServerPlayer serverPlayer) {
+                transmitter.setOwner(serverPlayer.getUUID());
+            }
+            if (level instanceof net.minecraft.server.level.ServerLevel
+                    serverLevel) {
+                transmitter.refreshCampIdentity(serverLevel);
+            }
         }
     }
 
@@ -117,6 +123,15 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
         }
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResult.PASS;
+        }
+        if (level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter
+                && transmitter.refreshCampIdentity(
+                        serverPlayer.serverLevel()
+                )
+                && transmitter.hasCampIdentity()) {
+            serverPlayer.openMenu(transmitter, position);
+            return InteractionResult.CONSUME;
         }
 
         if (!RadioNetwork.isConnected(level, position)) {
@@ -139,25 +154,62 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
             return InteractionResult.CONSUME;
         }
 
-        DeliveryManager.collectReady(serverPlayer);
-        if (DeliveryManager.openReadyChoice(serverPlayer)) {
-            return InteractionResult.CONSUME;
-        }
-        DeliveryManager.sendStatus(serverPlayer);
-        RadioNetwork.cityZone(level, position)
-                .ifPresentOrElse(
-                        zone -> CityZoneManager.sendStatus(
-                                serverPlayer,
-                                zone
-                        ),
-                        () -> CityZoneManager.sendNoStatus(serverPlayer)
-                );
-        WeatherManager.sendForecast(serverPlayer);
-        NetworkManager.sendToPlayer(
-                serverPlayer,
-                new OpenQuestBookMessage(0L)
-        );
+        RadioServices.openNetwork(serverPlayer, position);
         return InteractionResult.CONSUME;
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(
+            ItemStack stack,
+            BlockState state,
+            Level level,
+            BlockPos position,
+            Player player,
+            InteractionHand hand,
+            BlockHitResult hit
+    ) {
+        if (!(stack.getItem() instanceof CampModuleItem module)) {
+            return super.useItemOn(
+                    stack,
+                    state,
+                    level,
+                    position,
+                    player,
+                    hand,
+                    hit
+            );
+        }
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        if (player instanceof ServerPlayer serverPlayer
+                && level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter
+                && transmitter.installModule(
+                        serverPlayer,
+                        module.moduleType()
+                )) {
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+        }
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected void onRemove(
+            BlockState state,
+            Level level,
+            BlockPos position,
+            BlockState newState,
+            boolean isMoving
+    ) {
+        if (!state.is(newState.getBlock())
+                && level.getBlockEntity(position)
+                instanceof RadioTransmitterBlockEntity transmitter) {
+            transmitter.dropCampContents(level);
+        }
+        super.onRemove(state, level, position, newState, isMoving);
     }
 
     @Override

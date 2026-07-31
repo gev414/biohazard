@@ -24,6 +24,14 @@
         "name": "toughasnails:purified_water_bottle",
         "functions": [{"function": "minecraft:set_count", "count": 2}]
       }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "rotwire:tarp",
+        "functions": [{"function": "minecraft:set_count", "count": 1}]
+      }]
     }
   ],
   "random_sequence": "rotwire:quest_delivery/starter_signal_cache"

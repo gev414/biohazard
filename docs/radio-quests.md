@@ -74,6 +74,13 @@ and `firearm`. If no category tag is present, the implementation falls back
 to `supplies`. If a delivery reward has no manifest tag, it is rejected and no
 delivery is scheduled.
 
+The shipped first-contact quest uses `starter_signal_cache`. Its delivery
+contains bread, 9mm ammunition, purified water, and one Rotwire Tarp so the
+player can establish a qualifying campsite. Three later repeatable contracts
+use `camp_storage_module`, `camp_workshop_module`, and
+`camp_operations_module`; their five-minute cooldown lets players replace an
+upgrade lost with a destroyed camp.
+
 Set radio item tasks to `consume_items: false` and
 `only_from_crafting: true`; do not set `task_screen_only`. This keeps their
 item icons and required amounts visible in the normal quest page while

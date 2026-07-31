@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "facing=north,part=center": {
+      "model": "rotwire:block/deployed_tarp"
+    },
+    "facing=east,part=center": {
+      "model": "rotwire:block/deployed_tarp",
+      "y": 90
+    },
+    "facing=south,part=center": {
+      "model": "rotwire:block/deployed_tarp",
+      "y": 180
+    },
+    "facing=west,part=center": {
+      "model": "rotwire:block/deployed_tarp",
+      "y": 270
+    },
+    "facing=north,part=north_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=east,part=north_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=south,part=north_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=west,part=north_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=north,part=north": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=east,part=north": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=south,part=north": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=west,part=north": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=north,part=west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=east,part=west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=south,part=west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=west,part=west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=north,part=south_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=east,part=south_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=south,part=south_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=west,part=south_west": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=north,part=south": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=east,part=south": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=south,part=south": {
+      "model": "rotwire:block/empty_tarp_part"
+    },
+    "facing=west,part=south": {
+      "model": "rotwire:block/empty_tarp_part"
+    }
+  }
+}

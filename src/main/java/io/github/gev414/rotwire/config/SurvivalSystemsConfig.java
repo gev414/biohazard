@@ -56,6 +56,9 @@ public final class SurvivalSystemsConfig {
     public static ModConfigSpec.IntValue SLEEP_EFFECT_DURATION_TICKS;
     public static ModConfigSpec.IntValue SLEEP_EFFECT_PULSE_INTERVAL_TICKS;
     public static ModConfigSpec.IntValue SLEEP_METER_POINTS_PER_PULSE;
+    public static ModConfigSpec.IntValue SLEEP_CAMPSITE_RADIUS;
+    public static ModConfigSpec.IntValue
+            SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD;
 
     public static void initialize() {
         if (SPEC != null) {
@@ -263,6 +266,26 @@ public final class SurvivalSystemsConfig {
                         "Two internal points equal one full HUD icon."
                 )
                 .defineInRange("meterPointsPerPulse", 2, 1, 20);
+        SLEEP_CAMPSITE_RADIUS = BUILDER
+                .comment(
+                        "Maximum distance from a campsite shelter center to",
+                        "the lit campfire and deployed Traveler's Backpack.",
+                        "SimplyTents shelters enforce a size-based minimum",
+                        "so the radius always covers their full footprint."
+                )
+                .defineInRange("campsiteRadius", 12, 1, 32);
+        SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD = BUILDER
+                .comment(
+                        "A campsite backpack must contain food totaling",
+                        "strictly more nutrition than this value. The smallest",
+                        "qualifying ration is consumed after the night skips."
+                )
+                .defineInRange(
+                        "campsiteFoodNutritionThreshold",
+                        5,
+                        0,
+                        100
+                );
         BUILDER.pop();
 
         BUILDER.pop();

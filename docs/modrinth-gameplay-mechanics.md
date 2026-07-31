@@ -9,7 +9,11 @@ Everything you carry now matters: stackable supplies contribute linearly by per-
 
 ## Sleep survival
 
-A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp or inside a supported SimplyTents shelter with a lit campfire and a nearby deployed backpack containing more than 5 nutrition consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+
+## Camp Radio and extensions
+
+A Radio Transmitter sheltered beneath a Rotwire Tarp or inside SimplyTents becomes a persistent Camp Radio with a live campsite checklist and direct Survivor Network access. Repeatable contracts unlock a 27-slot Quartermaster Cache that receives courier deliveries first, a Field Workshop that spends repair kits to restore 25% of an item's maximum durability, and an Operations Relay that reports weather, hostiles, mapped city danger, and courier traffic while extending radio access across the active camp. The first radio setup shipment includes a Tarp, and dismantling the radio safely returns every module and cached item.
 
 ## Stealth and progressive detection
 
@@ -26,3 +30,11 @@ A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor 
 ## Weather forecast and contaminated storms
 
 A calibrated Radio Transmitter now provides a two-day weather forecast so expeditions can be planned around clear skies, rain, storms, and their contaminated variants. Ordinary wet weather masks sight and sound from infected, while direct exposure to contaminated precipitation gives a short dirty-green vignette warning before shifting to a pulsing red-orange hazard that damages survivors until they find a roof; the warning stays readable without adding a countdown bar.
+
+## Underground skeletons and creepers
+
+Skeletons and creepers no longer emerge naturally across the surface: their ordinary spawns are pushed into deeper caves, making underground exploration more dangerous while keeping outdoor threats focused on the infected. Deliberate encounters such as dungeon spawners and scripted events remain intact.
+
+## Daylight surface wanderers
+
+Zombies can roam every outdoor region by day or night, but danger remains concentrated in the ruined cities. Their outdoor spawn chance triples after nightfall, while vanilla underground zombie spawning remains unchanged. Beyond the city limits, only occasional wilderness wanderers appear, with a much lower spawn chance and smaller nearby population cap than their urban counterparts.

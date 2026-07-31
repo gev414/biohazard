@@ -16,6 +16,20 @@
       "recipe2": "toughasnails:thermoregulator",
       "title": "A Sustainable Shelter",
       "text": "Water treatment and temperature control solve different problems. Plan room for both before a horde night makes outdoor work dangerous."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "simplytents:ziptent",
+      "recipe2": "simplytents:largetent",
+      "title": "Field Tents",
+      "text": "The Zip-Up Tent provides a compact enclosed shelter with a door you can open and close. The Large Tent trades that enclosure for a much roomier sheltered interior. Sneak-use either deployed tent to pack it for travel."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "simplytents:rooftent",
+      "recipe2": "simplytents:canvaswall",
+      "title": "Canopy and Walls",
+      "text": "The Canopy Tent supplies open overhead cover. Place Canvas Walls around it when the camp needs partitions or a more protected working area. Both tents are recognized as valid Camp Radio shelters when the required equipment is kept inside their sheltered area."
     }
   ]
 }
