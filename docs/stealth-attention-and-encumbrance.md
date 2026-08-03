@@ -47,11 +47,23 @@ attachment groups, not from a guessed sound-name convention.
 
 When ZombieTactics 1.3.3 is installed and
 `replaceZombieTacticsMarkers = true`, Rotwire rejects that mod's automatic
-marker entities. It creates an approved marker only for unsuppressed gunfire
-and only when ZombieTactics' marker range does not exceed the configured
-loud-gun radius. Smaller sounds use
-Rotwire's radius-bounded investigation navigation so a 12-block suppressed
-shot cannot leak into ZombieTactics' global marker range.
+marker entities. Every configured sound submits a radius-bounded
+`INVESTIGATE` intent directly to Rotwire's coordinated infected controller, so
+a 12-block suppressed shot cannot leak into ZombieTactics' global marker
+range. A current hunt or settlement assault outranks investigation and cannot
+have its route replaced by a new sound.
+
+For entity types in `rotwire:coordinated_hostiles`, the same controller owns
+`HUNT`, `ASSAULT`, and `INVESTIGATE` movement. When
+`suppressZombieTacticsMovementGoals = true`, Rotwire removes ZombieTactics'
+mining and marker-pathing goals from those entities. With
+`suppressZombieTacticsCollisionClimbing = true`, it also disables the global
+collision boost that otherwise makes blocked zombie stacks bounce repeatedly.
+Building-encounter and Horde-event infected may use Rotwire's tagged
+progressive breaching. Ambient breaching is disabled by default except while a
+coordinated infected actively hunts a survivor or non-creative player. That
+exception opens tagged fences or gates immediately after a failed route and may
+start the same guarded structural lane only after persistent route evidence.
 
 ## Carried weight
 

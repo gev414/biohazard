@@ -4,6 +4,8 @@ import io.github.gev414.rotwire.config.CityOperationsConfig;
 import io.github.gev414.rotwire.encounter.BuildingKey;
 import io.github.gev414.rotwire.encounter.EncounterSavedData;
 import io.github.gev414.rotwire.network.CityStatusPayload;
+import io.github.gev414.rotwire.settlement.SettlementManager;
+import io.github.gev414.rotwire.settlement.SettlementSiegeState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -82,17 +84,33 @@ public final class CityZoneManager {
             CityZoneKey key
     ) {
         status(player.getServer(), key).ifPresentOrElse(
-                cityStatus -> PacketDistributor.sendToPlayer(
-                        player,
-                        new CityStatusPayload(
-                                true,
-                                cityStatus.clearedBuildings(),
-                                cityStatus.dangerLevel(),
-                                cityStatus.maximumDangerLevel(),
-                                healthPercent(cityStatus),
-                                cityStatus.remainingUntilNextLevel()
-                        )
-                ),
+                cityStatus -> {
+                    var settlement = SettlementManager.status(
+                            player.getServer(),
+                            key
+                    ).orElse(null);
+                    PacketDistributor.sendToPlayer(
+                            player,
+                            new CityStatusPayload(
+                                    true,
+                                    cityStatus.clearedBuildings(),
+                                    cityStatus.dangerLevel(),
+                                    cityStatus.maximumDangerLevel(),
+                                    healthPercent(cityStatus),
+                                    cityStatus.remainingUntilNextLevel(),
+                                    settlement != null
+                                            && SettlementManager.isOperational(
+                                            settlement
+                                    ),
+                                    settlement == null
+                                            ? SettlementSiegeState.CALM.ordinal()
+                                            : settlement.siegeState().ordinal(),
+                                    settlement == null
+                                            ? -1L
+                                            : settlement.nextSiegeAt()
+                            )
+                    );
+                },
                 () -> sendNoStatus(player)
         );
     }

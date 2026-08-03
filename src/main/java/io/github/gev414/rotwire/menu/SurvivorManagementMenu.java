@@ -28,8 +28,10 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
 
     public static final int CALL_CIVILIAN_BUTTON = 0;
     public static final int CALL_RIFLEMAN_BUTTON = 1;
-    public static final int RALLY_SURVIVORS_BUTTON = 2;
-    public static final int BACK_BUTTON = 3;
+    public static final int CALL_PISTOLMAN_BUTTON = 2;
+    public static final int CALL_SHOTGUNNER_BUTTON = 3;
+    public static final int RALLY_SURVIVORS_BUTTON = 4;
+    public static final int BACK_BUTTON = 5;
 
     private static final int FLAGS_DATA = 0;
     private static final int POPULATION_DATA = 1;
@@ -42,7 +44,17 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
     private static final int RIFLEMAN_AMMUNITION_REQUIRED_DATA = 8;
     private static final int MAX_CIVILIANS_DATA = 9;
     private static final int MAX_RIFLEMEN_DATA = 10;
-    private static final int DATA_COUNT = 11;
+    private static final int PISTOL_AMMUNITION_DATA = 11;
+    private static final int SHOTGUN_AMMUNITION_DATA = 12;
+    private static final int PISTOLMAN_RATIONS_REQUIRED_DATA = 13;
+    private static final int PISTOLMAN_AMMUNITION_REQUIRED_DATA = 14;
+    private static final int SHOTGUNNER_RATIONS_REQUIRED_DATA = 15;
+    private static final int SHOTGUNNER_AMMUNITION_REQUIRED_DATA = 16;
+    private static final int MAX_PISTOLMEN_DATA = 17;
+    private static final int MAX_SHOTGUNNERS_DATA = 18;
+    private static final int PISTOLMEN_DATA = 19;
+    private static final int SHOTGUNNERS_DATA = 20;
+    private static final int DATA_COUNT = 21;
 
     private static final int SETTLEMENT_PRESENT_FLAG = 1;
     private static final int PRIMARY_RADIO_FLAG = 1 << 1;
@@ -131,6 +143,8 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
         return switch (id) {
             case CALL_CIVILIAN_BUTTON -> radio.callCivilian(serverPlayer);
             case CALL_RIFLEMAN_BUTTON -> radio.callRifleman(serverPlayer);
+            case CALL_PISTOLMAN_BUTTON -> radio.callPistolman(serverPlayer);
+            case CALL_SHOTGUNNER_BUTTON -> radio.callShotgunner(serverPlayer);
             case RALLY_SURVIVORS_BUTTON -> radio.rallySurvivors(serverPlayer);
             case BACK_BUTTON -> {
                 radio.openCampHub(serverPlayer);
@@ -168,6 +182,34 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
     public int mosinAmmunition() {
         return data.get(MOSIN_AMMUNITION_DATA);
     }
+
+    public int pistolAmmunition() { return data.get(PISTOL_AMMUNITION_DATA); }
+
+    public int shotgunAmmunition() { return data.get(SHOTGUN_AMMUNITION_DATA); }
+
+    public int pistolmen() { return data.get(PISTOLMEN_DATA); }
+
+    public int shotgunners() { return data.get(SHOTGUNNERS_DATA); }
+
+    public int pistolmanRationsRequired() {
+        return data.get(PISTOLMAN_RATIONS_REQUIRED_DATA);
+    }
+
+    public int pistolmanAmmunitionRequired() {
+        return data.get(PISTOLMAN_AMMUNITION_REQUIRED_DATA);
+    }
+
+    public int shotgunnerRationsRequired() {
+        return data.get(SHOTGUNNER_RATIONS_REQUIRED_DATA);
+    }
+
+    public int shotgunnerAmmunitionRequired() {
+        return data.get(SHOTGUNNER_AMMUNITION_REQUIRED_DATA);
+    }
+
+    public int maximumPistolmen() { return data.get(MAX_PISTOLMEN_DATA); }
+
+    public int maximumShotgunners() { return data.get(MAX_SHOTGUNNERS_DATA); }
 
     public int civilianRationsRequired() {
         return data.get(CIVILIAN_RATIONS_REQUIRED_DATA);
@@ -258,6 +300,14 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
         data.set(MOSIN_AMMUNITION_DATA, settlement == null
                 ? 0
                 : settlement.mosinAmmunition());
+        data.set(PISTOL_AMMUNITION_DATA, settlement == null
+                ? 0 : settlement.pistolAmmunition());
+        data.set(SHOTGUN_AMMUNITION_DATA, settlement == null
+                ? 0 : settlement.shotgunAmmunition());
+        data.set(PISTOLMEN_DATA, settlement == null
+                ? 0 : settlement.pistolmanPopulation());
+        data.set(SHOTGUNNERS_DATA, settlement == null
+                ? 0 : settlement.shotgunnerPopulation());
         data.set(
                 CIVILIAN_RATIONS_REQUIRED_DATA,
                 SettlementConfig.CIVILIAN_CALL_RATION_REQUIREMENT.get()
@@ -283,5 +333,19 @@ public final class SurvivorManagementMenu extends AbstractContainerMenu {
                 MAX_RIFLEMEN_DATA,
                 SettlementConfig.MAX_RIFLEMEN.get()
         );
+        data.set(PISTOLMAN_RATIONS_REQUIRED_DATA,
+                SettlementConfig.PISTOLMAN_CALL_RATION_REQUIREMENT.get());
+        data.set(PISTOLMAN_AMMUNITION_REQUIRED_DATA, Math.max(
+                SurvivorEntity.pistolMagazineCapacity(),
+                SettlementConfig.PISTOLMAN_CALL_AMMUNITION_REQUIREMENT.get()
+        ));
+        data.set(SHOTGUNNER_RATIONS_REQUIRED_DATA,
+                SettlementConfig.SHOTGUNNER_CALL_RATION_REQUIREMENT.get());
+        data.set(SHOTGUNNER_AMMUNITION_REQUIRED_DATA, Math.max(
+                SurvivorEntity.shotgunMagazineCapacity(),
+                SettlementConfig.SHOTGUNNER_CALL_AMMUNITION_REQUIREMENT.get()
+        ));
+        data.set(MAX_PISTOLMEN_DATA, SettlementConfig.MAX_PISTOLMEN.get());
+        data.set(MAX_SHOTGUNNERS_DATA, SettlementConfig.MAX_SHOTGUNNERS.get());
     }
 }

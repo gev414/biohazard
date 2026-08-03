@@ -150,7 +150,12 @@ The current implementation includes:
 Rotwire Brute
 BruteRockProjectile
 
-Entity-specific AI remains inside the entity implementation while generic navigation and mining behaviour is delegated to ZombieTactics-Profiled.
+Entity-specific attacks remain inside their entity implementations. Rotwire's
+coordinated hostile controller owns hunt, investigation, settlement assault,
+segmented navigation, and progressive breaching for tagged infected. Its
+ZombieTactics compatibility layer removes that mod's competing mining and
+marker-navigation goals and disables its collision-climbing boost while
+Rotwire owns coordinated movement.
 
 ## Lost Cities Integration
 
@@ -266,7 +271,7 @@ Patchouli	In-game documentation
 The Hordes	Horde scheduling and infection
 FTB Quests	Survivor Network contacts, contracts, and quest journal
 Traveler's Backpack	Optional carried-weight integration
-ZombieTactics	Optional loud-gun investigation marker
+ZombieTactics	Optional infected traits with coordinated movement-goal suppression
 
 Development dependencies are resolved through Modrinth Maven and are not bundled into the final artifact.
 

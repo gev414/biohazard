@@ -60,6 +60,38 @@ points at each Minecraft-day boundary. There are no settlers yet, so a new
 settlement shows zero daily use, but supplies can be prepared before recruitment
 arrives.
 
+### Operational settlements and sieges
+
+A named, online primary Camp Hub becomes **operational** once three living
+survivors belong to it, regardless of whether they are civilians or armed.
+This is the shared eligibility rule reserved for later fast travel. It also
+starts the siege clock. The City drawer in the Survivor Network reports the
+operational state plus `CALM`, `WARNING`, `UNDER ATTACK`, or `RECOVERY` and the
+time to its next transition.
+
+An attended active siege sends persistent event zombies from a configurable
+90-100-block outdoor ring and caps their local population. It never
+force-loads chunks. If no player attends before the next nightfall, the siege
+resolves virtually: every online player receives a fall report and the
+settlement loses a random 60-80% of every active camp's physical stores. An
+unloaded camp records that loss and applies it as soon as its containers load.
+Attended zombies enter the coordinated `ASSAULT` intent when they have no
+living target and `HUNT` when they acquire one. The same movement owner handles
+their segmented approach, close combat, and progressive breaching. Sieges
+periodically raid food
+from the active settlement
+stockpile, and can break only blocks in the
+data-pack tag `rotwire:siege_breakable`. The bundled tag is intentionally
+limited to leaves, fences, walls, and minor light fixtures; containers, the
+radio, and tent structure are never free-form siege targets. Breakable blocks
+crack progressively using the fragile, standard, or reinforced siege duration;
+the resistance categories are also data-pack tags. All timing,
+spawning, and ration-loss values are in `[settlements.sieges]`.
+
+During an active siege, civilians return to the main shelter. Armed guards with
+ammunition hold their position and engage instead of joining the retreat;
+empty guards fall back with the civilians.
+
 The saved identity owns modular progression and private infrastructure. The
 placing player is the camp owner: only that player can install modules, use the
 workshop, or open the Quartermaster Cache. Breaking the radio removes the camp

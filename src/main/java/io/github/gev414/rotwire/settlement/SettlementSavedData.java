@@ -151,14 +151,14 @@ public final class SettlementSavedData extends SavedData {
             CityZoneKey cityZone,
             int minimumRations,
             int minimumAmmunition,
-            int loadedAmmunition,
+            int initialAmmunitionItems,
             int maximumRiflemen
     ) {
         return update(cityZone, settlement -> settlement.addRifleman(
                 level,
                 minimumRations,
                 minimumAmmunition,
-                loadedAmmunition,
+                initialAmmunitionItems,
                 maximumRiflemen
         ));
     }
@@ -168,6 +168,58 @@ public final class SettlementSavedData extends SavedData {
             UUID settlementId
     ) {
         return update(cityZone, settlement -> settlement.removeRifleman(
+                settlementId
+        ));
+    }
+
+    public boolean addPistolman(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumPistolmen
+    ) {
+        return update(cityZone, settlement -> settlement.addPistolman(
+                level,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumPistolmen
+        ));
+    }
+
+    public boolean removePistolman(
+            CityZoneKey cityZone,
+            UUID settlementId
+    ) {
+        return update(cityZone, settlement -> settlement.removePistolman(
+                settlementId
+        ));
+    }
+
+    public boolean addShotgunner(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumShotgunners
+    ) {
+        return update(cityZone, settlement -> settlement.addShotgunner(
+                level,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumShotgunners
+        ));
+    }
+
+    public boolean removeShotgunner(
+            CityZoneKey cityZone,
+            UUID settlementId
+    ) {
+        return update(cityZone, settlement -> settlement.removeShotgunner(
                 settlementId
         ));
     }
@@ -191,11 +243,33 @@ public final class SettlementSavedData extends SavedData {
         return removed;
     }
 
+    public int withdrawAmmunition(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            SettlementAmmunition ammunition,
+            int requestedRounds
+    ) {
+        Settlement settlement = settlements.get(cityZone);
+        if (settlement == null) {
+            return 0;
+        }
+        int removed = settlement.withdrawAmmunition(
+                level,
+                ammunition,
+                requestedRounds
+        );
+        if (removed > 0) {
+            setDirty();
+        }
+        return removed;
+    }
+
     public void refreshStockpiles(MinecraftServer server) {
         boolean changed = false;
         for (Settlement settlement : settlements.values()) {
             ServerLevel level = levelFor(server, settlement);
             if (level != null) {
+                changed |= settlement.applyPendingRaids(level);
                 changed |= settlement.refreshStockpile(
                         level,
                         level.getGameTime(),
@@ -258,6 +332,16 @@ public final class SettlementSavedData extends SavedData {
         }
     }
 
+    public void tickSieges(MinecraftServer server) {
+        boolean changed = false;
+        for (Settlement settlement : settlements.values()) {
+            changed |= SettlementSiegeManager.tick(server, settlement);
+        }
+        if (changed) {
+            setDirty();
+        }
+    }
+
     @Nullable
     private static ServerLevel levelFor(
             MinecraftServer server,
@@ -290,6 +374,29 @@ public final class SettlementSavedData extends SavedData {
                 cityZone,
                 settlement -> settlement.setSiegeSchedule(state, nextSiegeAt)
         );
+    }
+
+    public boolean startTestSiege(
+            ServerLevel level,
+            CityZoneKey cityZone
+    ) {
+        Settlement settlement = settlements.get(cityZone);
+        return settlement != null && SettlementSiegeManager.startTestSiege(
+                level.getServer(),
+                level,
+                settlement
+        ) && markDirtyAndTrue();
+    }
+
+    public boolean cancelTestSiege(
+            ServerLevel level,
+            CityZoneKey cityZone
+    ) {
+        Settlement settlement = settlements.get(cityZone);
+        return settlement != null && SettlementSiegeManager.cancelTestSiege(
+                level,
+                settlement
+        ) && markDirtyAndTrue();
     }
 
     public void markRadioDestroyed(
@@ -352,6 +459,11 @@ public final class SettlementSavedData extends SavedData {
         if (settlement == null || !mutation.apply(settlement)) {
             return false;
         }
+        setDirty();
+        return true;
+    }
+
+    private boolean markDirtyAndTrue() {
         setDirty();
         return true;
     }

@@ -123,10 +123,10 @@ The following transient static families are lifecycle-sensitive:
   reset on server stop.
 - `HordeAtmosphereSyncEvents.LAST_SENT` and `ticksUntilSync` are a transient
   packet deduplication cache and are cleared on logout/server stop.
-- `EncumbranceManager`, `AwarenessManager`, `AttentionManager`, and
+- `EncumbranceManager`, `AwarenessManager`, `CoordinatedHostileAi`, and
   `SurvivalStatusSync` keep only recalculation caches, suspicion/alert timers,
-  short-lived investigation targets, and packet deduplication state. All are
-  cleared on logout or server stop as appropriate.
+  transient intent/action state, path budgets, and packet deduplication state.
+  All are cleared on logout or server stop as appropriate.
 
 Static state must never become the only copy of gameplay progress. The durable
 copies are described below.
@@ -285,7 +285,7 @@ later mapped camp radio is persisted as a relay of that same record.
 
 Each settlement persists its UUID, city zone, name, fixed primary camp UUID and
 position, civilian and guard population, last observed ration and supplying
-container totals, city-wide upgrade bitmask, future siege state/timing, and the
+container totals, city-wide upgrade bitmask, siege state/timing, and the
 last known state of every radio. Radio state includes its primary/relay role,
 position, campsite center/radius, active/connected state, installed local module
 mask, destruction status, and update time. Destroying a primary radio marks it
@@ -299,7 +299,9 @@ vanilla inventories or the NeoForge item-handler capability; their nutrition
 total and prepared partial-food portions are persisted for the UI while the
 containers retain unconsumed food. `SettlementManager` processes daily
 per-population hunger-point consumption from the Overworld clock and persists
-the last processed day to prevent double charging after a restart.
+the last processed day to prevent double charging after a restart. The same
+20-tick settlement tick advances the operational-settlement siege state,
+spawns only in loaded camp-adjacent chunks, and makes physical stockpile raids.
 
 ### 5.7 Weather schedule state
 
@@ -619,8 +621,9 @@ flowchart LR
     H["The Hordes capability"] --> B["Bypass target suppression"]
     G["PointBlank resolved fire sound"] --> N["Attention radius"]
     D["Melee / durable block break"] --> N
-    N --> Z["Bounded investigation"]
-    N --> T["Approved ZombieTactics marker for loud gunfire only"]
+    N --> Z["Coordinated INVESTIGATE intent"]
+    H --> C["Coordinated HUNT intent"]
+    Z --> C["Single movement/action owner"]
     A --> P["Survival status payload"]
     W --> P
 ```
@@ -632,11 +635,88 @@ immediately. Existing targets receive configured memory. Horde-spawned mobs
 bypass this filter and remain controlled by The Hordes' native tracking goal.
 
 PointBlank shots are recognized from the resolved server sound and active
-attachment set. Suppressed fire uses a 12-block direct investigation and never
-creates a global marker. Unsuppressed fire defaults to 96 blocks and creates
-the only Rotwire-approved ZombieTactics marker. Melee and durable block
-breaks use their own bounded ranges. Rotwire skips marker creation when
-ZombieTactics' configured marker range would exceed the current event radius.
+attachment set. Suppressed fire uses a 12-block direct investigation and
+unsuppressed fire defaults to 96 blocks. Melee and durable block breaks use
+their own bounded ranges. Each sound submits an `INVESTIGATE` intent instead
+of directly replacing navigation or creating a global marker.
+
+`CoordinatedHostileAi` gives entity types in
+`rotwire:coordinated_hostiles` one intent/action state. `HUNT` outranks
+`ASSAULT`, which outranks `INVESTIGATE`; `IDLE` releases the entity to its
+ordinary goals. `CoordinatedHostileGoal` is the only Rotwire movement owner
+while an intent is active. It divides remote objectives into bounded route
+segments, uses a per-level path-calculation budget with a fair FIFO wait queue,
+staggers survivor scans and route retries, remembers already-known targets
+without new entity scans, and
+owns progressive breach state. A returned Minecraft `Path` is inspected with
+`canReach()`: a partial path remains useful movement, but reaching its dead-end
+records a route failure instead of being reported as success. Repeated route
+failures or a genuinely stuck navigation state trigger the guarded failure
+process and bounded direct-line and forward collision-corridor search. A
+completed reachable segment is not a route failure, and there is no radial
+fallback that selects unrelated nearby blocks. Any coordinated infected hunting
+a survivor or non-creative player may breach a tagged local defense such as a
+fence or gate. After either shared evidence from distinct blocked infected or
+four persistent failures from one infected, the same target-scoped group may
+open the guarded all-solid-block structural lane. The target anchor is snapped
+to an eight-block grid so a moving player does not fracture group memory.
+Building-encounter and
+Horde-event mobs can breach by default; ambient mobs cannot. On coordinated
+entities, the compatibility adapter removes ZombieTactics mining and
+marker-movement goals so the two systems never own `MOVE` simultaneously. It
+also disables ZombieTactics' global collision-climbing boost, preventing a
+blocked stack from continually forcing vertical velocity outside Rotwire's
+route and breach state machine.
+
+`SiegeCoordinationManager` holds one transient tactical group per siege camp or
+player/survivor target anchor. Members share the last known target, recent
+failure reports from distinct infected, and one structural breach lane, while retaining individual local
+paths because their origins and collisions differ. A successful route
+withdraws that infected's report, and stale reports expire. Only a blocked
+scout may select an exposed solid block immediately ahead and closer to the
+objective after the shared or persistent-individual threshold. Before joining
+or continuing a breach against a survivor or player, each infected spends a
+budgeted route check and abandons the breach
+as soon as a fresh full path exists. At most two nearby infected add progress
+per tick. Destroying one block broadcasts an opening revision, cancels stale
+neighboring breach targets, and suspends the lane while participants immediately
+repath. A valid path completes the plan; only renewed collective failures from
+the same participants advance the fixed horizontal one-by-two corridor. Blocks
+with one-block collision height and clear headroom are treated as walkable
+steps, not structural targets. Hardness controls duration, progress is retained
+for a configurable 10 seconds before unattended decay begins, and the lane is
+capped by depth, camp distance, and ground
+level. Fluids, block entities, negative-hardness blocks, and
+`rotwire:siege_unbreakable` are never selected.
+
+Blocked groups below the normal camp breach floor may instead select a local
+upward terrain-escape ramp. Each step rises as it advances, the normal
+structural depth remains the limit, and only infected within eight blocks share
+the ramp. This permits ditch escape without enabling level or downward tunnels
+or diverting the entire horde.
+
+The destroyed position also becomes a transient group gateway when a
+mob-sized block-collision box can stand on its approach, passage, and camp-facing
+exit. Direction is selected from all four cardinal orientations rather than
+assumed from fence geometry. Exterior infected path to the approach and receive
+short direct steering through the gap, preventing exact-target partial paths
+from carrying the group past a valid entrance. Transient zombie occupancy is
+ignored when caching this geometry. Distant siege mobs retain the
+fixed `ASSAULT` objective; they adopt a shared moving survivor only within the
+bounded survivor-scan radius, avoiding horde-wide remote repaths.
+
+All survivor movement modes share a one-path-per-level-tick budget. Rally and
+safety returns rotate through feet-level camp approaches, calculate one bounded
+segment per attempt, accept partial movement, and apply failure backoff. This
+prevents unreachable camp geometry from multiplying eight long path searches
+per survivor on every tick.
+
+Armed survivors retain close contact through temporary line-of-sight loss but
+still require a clear firearm ray to shoot. Their combat goal maintains a
+weapon-specific minimum distance and samples a small, staggered set of nearby
+firing positions; only the chosen position requests a navigation path. Firearm
+range bounds target acquisition and guards hold rather than chase targets that
+move beyond it.
 
 ### 6.10 Weather scheduling, forecast, and exposure
 
@@ -680,7 +760,7 @@ present.
 | Lost Cities Modern Tweaks 2.0.7 to <2.1 | optional, load after | Rotwire supplies targeted `lcmt:` overrides and decorated copies of tower floor parts. Without it, those resources are simply unused. |
 | Traveler's Backpack 10.1.36 to <10.2 | optional, load after | Equipped and stored backpack contents, tools, upgrades, and fluids contribute to weight. The integration class is loaded only when present. |
 | SimplyTents 4.6+ | optional, load after | Tunnel, Wall, Canopy, Zip-Up, Duo, Large, Tipi, and Yurt structures become rested-camp and Camp Radio shelters; selected recipes appear in the Field Manual. |
-| ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic marker joins can be replaced; Rotwire emits an approved marker for unsuppressed fire only. |
+| ZombieTactics 1.3.3 to <1.4 | optional, load after | Automatic markers and competing mining/marker movement goals are suppressed; its global collision-climbing boost is disabled while Rotwire owns coordinated movement. |
 | Serene Seasons 10.1.0.3 | optional, load after | The current season adjusts Rotwire's daily weather weights. Disable its independent weather-frequency changes while Rotwire scheduling is enabled. |
 | Lost Souls | incompatible, any version | Both mods manage Lost Cities building encounters, so metadata prevents a conflicting installation. |
 

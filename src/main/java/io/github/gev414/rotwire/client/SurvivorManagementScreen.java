@@ -10,6 +10,14 @@ import net.minecraft.world.entity.player.Inventory;
 public final class SurvivorManagementScreen
         extends AbstractContainerScreen<SurvivorManagementMenu> {
 
+    private static final int PANEL_WIDTH = 340;
+    private static final int PANEL_HEIGHT = 310;
+    private static final int CONTENT_LEFT = 14;
+    private static final int LEFT_COLUMN_RIGHT = 167;
+    private static final int RIGHT_COLUMN_LEFT = 173;
+    private static final int CONTENT_RIGHT = 326;
+    private static final int ROLE_CARD_HEIGHT = 52;
+
     private static final int PANEL_COLOR = 0xF0141A17;
     private static final int INNER_COLOR = 0xE51D2720;
     private static final int BORDER_COLOR = 0xFF536B4E;
@@ -20,6 +28,8 @@ public final class SurvivorManagementScreen
 
     private Button callCivilianButton;
     private Button callRiflemanButton;
+    private Button callPistolmanButton;
+    private Button callShotgunnerButton;
     private Button rallyButton;
 
     public SurvivorManagementScreen(
@@ -28,8 +38,8 @@ public final class SurvivorManagementScreen
             Component title
     ) {
         super(menu, inventory, title);
-        imageWidth = 276;
-        imageHeight = 236;
+        imageWidth = PANEL_WIDTH;
+        imageHeight = PANEL_HEIGHT;
         inventoryLabelY = 10_000;
     }
 
@@ -43,7 +53,7 @@ public final class SurvivorManagementScreen
                 button -> clickMenuButton(
                         SurvivorManagementMenu.CALL_CIVILIAN_BUTTON
                 )
-        ).bounds(leftPos + 20, topPos + 137, 112, 20).build());
+        ).bounds(leftPos + 20, topPos + 153, 141, 20).build());
         callRiflemanButton = addRenderableWidget(Button.builder(
                 Component.translatable(
                         "screen.rotwire.survivors.call_rifleman"
@@ -51,7 +61,19 @@ public final class SurvivorManagementScreen
                 button -> clickMenuButton(
                         SurvivorManagementMenu.CALL_RIFLEMAN_BUTTON
                 )
-        ).bounds(leftPos + 144, topPos + 137, 112, 20).build());
+        ).bounds(leftPos + 179, topPos + 153, 141, 20).build());
+        callPistolmanButton = addRenderableWidget(Button.builder(
+                Component.translatable("screen.rotwire.survivors.call_pistolman"),
+                button -> clickMenuButton(
+                        SurvivorManagementMenu.CALL_PISTOLMAN_BUTTON
+                )
+        ).bounds(leftPos + 20, topPos + 210, 141, 20).build());
+        callShotgunnerButton = addRenderableWidget(Button.builder(
+                Component.translatable("screen.rotwire.survivors.call_shotgunner"),
+                button -> clickMenuButton(
+                        SurvivorManagementMenu.CALL_SHOTGUNNER_BUTTON
+                )
+        ).bounds(leftPos + 179, topPos + 210, 141, 20).build());
         rallyButton = addRenderableWidget(Button.builder(
                 Component.translatable(
                         "screen.rotwire.survivors.rally"
@@ -59,13 +81,13 @@ public final class SurvivorManagementScreen
                 button -> clickMenuButton(
                         SurvivorManagementMenu.RALLY_SURVIVORS_BUTTON
                 )
-        ).bounds(leftPos + 20, topPos + 174, 236, 20).build());
+        ).bounds(leftPos + 20, topPos + 250, 300, 20).build());
         addRenderableWidget(Button.builder(
                 Component.translatable("screen.rotwire.survivors.back"),
                 button -> clickMenuButton(
                         SurvivorManagementMenu.BACK_BUTTON
                 )
-        ).bounds(leftPos + 82, topPos + 204, 112, 20).build());
+        ).bounds(leftPos + 114, topPos + 280, 112, 20).build());
         refreshButtons();
     }
 
@@ -103,26 +125,23 @@ public final class SurvivorManagementScreen
         );
         outline(graphics);
         graphics.fill(
-                leftPos + 14,
+                leftPos + CONTENT_LEFT,
                 topPos + 38,
-                leftPos + 262,
-                topPos + 95,
+                leftPos + LEFT_COLUMN_RIGHT,
+                topPos + 116,
                 INNER_COLOR
         );
         graphics.fill(
-                leftPos + 14,
-                topPos + 103,
-                leftPos + 138,
-                topPos + 163,
+                leftPos + RIGHT_COLUMN_LEFT,
+                topPos + 38,
+                leftPos + CONTENT_RIGHT,
+                topPos + 116,
                 INNER_COLOR
         );
-        graphics.fill(
-                leftPos + 138,
-                topPos + 103,
-                leftPos + 262,
-                topPos + 163,
-                INNER_COLOR
-        );
+        fillRoleCard(graphics, CONTENT_LEFT, 124);
+        fillRoleCard(graphics, RIGHT_COLUMN_LEFT, 124);
+        fillRoleCard(graphics, CONTENT_LEFT, 181);
+        fillRoleCard(graphics, RIGHT_COLUMN_LEFT, 181);
     }
 
     @Override
@@ -140,7 +159,9 @@ public final class SurvivorManagementScreen
         );
         graphics.drawCenteredString(
                 font,
-                Component.literal(menu.settlementName()),
+                Component.literal(font.plainSubstrByWidth(
+                        menu.settlementName(), imageWidth - 40
+                )),
                 imageWidth / 2,
                 23,
                 MUTED_COLOR
@@ -151,75 +172,107 @@ public final class SurvivorManagementScreen
                 22,
                 47,
                 "screen.rotwire.survivors.population",
-                menu.population()
+                menu.population(),
+                157
         );
         drawValue(
                 graphics,
                 22,
                 62,
                 "screen.rotwire.survivors.civilians",
-                menu.civilians()
+                menu.civilians(),
+                157
         );
         drawValue(
                 graphics,
                 22,
                 77,
                 "screen.rotwire.survivors.riflemen",
-                menu.riflemen()
+                menu.riflemen(),
+                157
         );
         drawValue(
                 graphics,
-                148,
+                22,
+                92,
+                "screen.rotwire.survivors.pistolmen",
+                menu.pistolmen(),
+                157
+        );
+        drawValue(
+                graphics,
+                22,
+                107,
+                "screen.rotwire.survivors.shotgunners",
+                menu.shotgunners(),
+                157
+        );
+        drawValue(
+                graphics,
+                181,
                 47,
                 "screen.rotwire.survivors.rations",
-                menu.rations()
+                menu.rations(),
+                318
         );
         drawValue(
                 graphics,
-                148,
+                181,
                 62,
                 "screen.rotwire.survivors.ammunition",
-                menu.mosinAmmunition()
+                menu.mosinAmmunition(),
+                318
         );
+        drawValue(graphics, 181, 77,
+                "screen.rotwire.survivors.pistol_ammunition",
+                menu.pistolAmmunition(), 318);
+        drawValue(graphics, 181, 92,
+                "screen.rotwire.survivors.shotgun_ammunition",
+                menu.shotgunAmmunition(), 318);
 
-        graphics.drawString(
-                font,
-                Component.translatable("screen.rotwire.survivors.civilian"),
-                22,
-                109,
-                TEXT_COLOR,
-                false
-        );
-        graphics.drawString(
-                font,
+        drawRoleCard(
+                graphics,
+                CONTENT_LEFT,
+                124,
+                "screen.rotwire.survivors.civilian",
                 Component.translatable(
                         "screen.rotwire.survivors.requires_rations",
                         menu.civilianRationsRequired()
                 ),
-                22,
-                122,
-                hasCivilianResources() ? READY_COLOR : MISSING_COLOR,
-                false
+                hasCivilianResources()
         );
-        graphics.drawString(
-                font,
-                Component.translatable("screen.rotwire.survivors.rifleman"),
-                146,
-                109,
-                TEXT_COLOR,
-                false
-        );
-        graphics.drawString(
-                font,
-                Component.translatable(
-                        "screen.rotwire.survivors.rifleman_requirements",
+        drawRoleCard(
+                graphics,
+                RIGHT_COLUMN_LEFT,
+                124,
+                "screen.rotwire.survivors.rifleman",
+                armedRequirements(
                         menu.riflemanRationsRequired(),
                         menu.riflemanAmmunitionRequired()
                 ),
-                146,
-                122,
-                hasRiflemanResources() ? READY_COLOR : MISSING_COLOR,
-                false
+                hasRiflemanResources()
+        );
+        drawRoleCard(
+                graphics,
+                CONTENT_LEFT,
+                181,
+                "screen.rotwire.survivors.pistolman",
+                armedRequirements(
+                        menu.pistolmanRationsRequired(),
+                        menu.pistolmanAmmunitionRequired()
+                ),
+                hasPistolmanResources()
+        );
+        drawRoleCard(
+                graphics,
+                RIGHT_COLUMN_LEFT,
+                181,
+                "screen.rotwire.survivors.shotgunner",
+                armedRequirements(
+                        menu.shotgunnerRationsRequired(),
+                        menu.shotgunnerAmmunitionRequired()
+                ),
+                hasShotgunnerResources()
         );
         graphics.drawCenteredString(
                 font,
@@ -227,7 +280,7 @@ public final class SurvivorManagementScreen
                         "screen.rotwire.survivors.rally_hint"
                 ),
                 imageWidth / 2,
-                163,
+                238,
                 MUTED_COLOR
         );
     }
@@ -249,6 +302,16 @@ public final class SurvivorManagementScreen
                     && menu.riflemen() < menu.maximumRiflemen()
                     && hasRiflemanResources();
         }
+        if (callPistolmanButton != null) {
+            callPistolmanButton.active = canManage
+                    && menu.pistolmen() < menu.maximumPistolmen()
+                    && hasPistolmanResources();
+        }
+        if (callShotgunnerButton != null) {
+            callShotgunnerButton.active = canManage
+                    && menu.shotgunners() < menu.maximumShotgunners()
+                    && hasShotgunnerResources();
+        }
         if (rallyButton != null) {
             rallyButton.active = canManage && menu.population() > 0;
         }
@@ -264,12 +327,25 @@ public final class SurvivorManagementScreen
                 >= menu.riflemanAmmunitionRequired();
     }
 
+    private boolean hasPistolmanResources() {
+        return menu.rations() >= menu.pistolmanRationsRequired()
+                && menu.pistolAmmunition()
+                >= menu.pistolmanAmmunitionRequired();
+    }
+
+    private boolean hasShotgunnerResources() {
+        return menu.rations() >= menu.shotgunnerRationsRequired()
+                && menu.shotgunAmmunition()
+                >= menu.shotgunnerAmmunitionRequired();
+    }
+
     private void drawValue(
             GuiGraphics graphics,
             int x,
             int y,
             String translationKey,
-            int value
+            int value,
+            int valueRight
     ) {
         Component label = Component.translatable(translationKey);
         Component amount = Component.literal(Integer.toString(value));
@@ -277,7 +353,7 @@ public final class SurvivorManagementScreen
         graphics.drawString(
                 font,
                 amount,
-                x + 105 - font.width(amount),
+                valueRight - font.width(amount),
                 y,
                 TEXT_COLOR,
                 false
@@ -291,6 +367,50 @@ public final class SurvivorManagementScreen
                     buttonId
             );
         }
+    }
+
+    private Component armedRequirements(int rations, int ammunition) {
+        return Component.translatable(
+                "screen.rotwire.survivors.rifleman_requirements",
+                rations,
+                ammunition
+        );
+    }
+
+    private void fillRoleCard(GuiGraphics graphics, int x, int y) {
+        graphics.fill(
+                leftPos + x,
+                topPos + y,
+                leftPos + x + (LEFT_COLUMN_RIGHT - CONTENT_LEFT),
+                topPos + y + ROLE_CARD_HEIGHT,
+                INNER_COLOR
+        );
+    }
+
+    private void drawRoleCard(
+            GuiGraphics graphics,
+            int x,
+            int y,
+            String titleKey,
+            Component requirements,
+            boolean hasResources
+    ) {
+        graphics.drawString(
+                font,
+                Component.translatable(titleKey),
+                x + 8,
+                y + 6,
+                TEXT_COLOR,
+                false
+        );
+        graphics.drawString(
+                font,
+                requirements,
+                x + 8,
+                y + 19,
+                hasResources ? READY_COLOR : MISSING_COLOR,
+                false
+        );
     }
 
     private void outline(GuiGraphics graphics) {

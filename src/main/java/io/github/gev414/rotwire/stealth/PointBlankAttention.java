@@ -77,8 +77,7 @@ public final class PointBlankAttention {
                 level,
                 position,
                 shooter,
-                range,
-                !suppressed
+                range
         );
     }
 

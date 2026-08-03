@@ -48,6 +48,20 @@ public final class SurvivalSystemsConfig {
     public static ModConfigSpec.DoubleValue BLOCK_BREAK_ATTENTION_RANGE;
     public static ModConfigSpec.BooleanValue REPLACE_ZOMBIE_TACTICS_MARKERS;
 
+    public static ModConfigSpec.BooleanValue COORDINATED_INFECTED_AI_ENABLED;
+    public static ModConfigSpec.IntValue COORDINATED_AI_PATHS_PER_TICK;
+    public static ModConfigSpec.IntValue COORDINATED_AI_PATH_RETRY_TICKS;
+    public static ModConfigSpec.IntValue COORDINATED_AI_PATH_RETRY_JITTER_TICKS;
+    public static ModConfigSpec.IntValue COORDINATED_AI_PATH_SEGMENT_DISTANCE;
+    public static ModConfigSpec.IntValue COORDINATED_AI_SURVIVOR_SCAN_TICKS;
+    public static ModConfigSpec.IntValue COORDINATED_AI_CONTACT_RADIUS;
+    public static ModConfigSpec.IntValue COORDINATED_AI_CONTACT_MEMORY_TICKS;
+    public static ModConfigSpec.BooleanValue COORDINATED_AI_BUILDING_BREACH;
+    public static ModConfigSpec.BooleanValue COORDINATED_AI_HORDE_BREACH;
+    public static ModConfigSpec.BooleanValue COORDINATED_AI_AMBIENT_BREACH;
+    public static ModConfigSpec.BooleanValue SUPPRESS_ZOMBIE_TACTICS_AI_GOALS;
+    public static ModConfigSpec.BooleanValue SUPPRESS_ZOMBIE_TACTICS_CLIMBING;
+
     public static ModConfigSpec.BooleanValue KNOCKBACK_ENABLED;
     public static ModConfigSpec.DoubleValue ZOMBIE_KNOCKBACK_RETENTION;
     public static ModConfigSpec.DoubleValue PLAYER_KNOCKBACK_RETENTION;
@@ -213,10 +227,74 @@ public final class SurvivalSystemsConfig {
                 .defineInRange("blockBreakRange", 20.0D, 0.0D, 128.0D);
         REPLACE_ZOMBIE_TACTICS_MARKERS = BUILDER
                 .comment(
-                        "Suppress ZombieTactics' automatic markers and let",
-                        "Rotwire create markers only for configured loud events."
+                        "Suppress ZombieTactics' marker entities; Rotwire",
+                        "represents configured loud events as investigation intents."
                 )
                 .define("replaceZombieTacticsMarkers", true);
+        BUILDER.pop();
+
+        BUILDER.push("infectedAi");
+        COORDINATED_INFECTED_AI_ENABLED = BUILDER
+                .comment(
+                        "Give tagged infected one Rotwire owner for hunt,",
+                        "investigation, assault, navigation, and breaching."
+                )
+                .define("enabled", true);
+        COORDINATED_AI_PATHS_PER_TICK = BUILDER
+                .comment(
+                        "Maximum new coordinated paths calculated per level tick.",
+                        "Rotwire lowers this limit automatically under horde load."
+                )
+                .defineInRange("pathCalculationsPerTick", 2, 1, 64);
+        COORDINATED_AI_PATH_RETRY_TICKS = BUILDER
+                .comment("Base cooldown between route replacements for one infected.")
+                .defineInRange("pathRetryTicks", 30, 5, 1_200);
+        COORDINATED_AI_PATH_RETRY_JITTER_TICKS = BUILDER
+                .comment("Random extra route cooldown used to desynchronize mobs.")
+                .defineInRange("pathRetryJitterTicks", 30, 0, 1_200);
+        COORDINATED_AI_PATH_SEGMENT_DISTANCE = BUILDER
+                .comment("Maximum length of one long-distance assault route segment.")
+                .defineInRange("pathSegmentDistance", 24, 8, 64);
+        COORDINATED_AI_SURVIVOR_SCAN_TICKS = BUILDER
+                .comment("Ticks between staggered survivor scans by assault mobs.")
+                .defineInRange("survivorScanTicks", 20, 5, 200);
+        COORDINATED_AI_CONTACT_RADIUS = BUILDER
+                .comment(
+                        "Distance where an already-known target remains in "
+                                + "close contact even through an obstruction."
+                )
+                .defineInRange("contactRadius", 8, 2, 24);
+        COORDINATED_AI_CONTACT_MEMORY_TICKS = BUILDER
+                .comment(
+                        "Ticks coordinated infected remember an already-known "
+                                + "target after direct contact is lost."
+                )
+                .defineInRange("contactMemoryTicks", 120, 20, 600);
+        COORDINATED_AI_BUILDING_BREACH = BUILDER
+                .comment("Allow Rotwire building-encounter infected to breach.")
+                .define("buildingEncounterBreaching", true);
+        COORDINATED_AI_HORDE_BREACH = BUILDER
+                .comment("Allow The Hordes event infected to breach.")
+                .define("hordeEventBreaching", true);
+        COORDINATED_AI_AMBIENT_BREACH = BUILDER
+                .comment(
+                        "Allow all other coordinated infected to breach.",
+                        "Keep false to protect unrelated player builds."
+                )
+                .define("ambientBreaching", false);
+        SUPPRESS_ZOMBIE_TACTICS_AI_GOALS = BUILDER
+                .comment(
+                        "Remove ZombieTactics mining and marker movement goals",
+                        "from coordinated infected so only Rotwire owns movement."
+                )
+                .define("suppressZombieTacticsMovementGoals", true);
+        SUPPRESS_ZOMBIE_TACTICS_CLIMBING = BUILDER
+                .comment(
+                        "Disable ZombieTactics' collision climbing hook while",
+                        "Rotwire owns infected movement. This prevents stacked",
+                        "zombies from repeatedly bouncing against blocked routes."
+                )
+                .define("suppressZombieTacticsCollisionClimbing", true);
         BUILDER.pop();
 
         BUILDER.push("knockback");

@@ -47,7 +47,24 @@ public final class SettlementManager {
             ServerLevel level,
             CityZoneKey cityZone
     ) {
-        return SettlementSavedData.get(level.getServer()).status(cityZone);
+        return status(level.getServer(), cityZone);
+    }
+
+    public static Optional<SettlementSnapshot> status(
+            net.minecraft.server.MinecraftServer server,
+            CityZoneKey cityZone
+    ) {
+        return SettlementSavedData.get(server).status(cityZone);
+    }
+
+    public static boolean isOperational(SettlementSnapshot settlement) {
+        return SettlementConfig.SIEGES_ENABLED.get()
+                && settlement.hasUpgrade(SettlementUpgrade.CAMP_HUB)
+                && !settlement.name().isEmpty()
+                && settlement.population()
+                >= SettlementConfig.SIEGE_MINIMUM_POPULATION.get()
+                && settlement.activeRadioCount() > 0
+                && !settlement.primaryRadioDestroyed();
     }
 
     public static boolean renamePrimary(
@@ -119,7 +136,7 @@ public final class SettlementManager {
             CityZoneKey cityZone,
             int minimumRations,
             int minimumAmmunition,
-            int loadedAmmunition,
+            int initialAmmunitionItems,
             int maximumRiflemen
     ) {
         return SettlementSavedData.get(level.getServer()).addRifleman(
@@ -127,7 +144,7 @@ public final class SettlementManager {
                 cityZone,
                 minimumRations,
                 minimumAmmunition,
-                loadedAmmunition,
+                initialAmmunitionItems,
                 maximumRiflemen
         );
     }
@@ -138,6 +155,64 @@ public final class SettlementManager {
             UUID settlementId
     ) {
         return SettlementSavedData.get(level.getServer()).removeRifleman(
+                cityZone,
+                settlementId
+        );
+    }
+
+    public static boolean addPistolman(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumPistolmen
+    ) {
+        return SettlementSavedData.get(level.getServer()).addPistolman(
+                level,
+                cityZone,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumPistolmen
+        );
+    }
+
+    public static boolean removePistolman(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            UUID settlementId
+    ) {
+        return SettlementSavedData.get(level.getServer()).removePistolman(
+                cityZone,
+                settlementId
+        );
+    }
+
+    public static boolean addShotgunner(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumShotgunners
+    ) {
+        return SettlementSavedData.get(level.getServer()).addShotgunner(
+                level,
+                cityZone,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumShotgunners
+        );
+    }
+
+    public static boolean removeShotgunner(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            UUID settlementId
+    ) {
+        return SettlementSavedData.get(level.getServer()).removeShotgunner(
                 cityZone,
                 settlementId
         );
@@ -154,6 +229,16 @@ public final class SettlementManager {
                         cityZone,
                         requestedRounds
                 );
+    }
+
+    public static int withdrawAmmunition(
+            ServerLevel level,
+            CityZoneKey cityZone,
+            SettlementAmmunition ammunition,
+            int requestedRounds
+    ) {
+        return SettlementSavedData.get(level.getServer())
+                .withdrawAmmunition(level, cityZone, ammunition, requestedRounds);
     }
 
     public static void refreshStockpile(
@@ -194,6 +279,26 @@ public final class SettlementManager {
         );
     }
 
+    public static boolean startTestSiege(
+            ServerLevel level,
+            CityZoneKey cityZone
+    ) {
+        return SettlementSavedData.get(level.getServer()).startTestSiege(
+                level,
+                cityZone
+        );
+    }
+
+    public static boolean cancelTestSiege(
+            ServerLevel level,
+            CityZoneKey cityZone
+    ) {
+        return SettlementSavedData.get(level.getServer()).cancelTestSiege(
+                level,
+                cityZone
+        );
+    }
+
     public static void markRadioDestroyed(
             ServerLevel level,
             CityZoneKey cityZone,
@@ -222,6 +327,7 @@ public final class SettlementManager {
                 overworld.getDayTime() / 24_000L,
                 SettlementConfig.RATIONS_PER_SETTLER_PER_DAY.get()
         );
+        data.tickSieges(event.getServer());
     }
 
     private SettlementManager() {

@@ -1,7 +1,7 @@
 package io.github.gev414.rotwire.settlement;
 
 /**
- * Durable siege lifecycle placeholders for the future siege scheduler.
+ * Durable lifecycle for the settlement siege scheduler.
  */
 public enum SettlementSiegeState {
     CALM,

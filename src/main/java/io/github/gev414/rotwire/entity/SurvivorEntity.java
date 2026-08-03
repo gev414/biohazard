@@ -7,6 +7,7 @@ import io.github.gev414.rotwire.entity.ai.SurvivorMosinAttackGoal;
 import io.github.gev414.rotwire.entity.ai.SurvivorReturnToCampGoal;
 import io.github.gev414.rotwire.entity.ai.SurvivorThreatAwarenessGoal;
 import io.github.gev414.rotwire.settlement.SettlementManager;
+import io.github.gev414.rotwire.settlement.SettlementAmmunition;
 import io.github.gev414.rotwire.settlement.SettlementSnapshot;
 import io.github.gev414.rotwire.settlement.SettlementSiegeState;
 import io.github.gev414.rotwire.settlement.SurvivorSafetyRules;
@@ -18,6 +19,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -70,10 +74,25 @@ public final class SurvivorEntity extends AbstractVillager {
     private static final String HOME_POSITION_TAG = "homePosition";
     private static final String HOME_RADIUS_TAG = "homeRadius";
     private static final String ROLE_TAG = "role";
+    private static final String FIREARM_ROUNDS_TAG = "firearmRounds";
+    private static final String FIREARM_RESERVE_SHOTS_TAG = "firearmReserveShots";
     private static final String RETURN_HOME_ORDERED_TAG = "returnHomeOrdered";
+
+    /** Each physical camp-stockpile round provides this many survivor shots. */
+    private static final int SHOTS_PER_STORED_AMMUNITION = 10;
+
+    private static final EntityDataAccessor<Integer> ROLE_DATA =
+            SynchedEntityData.defineId(
+                    SurvivorEntity.class,
+                    EntityDataSerializers.INT
+            );
 
     private static final ResourceLocation MOSIN_ID =
             ResourceLocation.fromNamespaceAndPath("pointblank", "mosin");
+    private static final ResourceLocation M1911_ID =
+            ResourceLocation.fromNamespaceAndPath("pointblank", "m1911a1");
+    private static final ResourceLocation M870_ID =
+            ResourceLocation.fromNamespaceAndPath("pointblank", "m870");
 
     private static final double ROAM_SPEED = 0.80D;
     private static final double RETREAT_SPEED = 1.25D;
@@ -88,7 +107,10 @@ public final class SurvivorEntity extends AbstractVillager {
     @Nullable
     private BlockPos homePosition;
     private int homeRadius;
-    private SurvivorRole role = SurvivorRole.CIVILIAN;
+    private int firearmRounds;
+    private int firearmReserveShots;
+    @Nullable
+    private FirearmProfile firearmProfileCache;
     private boolean returnHomeOrdered;
 
     public SurvivorEntity(
@@ -105,6 +127,12 @@ public final class SurvivorEntity extends AbstractVillager {
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.10D);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ROLE_DATA, SurvivorRole.CIVILIAN.ordinal());
     }
 
     @Override
@@ -129,7 +157,13 @@ public final class SurvivorEntity extends AbstractVillager {
                 10,
                 true,
                 false,
-                monster -> isRifleman() && !shouldReturnToCamp()
+                monster -> {
+                    int range = firearmMaximumShootingDistance();
+                    return canFightWithFirearm()
+                            && range > 0
+                            && distanceToSqr(monster)
+                            <= (double) range * range;
+                }
         ));
     }
 
@@ -152,71 +186,107 @@ public final class SurvivorEntity extends AbstractVillager {
         setPersistenceRequired();
     }
 
-    /**
-     * Gives this survivor a genuine PointBlank Mosin, with its magazine stored
-     * on the firearm item itself so reloads and persistence use the same ammo
-     * capacity as a player-held Mosin.
-     */
     public boolean equipMosinRifle(int loadedRounds) {
-        ItemStack rifle = createMosinStack();
-        if (rifle.isEmpty() || !(rifle.getItem() instanceof GunItem gun)) {
-            return false;
-        }
-        FireModeInstance fireMode = GunItem.getFireModeInstance(rifle);
-        int capacity = Math.max(
-                0,
-                gun.getMaxAmmoCapacity(rifle, fireMode)
-        );
-        if (capacity <= 0) {
-            return false;
-        }
-        GunItem.setAmmo(
-                rifle,
-                fireMode,
-                Math.min(Math.max(0, loadedRounds), capacity)
-        );
-        role = SurvivorRole.RIFLEMAN;
-        setItemSlot(EquipmentSlot.MAINHAND, rifle);
-        setDropChance(EquipmentSlot.MAINHAND, 0.0F);
-        setCustomName(Component.translatable("entity.rotwire.rifleman"));
-        return true;
+        return equipFirearm(SurvivorRole.RIFLEMAN, loadedRounds);
+    }
+
+    public boolean equipPistol(int loadedRounds) {
+        return equipFirearm(SurvivorRole.PISTOLMAN, loadedRounds);
+    }
+
+    public boolean equipShotgun(int loadedRounds) {
+        return equipFirearm(SurvivorRole.SHOTGUNNER, loadedRounds);
     }
 
     public static int mosinMagazineCapacity() {
-        ItemStack rifle = createMosinStack();
-        if (rifle.isEmpty() || !(rifle.getItem() instanceof GunItem gun)) {
-            return 0;
-        }
-        return Math.max(
-                0,
-                gun.getMaxAmmoCapacity(
-                        rifle,
-                        GunItem.getFireModeInstance(rifle)
-                )
-        );
+        return magazineCapacity(SurvivorRole.RIFLEMAN);
+    }
+
+    public static int pistolMagazineCapacity() {
+        return magazineCapacity(SurvivorRole.PISTOLMAN);
+    }
+
+    public static int shotgunMagazineCapacity() {
+        return magazineCapacity(SurvivorRole.SHOTGUNNER);
+    }
+
+    /**
+     * Returns the number of physical stockpile items required to provide the
+     * requested number of survivor combat shots.
+     */
+    public static int storedAmmunitionItemsForShots(int combatShots) {
+        int shots = Math.max(0, combatShots);
+        return shots == 0
+                ? 0
+                : ((shots - 1) / SHOTS_PER_STORED_AMMUNITION) + 1;
     }
 
     public boolean isRifleman() {
-        return role == SurvivorRole.RIFLEMAN;
+        return role() == SurvivorRole.RIFLEMAN;
+    }
+
+    public boolean isPistolman() {
+        return role() == SurvivorRole.PISTOLMAN;
+    }
+
+    public boolean isShotgunner() {
+        return role() == SurvivorRole.SHOTGUNNER;
+    }
+
+    public boolean hasFirearm() {
+        return role().isArmed();
+    }
+
+    public @Nullable ResourceLocation firearmItemId() {
+        SurvivorRole currentRole = role();
+        return currentRole.isArmed() ? currentRole.gunId() : null;
     }
 
     public boolean canFightWithMosin() {
-        return isRifleman()
-                && mosinProfile().isPresent()
+        return canFightWithFirearm();
+    }
+
+    public boolean canFightWithFirearm() {
+        return role().isArmed()
+                && firearmProfile().isPresent()
                 && availableAmmunition() > 0
-                && !shouldReturnToCamp();
+                && !mustActivelyRetreat();
     }
 
     public int mosinMaximumShootingDistance() {
-        return mosinProfile()
-                .map(MosinProfile::maximumShootingDistance)
+        return firearmMaximumShootingDistance();
+    }
+
+    public int firearmMaximumShootingDistance() {
+        return firearmProfile()
+                .map(FirearmProfile::maximumShootingDistance)
                 .orElse(0);
     }
 
+    public double firearmMinimumEngagementDistance() {
+        double configured = switch (role()) {
+            case RIFLEMAN -> SettlementConfig
+                    .RIFLEMAN_MINIMUM_ENGAGEMENT_DISTANCE.get();
+            case PISTOLMAN -> SettlementConfig
+                    .PISTOLMAN_MINIMUM_ENGAGEMENT_DISTANCE.get();
+            case SHOTGUNNER -> SettlementConfig
+                    .SHOTGUNNER_MINIMUM_ENGAGEMENT_DISTANCE.get();
+            case CIVILIAN -> 0.0D;
+        };
+        int maximum = firearmMaximumShootingDistance();
+        return maximum <= 1
+                ? 0.0D
+                : Math.min(configured, maximum - 1.0D);
+    }
+
     public int mosinMagazineRounds() {
-        return mosinProfile().map(profile -> Math.max(
+        return firearmMagazineRounds();
+    }
+
+    public int firearmMagazineRounds() {
+        return firearmProfile().map(profile -> Math.max(
                 0,
-                GunItem.getAmmo(profile.stack(), profile.fireMode())
+                Math.min(firearmRounds, profile.capacity())
         )).orElse(0);
     }
 
@@ -225,36 +295,50 @@ public final class SurvivorEntity extends AbstractVillager {
      * survivor's settlement, returning true when at least one round loaded.
      */
     public boolean reloadMosinFromSettlement() {
+        return reloadFirearmFromSettlement();
+    }
+
+    public boolean reloadFirearmFromSettlement() {
         if (!(level() instanceof ServerLevel serverLevel)
                 || cityZone == null
                 || settlementId == null) {
             return false;
         }
-        MosinProfile profile = mosinProfile().orElse(null);
+        FirearmProfile profile = firearmProfile().orElse(null);
         if (profile == null) {
             return false;
         }
-        int currentRounds = GunItem.getAmmo(
-                profile.stack(),
-                profile.fireMode()
-        );
+        int currentRounds = firearmMagazineRounds();
         int requiredRounds = profile.capacity() - currentRounds;
         if (requiredRounds <= 0) {
             return false;
         }
-        int withdrawn = SettlementManager.withdrawMosinAmmunition(
+        int reserveRoundsLoaded = Math.min(requiredRounds, firearmReserveShots);
+        int roundsStillRequired = requiredRounds - reserveRoundsLoaded;
+        int requestedAmmunitionItems = storedAmmunitionItemsForShots(
+                roundsStillRequired
+        );
+        int withdrawn = SettlementManager.withdrawAmmunition(
                 serverLevel,
                 cityZone,
-                requiredRounds
+                role().ammunition(),
+                requestedAmmunitionItems
         );
-        if (withdrawn <= 0) {
+        int suppliedShots = saturatedMultiply(
+                withdrawn,
+                SHOTS_PER_STORED_AMMUNITION
+        );
+        int roundsLoadedFromStockpile = Math.min(
+                roundsStillRequired,
+                suppliedShots
+        );
+        if (reserveRoundsLoaded + roundsLoadedFromStockpile <= 0) {
             return false;
         }
-        GunItem.setAmmo(
-                profile.stack(),
-                profile.fireMode(),
-                currentRounds + withdrawn
-        );
+        firearmRounds = currentRounds + reserveRoundsLoaded
+                + roundsLoadedFromStockpile;
+        firearmReserveShots = firearmReserveShots - reserveRoundsLoaded
+                + suppliedShots - roundsLoadedFromStockpile;
         return true;
     }
 
@@ -264,15 +348,16 @@ public final class SurvivorEntity extends AbstractVillager {
      * headshot multiplier without relying on a fake player firing packet.
      */
     public boolean fireMosinAt(LivingEntity target) {
-        MosinProfile profile = mosinProfile().orElse(null);
+        return fireFirearmAt(target);
+    }
+
+    public boolean fireFirearmAt(LivingEntity target) {
+        FirearmProfile profile = firearmProfile().orElse(null);
         if (profile == null || target == null || !target.isAlive()
-                || isAlliedTo(target) || shouldReturnToCamp()) {
+                || isAlliedTo(target) || mustActivelyRetreat()) {
             return false;
         }
-        int currentRounds = GunItem.getAmmo(
-                profile.stack(),
-                profile.fireMode()
-        );
+        int currentRounds = firearmMagazineRounds();
         if (currentRounds <= 0 || !getSensing().hasLineOfSight(target)) {
             return false;
         }
@@ -282,50 +367,20 @@ public final class SurvivorEntity extends AbstractVillager {
         if (distance > profile.maximumShootingDistance()) {
             return false;
         }
-        boolean headshot = random.nextDouble()
+        boolean headshot = isRifleman() && random.nextDouble()
                 < SettlementConfig.RIFLEMAN_HEADSHOT_CHANCE.get();
         Vec3 aimPoint = headshot
                 ? target.getEyePosition()
                 : target.getBoundingBox().getCenter();
         Vec3 direction = aimPoint.subtract(origin).normalize();
-        if (distance > SettlementConfig.RIFLEMAN_PRECISE_RANGE.get()
+        if (isRifleman()
+                && distance > SettlementConfig.RIFLEMAN_PRECISE_RANGE.get()
                 && random.nextDouble()
                 < SettlementConfig.RIFLEMAN_LONG_RANGE_MISS_CHANCE.get()) {
             direction = intentionalMissDirection(direction);
         }
 
-        Vec3 maximumEnd = origin.add(
-                direction.scale(profile.maximumShootingDistance())
-        );
-        BlockHitResult blockHit = level().clip(new ClipContext(
-                origin,
-                maximumEnd,
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                this
-        ));
-        Vec3 rayEnd = blockHit.getType() == HitResult.Type.MISS
-                ? maximumEnd
-                : blockHit.getLocation();
-        EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(
-                level(),
-                this,
-                origin,
-                rayEnd,
-                getBoundingBox().expandTowards(
-                        direction.scale(profile.maximumShootingDistance())
-                ).inflate(1.0D),
-                entity -> entity instanceof LivingEntity living
-                        && living.isAlive()
-                        && !(entity instanceof Player)
-                        && !isAlliedTo(entity)
-        );
-
-        GunItem.setAmmo(
-                profile.stack(),
-                profile.fireMode(),
-                currentRounds - 1
-        );
+        firearmRounds = currentRounds - 1;
         swing(InteractionHand.MAIN_HAND, true);
         level().playSound(
                 null,
@@ -350,25 +405,36 @@ public final class SurvivorEntity extends AbstractVillager {
                     0.01D
             );
         }
-        if (entityHit != null
-                && entityHit.getEntity() instanceof LivingEntity living) {
-            float damage = profile.fireMode().getDamage();
-            if (headshot) {
-                damage *= profile.fireMode().getHeadshotMultiplier();
-            }
-            living.hurt(level().damageSources().mobAttack(this), damage);
+        int pellets = isShotgunner()
+                ? Math.max(1, profile.gun().getPelletCount())
+                : 1;
+        for (int pellet = 0; pellet < pellets; pellet++) {
+            Vec3 pelletDirection = pellets == 1
+                    ? direction
+                    : spreadDirection(
+                            direction,
+                            profile.gun().getPelletSpread()
+                    );
+            damageFirstHit(
+                    origin,
+                    pelletDirection,
+                    profile.maximumShootingDistance(),
+                    profile.fireMode().getDamage(),
+                    headshot ? profile.fireMode().getHeadshotMultiplier() : 1.0F
+            );
         }
         return true;
     }
 
-    public int mosinShotCooldownTicks() {
-        return mosinProfile().map(profile -> Math.max(
-                1,
-                (int) Math.ceil(1_200.0D / Math.max(
-                        1,
-                        profile.fireMode().getRpm()
-                ))
-        )).orElse(20);
+    public double mosinShotCooldownTicks() {
+        return firearmShotCooldownTicks();
+    }
+
+    public double firearmShotCooldownTicks() {
+        return firearmProfile().map(profile -> Math.max(
+                role().minimumShotIntervalTicks(),
+                1_200.0D / Math.max(1, profile.fireMode().getRpm())
+        )).orElse(20.0D);
     }
 
     public boolean isBoundToSettlement() {
@@ -385,6 +451,20 @@ public final class SurvivorEntity extends AbstractVillager {
         return homePosition != null
                 && homePosition.distSqr(blockPosition())
                 <= (double) homeRadius * homeRadius;
+    }
+
+    /**
+     * Keeps tactical movement inside the assigned camp. A survivor already
+     * outside that boundary may still choose a position that moves it closer
+     * to home, preventing combat movement from trapping it beyond the camp.
+     */
+    public boolean isTacticalPositionAllowed(BlockPos candidate) {
+        if (homePosition == null) {
+            return true;
+        }
+        double candidateDistance = homePosition.distSqr(candidate);
+        return candidateDistance <= (double) homeRadius * homeRadius
+                || candidateDistance < homePosition.distSqr(blockPosition());
     }
 
     /**
@@ -436,20 +516,52 @@ public final class SurvivorEntity extends AbstractVillager {
         if (settlement == null) {
             return true;
         }
+        if (!isWithinCityRoamRadius()) {
+            return true;
+        }
 
+        boolean ranged = hasRangedLoadout();
+        int ammunition = availableAmmunition();
+        if (settlement.siegeState() == SettlementSiegeState.ACTIVE) {
+            return SurvivorSafetyRules.mustReturnToCamp(
+                    new SurvivorSafetyRules.SafetyContext(
+                            settlement.siegeState(),
+                            ranged,
+                            ammunition,
+                            false,
+                            0,
+                            0
+                    )
+            );
+        }
+        if (!role().isArmed()) {
+            return nearbyHostileCount() > 0;
+        }
+
+        boolean meleeFight = isInMeleeFight();
+        if (!meleeFight) {
+            return ranged && ammunition <= 0;
+        }
         int hostileCount = nearbyHostileCount();
-        SurvivorSafetyRules.SafetyContext safetyContext =
+        return SurvivorSafetyRules.mustReturnToCamp(
                 new SurvivorSafetyRules.SafetyContext(
                         settlement.siegeState(),
-                        hasRangedLoadout(),
-                        availableAmmunition(),
-                        isInMeleeFight(),
+                        ranged,
+                        ammunition,
+                        true,
                         hostileCount,
                         nearbyMeleeAllyCount()
-                );
-        return SurvivorSafetyRules.mustReturnToCamp(safetyContext)
-                || (!isRifleman() && hostileCount > 0)
-                || !isWithinCityRoamRadius();
+                )
+        );
+    }
+
+    /**
+     * Safety conditions send survivors home, but once they have reached the
+     * shelter an armed survivor must defend itself instead of remaining in a
+     * permanent retreat state while an infected attacks at point-blank range.
+     */
+    private boolean mustActivelyRetreat() {
+        return shouldReturnToCamp() && !isAtCampRetreatPoint();
     }
 
     public Optional<SettlementBinding> settlementBinding() {
@@ -550,7 +662,9 @@ public final class SurvivorEntity extends AbstractVillager {
             tag.putLong(HOME_POSITION_TAG, homePosition.asLong());
         }
         tag.putInt(HOME_RADIUS_TAG, homeRadius);
-        tag.putString(ROLE_TAG, role.name());
+        tag.putString(ROLE_TAG, role().name());
+        tag.putInt(FIREARM_ROUNDS_TAG, firearmMagazineRounds());
+        tag.putInt(FIREARM_RESERVE_SHOTS_TAG, firearmReserveShots);
         tag.putBoolean(RETURN_HOME_ORDERED_TAG, returnHomeOrdered);
     }
 
@@ -570,10 +684,37 @@ public final class SurvivorEntity extends AbstractVillager {
                 ? BlockPos.of(tag.getLong(HOME_POSITION_TAG))
                 : null;
         homeRadius = Math.max(2, tag.getInt(HOME_RADIUS_TAG));
-        role = SurvivorRole.fromSavedName(tag.getString(ROLE_TAG));
+        SurvivorRole savedRole = SurvivorRole.fromSavedName(
+                tag.getString(ROLE_TAG)
+        );
+        setRole(savedRole);
+        if (tag.contains(FIREARM_ROUNDS_TAG, Tag.TAG_INT)) {
+            firearmRounds = Math.max(0, tag.getInt(FIREARM_ROUNDS_TAG));
+        } else {
+            // Migrate survivors saved before firearm magazines were separated
+            // from PointBlank's player-only equipped-item state.
+            ItemStack oldFirearm = getMainHandItem();
+            firearmRounds = oldFirearm.getItem() instanceof GunItem
+                    ? Math.max(0, GunItem.getAmmo(
+                            oldFirearm,
+                            GunItem.getFireModeInstance(oldFirearm)
+                    ))
+                    : 0;
+        }
+        firearmReserveShots = Math.max(
+                0,
+                Math.min(
+                        SHOTS_PER_STORED_AMMUNITION - 1,
+                        tag.getInt(FIREARM_RESERVE_SHOTS_TAG)
+                )
+        );
         returnHomeOrdered = tag.getBoolean(RETURN_HOME_ORDERED_TAG);
-        if (role == SurvivorRole.RIFLEMAN) {
-            setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        if (savedRole.isArmed()) {
+            firearmRounds = Math.min(
+                    firearmRounds,
+                    magazineCapacity(savedRole)
+            );
+            setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         }
         setPersistenceRequired();
     }
@@ -586,27 +727,30 @@ public final class SurvivorEntity extends AbstractVillager {
     }
 
     private boolean hasRangedLoadout() {
-        return isRifleman() && mosinProfile().isPresent();
+        return role().isArmed() && firearmProfile().isPresent();
     }
 
     private int availableAmmunition() {
-        MosinProfile profile = mosinProfile().orElse(null);
+        FirearmProfile profile = firearmProfile().orElse(null);
         if (profile == null) {
             return 0;
         }
-        int magazine = Math.max(
-                0,
-                GunItem.getAmmo(profile.stack(), profile.fireMode())
-        );
+        int magazine = firearmMagazineRounds();
         if (!(level() instanceof ServerLevel serverLevel)) {
             return magazine;
         }
         int settlementRounds = settlement(serverLevel)
-                .map(SettlementSnapshot::mosinAmmunition)
+                .map(snapshot -> switch (role().ammunition()) {
+                    case MOSIN_762X51 -> snapshot.mosinAmmunition();
+                    case PISTOL_45_ACP -> snapshot.pistolAmmunition();
+                    case SHOTGUN_12_GAUGE -> snapshot.shotgunAmmunition();
+                })
                 .orElse(0);
         return (int) Math.min(
                 Integer.MAX_VALUE,
-                (long) magazine + settlementRounds
+                (long) magazine + firearmReserveShots
+                        + (long) settlementRounds
+                        * SHOTS_PER_STORED_AMMUNITION
         );
     }
 
@@ -645,9 +789,62 @@ public final class SurvivorEntity extends AbstractVillager {
                 <= (double) radius * radius;
     }
 
-    private Optional<MosinProfile> mosinProfile() {
-        ItemStack stack = getMainHandItem();
-        if (!isRifleman() || !(stack.getItem() instanceof GunItem gun)) {
+    private boolean equipFirearm(SurvivorRole nextRole, int loadedRounds) {
+        ItemStack firearm = createFirearmStack(nextRole);
+        if (firearm.isEmpty() || !(firearm.getItem() instanceof GunItem gun)) {
+            return false;
+        }
+        FireModeInstance fireMode = GunItem.getFireModeInstance(firearm);
+        int capacity = Math.max(0, gun.getMaxAmmoCapacity(firearm, fireMode));
+        if (capacity <= 0) {
+            return false;
+        }
+        setRole(nextRole);
+        firearmRounds = Math.min(Math.max(0, loadedRounds), capacity);
+        firearmReserveShots = saturatedMultiply(
+                storedAmmunitionItemsForShots(firearmRounds),
+                SHOTS_PER_STORED_AMMUNITION
+        ) - firearmRounds;
+        // Never equip the PointBlank stack itself. GunItem's inventory tick
+        // assumes its holder is a player and otherwise syncs inventory slot
+        // -1, producing a packet/error storm. The client survivor layer draws
+        // an equivalent display-only stack from the synchronized role.
+        setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        setCustomName(Component.translatable(nextRole.translationKey()));
+        return true;
+    }
+
+    private static int magazineCapacity(SurvivorRole firearmRole) {
+        ItemStack firearm = createFirearmStack(firearmRole);
+        if (firearm.isEmpty() || !(firearm.getItem() instanceof GunItem gun)) {
+            return 0;
+        }
+        return Math.max(
+                0,
+                gun.getMaxAmmoCapacity(
+                        firearm,
+                        GunItem.getFireModeInstance(firearm)
+                )
+        );
+    }
+
+    private static int saturatedMultiply(int left, int right) {
+        return (int) Math.min(
+                Integer.MAX_VALUE,
+                (long) Math.max(0, left) * Math.max(0, right)
+        );
+    }
+
+    private Optional<FirearmProfile> firearmProfile() {
+        SurvivorRole currentRole = role();
+        if (!currentRole.isArmed()) {
+            return Optional.empty();
+        }
+        if (firearmProfileCache != null) {
+            return Optional.of(firearmProfileCache);
+        }
+        ItemStack stack = createFirearmStack(currentRole);
+        if (!(stack.getItem() instanceof GunItem gun)) {
             return Optional.empty();
         }
         FireModeInstance fireMode = GunItem.getFireModeInstance(stack);
@@ -655,17 +852,29 @@ public final class SurvivorEntity extends AbstractVillager {
         if (capacity <= 0 || fireMode.getRpm() <= 0) {
             return Optional.empty();
         }
-        return Optional.of(new MosinProfile(
-                stack,
+        firearmProfileCache = new FirearmProfile(
                 gun,
                 fireMode,
                 capacity,
-                Math.max(64, fireMode.getMaxShootingDistance())
-        ));
+                currentRole.maximumRange()
+        );
+        return Optional.of(firearmProfileCache);
     }
 
-    private static ItemStack createMosinStack() {
-        Item item = BuiltInRegistries.ITEM.get(MOSIN_ID);
+    private SurvivorRole role() {
+        return SurvivorRole.fromOrdinal(entityData.get(ROLE_DATA));
+    }
+
+    private void setRole(SurvivorRole nextRole) {
+        entityData.set(ROLE_DATA, nextRole.ordinal());
+        firearmProfileCache = null;
+    }
+
+    private static ItemStack createFirearmStack(SurvivorRole firearmRole) {
+        if (!firearmRole.isArmed()) {
+            return ItemStack.EMPTY;
+        }
+        Item item = BuiltInRegistries.ITEM.get(firearmRole.gunId());
         if (item == null || item == net.minecraft.world.item.Items.AIR) {
             return ItemStack.EMPTY;
         }
@@ -685,9 +894,135 @@ public final class SurvivorEntity extends AbstractVillager {
         return direction.add(side.normalize().scale(0.15D)).normalize();
     }
 
+    private Vec3 spreadDirection(Vec3 direction, double spread) {
+        Vec3 side = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
+        if (side.lengthSqr() < 1.0E-6D) {
+            side = direction.cross(new Vec3(1.0D, 0.0D, 0.0D));
+        }
+        Vec3 up = side.cross(direction).normalize();
+        double spreadAmount = Math.min(0.5D, Math.max(0.0D, spread));
+        return direction.add(side.normalize().scale(
+                (random.nextDouble() - 0.5D) * spreadAmount
+        )).add(up.scale(
+                (random.nextDouble() - 0.5D) * spreadAmount
+        )).normalize();
+    }
+
+    private void damageFirstHit(
+            Vec3 origin,
+            Vec3 direction,
+            int maximumDistance,
+            float damage,
+            float multiplier
+    ) {
+        Vec3 maximumEnd = origin.add(direction.scale(maximumDistance));
+        BlockHitResult blockHit = level().clip(new ClipContext(
+                origin,
+                maximumEnd,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                this
+        ));
+        Vec3 rayEnd = blockHit.getType() == HitResult.Type.MISS
+                ? maximumEnd
+                : blockHit.getLocation();
+        EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(
+                level(),
+                this,
+                origin,
+                rayEnd,
+                getBoundingBox().expandTowards(
+                        direction.scale(maximumDistance)
+                ).inflate(1.0D),
+                entity -> entity instanceof LivingEntity living
+                        && living.isAlive()
+                        && !(entity instanceof Player)
+                        && !isAlliedTo(entity)
+        );
+        if (entityHit != null
+                && entityHit.getEntity() instanceof LivingEntity living) {
+            living.hurt(
+                    level().damageSources().mobAttack(this),
+                    damage * multiplier
+            );
+        }
+    }
+
     private enum SurvivorRole {
-        CIVILIAN,
-        RIFLEMAN;
+        CIVILIAN(null, null, 0, 0.0D, "entity.rotwire.survivor"),
+        RIFLEMAN(
+                MOSIN_ID,
+                SettlementAmmunition.MOSIN_762X51,
+                64,
+                0.0D,
+                "entity.rotwire.rifleman"
+        ),
+        PISTOLMAN(
+                M1911_ID,
+                SettlementAmmunition.PISTOL_45_ACP,
+                24,
+                8.0D,
+                "entity.rotwire.pistolman"
+        ),
+        SHOTGUNNER(
+                M870_ID,
+                SettlementAmmunition.SHOTGUN_12_GAUGE,
+                18,
+                20.0D,
+                "entity.rotwire.shotgunner"
+        );
+
+        @Nullable
+        private final ResourceLocation gunId;
+        @Nullable
+        private final SettlementAmmunition ammunition;
+        private final int maximumRange;
+        private final double minimumShotIntervalTicks;
+        private final String translationKey;
+
+        SurvivorRole(
+                @Nullable ResourceLocation gunId,
+                @Nullable SettlementAmmunition ammunition,
+                int maximumRange,
+                double minimumShotIntervalTicks,
+                String translationKey
+        ) {
+            this.gunId = gunId;
+            this.ammunition = ammunition;
+            this.maximumRange = maximumRange;
+            this.minimumShotIntervalTicks = minimumShotIntervalTicks;
+            this.translationKey = translationKey;
+        }
+
+        private boolean isArmed() {
+            return gunId != null && ammunition != null;
+        }
+
+        private ResourceLocation gunId() {
+            if (gunId == null) {
+                throw new IllegalStateException("Civilian has no firearm");
+            }
+            return gunId;
+        }
+
+        private SettlementAmmunition ammunition() {
+            if (ammunition == null) {
+                throw new IllegalStateException("Civilian has no ammunition");
+            }
+            return ammunition;
+        }
+
+        private int maximumRange() {
+            return maximumRange;
+        }
+
+        private double minimumShotIntervalTicks() {
+            return minimumShotIntervalTicks;
+        }
+
+        private String translationKey() {
+            return translationKey;
+        }
 
         private static SurvivorRole fromSavedName(String savedName) {
             try {
@@ -696,10 +1031,16 @@ public final class SurvivorEntity extends AbstractVillager {
                 return CIVILIAN;
             }
         }
+
+        private static SurvivorRole fromOrdinal(int ordinal) {
+            SurvivorRole[] roles = values();
+            return ordinal >= 0 && ordinal < roles.length
+                    ? roles[ordinal]
+                    : CIVILIAN;
+        }
     }
 
-    private record MosinProfile(
-            ItemStack stack,
+    private record FirearmProfile(
             GunItem gun,
             FireModeInstance fireMode,
             int capacity,

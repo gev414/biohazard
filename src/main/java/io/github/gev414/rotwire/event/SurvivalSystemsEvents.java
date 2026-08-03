@@ -2,6 +2,8 @@ package io.github.gev414.rotwire.event;
 
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import io.github.gev414.rotwire.encumbrance.EncumbranceManager;
+import io.github.gev414.rotwire.entity.ai.SurvivorNavigationBudget;
+import io.github.gev414.rotwire.mob.ai.CoordinatedHostileAi;
 import io.github.gev414.rotwire.stealth.AttentionManager;
 import io.github.gev414.rotwire.stealth.AwarenessManager;
 import io.github.gev414.rotwire.stealth.PointBlankAttention;
@@ -29,7 +31,7 @@ public final class SurvivalSystemsEvents {
     public static void onServerTick(ServerTickEvent.Post event) {
         EncumbranceManager.onServerTick(event);
         AwarenessManager.onServerTick(event);
-        AttentionManager.onServerTick(event);
+        CoordinatedHostileAi.onServerTick(event);
         SurvivalStatusSync.onServerTick(event);
         SleepSurvivalManager.onServerTick(event);
     }
@@ -62,8 +64,7 @@ public final class SurvivalSystemsEvents {
                     level,
                     player.position(),
                     player,
-                    SurvivalSystemsConfig.MELEE_ATTENTION_RANGE.get(),
-                    false
+                    SurvivalSystemsConfig.MELEE_ATTENTION_RANGE.get()
             );
         }
     }
@@ -87,8 +88,7 @@ public final class SurvivalSystemsEvents {
                 level,
                 event.getPos().getCenter(),
                 player,
-                SurvivalSystemsConfig.BLOCK_BREAK_ATTENTION_RANGE.get(),
-                false
+                SurvivalSystemsConfig.BLOCK_BREAK_ATTENTION_RANGE.get()
         );
     }
 
@@ -100,6 +100,7 @@ public final class SurvivalSystemsEvents {
 
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         AttentionManager.onEntityJoinLevel(event);
+        CoordinatedHostileAi.onEntityJoinLevel(event);
     }
 
     public static void onPlayerLoggedIn(
@@ -134,6 +135,8 @@ public final class SurvivalSystemsEvents {
         EncumbranceManager.onServerStopped(event);
         AwarenessManager.onServerStopped(event);
         AttentionManager.onServerStopped(event);
+        CoordinatedHostileAi.onServerStopped(event);
+        SurvivorNavigationBudget.clear();
         SurvivalStatusSync.onServerStopped(event);
         PointBlankAttention.clear();
         SleepSurvivalManager.onServerStopped(event);

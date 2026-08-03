@@ -169,9 +169,9 @@ block entities, radio proximity search, and `DeliveryCategory.delayTicks()`.
 
 Source: [`SettlementConfig.java`](../src/main/java/io/github/gev414/rotwire/config/SettlementConfig.java)
 
-Defines the server-side `rotwire-settlements.toml`: shared ration capacity and
-nutrition consumed per civilian/guard per Minecraft day. It is read live by
-the Camp Hub donation flow, Camp Radio menu, and settlement upkeep tick.
+Defines the server-side `rotwire-settlements.toml`: shared ration capacity,
+survivor recruitment rules, and siege timing/spawn/raid controls. It is read
+live by the Camp Hub flow and settlement upkeep/siege tick.
 
 ### `SurvivalSystemsConfig`
 
@@ -179,8 +179,10 @@ Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/rotwire
 
 Defines `rotwire-survival.toml`: weight categories and tier thresholds,
 movement penalties, progressive visual-awareness tuning, alert memory, loud
-action grace, attention radii, ZombieTactics marker replacement, and incoming
-knockback retention for zombies and players. All values are read live and the
+action grace, attention radii, coordinated infected AI/path budgets,
+ZombieTactics ownership suppression, and incoming knockback retention for
+zombies and players. Runtime behavior values are read live; attaching the
+controller and removing third-party goals occurs on entity join. The
 specification is initialized idempotently.
 
 ### `WeatherConfig`
@@ -299,8 +301,9 @@ Sources: [`SurvivalSystemsEvents.java`](../src/main/java/io/github/gev414/rotwir
 [`SurvivalStatusSync.java`](../src/main/java/io/github/gev414/rotwire/event/SurvivalStatusSync.java)
 
 The event facade routes server ticks, target changes, incoming damage, block
-breaks, PointBlank sounds, marker joins, login/logout, and server stop to the
-encumbrance and stealth services. `SurvivalStatusSync` sends changed weight,
+breaks, PointBlank sounds, coordinated-hostile joins, login/logout, and server
+stop to the encumbrance, stealth, and infected-AI services.
+`SurvivalStatusSync` sends changed weight,
 tier, quiet state, and maximum nearby suspicion at most every five ticks.
 
 ## 5. Lost Cities adapter
@@ -690,10 +693,46 @@ Sources: [`SettlementManager.java`](../src/main/java/io/github/gev414/rotwire/se
 settlement record for its `CityZoneKey`. The first complete camp becomes the
 fixed primary hub; later radios in that city become relays. It exposes the
 server-authoritative naming, Camp Hub upgrade, physical stockpile scan and
-consumption, population, siege-schedule, and radio-status operations intended
-for future survivor, travel, and siege work.
+consumption, population, live siege scheduling, and radio-status operations.
 `SettlementSavedData` persists those records under `rotwire_settlements` and
 skips malformed individual entries when loading.
+
+`SettlementSiegeManager` advances `CALM`, `WARNING`, `ACTIVE`, and `RECOVERY`
+for named, online Camp Hubs with at least three living survivors. It never
+force-loads chunks: active assault spawns and stockpile raids require a nearby
+player, and spawn candidates must be in entity-ticking chunks. Siege mobs
+receive a persisted camp objective consumed by
+`CoordinatedHostileAi`; a living target becomes `HUNT`, otherwise the camp is
+an `ASSAULT` objective. `CoordinatedHostileGoal` owns the approach, melee,
+segmented long-distance paths, and tagged progressive breaching without a
+second siege-specific navigation goal. Only repeated route failures or a truly
+stuck navigation state permit a bounded direct-line and forward collision
+corridor inspection, covering multipart modded fences without treating a
+completed path segment as a blockage. `SiegeCoordinationManager` shares
+survivor contacts, expiring one-report-per-infected failure evidence, and one
+guarded structural breach lane for each camp. Only blocked infected are
+assigned to that lane; members with valid paths retain their local approach.
+Each destroyed block suspends the lane and broadcasts an opening revision so
+local and shared breachers cancel obsolete adjacent targets and repath. The
+lane continues only after renewed failures from its participants, and its
+selector rejects ordinary one-block steps with clear headroom.
+The opening is also retained as a collision-validated, camp-oriented gateway;
+outside infected path to its approach and receive bounded direct steering
+through the passage. Gateway geometry ignores transient entity occupancy and
+is invalidated only by block geometry. Below-grade trapped groups may share a
+local upward-only escape ramp without redirecting distant siege members.
+Partial Minecraft paths remain useful for movement but
+count as failures when their unreachable endpoint is reached. Shared survivor
+targets are adopted only within the local survivor-scan radius, so distant
+siege members continue toward the fixed camp instead of repeatedly repathing
+to a moving guard.
+`SiegeBreachRules` maps fragile and
+reinforced resistance tags, with uncategorized allowed blocks using the
+standard duration. Its structural fallback accepts ordinary solid materials
+but rejects technical, block-entity, fluid, negative-hardness, protected, and
+below-floor targets. Armed survivors remember close threats, maintain a
+weapon-specific minimum distance, and use cooldown-driven lateral repositioning
+when a solid obstacle blocks their shot. Civilians and empty guards retreat.
 
 ### `RadioNetwork`
 
@@ -1107,11 +1146,28 @@ Awareness owns transient mob/player suspicion, alert memory, and player
 loud-action grace. It suppresses only automatic targets against quiet players,
 then promotes them after view-cone/line-of-sight suspicion completes. Horde
 capability mobs bypass suppression and Brutes multiply suspicion gain.
-Attention sends affected infected toward bounded sound positions.
+Attention submits bounded sound positions as `INVESTIGATE` intents; it never
+writes navigation directly. `HUNT` and `ASSAULT` take precedence over those
+intents.
 PointBlank integration matches the resolved server fire sound to the shooter
-and classifies active suppressor attachments; only unsuppressed fire creates an
-approved ZombieTactics marker, and only when its configured marker range does
-not exceed the Rotwire event radius.
+and classifies active suppressor attachments.
+
+### Coordinated hostile AI
+
+Sources: [`CoordinatedHostileAi.java`](../src/main/java/io/github/gev414/rotwire/mob/ai/CoordinatedHostileAi.java),
+[`CoordinatedHostileGoal.java`](../src/main/java/io/github/gev414/rotwire/mob/ai/CoordinatedHostileGoal.java),
+[`ZombieTacticsCompatibility.java`](../src/main/java/io/github/gev414/rotwire/mob/ai/ZombieTacticsCompatibility.java)
+
+The entity-type tag `rotwire:coordinated_hostiles` opts mobs into one
+intent/action controller. Intent precedence is `HUNT`, `ASSAULT`,
+`INVESTIGATE`, and `IDLE`; actions are `WAIT`, `MOVE`, `ATTACK`, and `BREACH`.
+The shared per-level path budget bounds synchronous path creation and reduces
+its effective per-tick cap as the active horde grows, while random cooldowns
+and bounded route segments avoid synchronized retries and permit 90-100-block
+camp approaches. The diagnostic command reports live calculations, deferrals,
+and timing. ZombieTactics mining, marker movement, and marker cleanup goals are
+removed by class name from opted-in mobs; its global collision-climbing boost
+is disabled separately while Rotwire owns movement.
 
 ## 14. Item behavior
 

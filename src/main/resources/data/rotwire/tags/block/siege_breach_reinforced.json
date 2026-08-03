@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:walls",
+    {
+      "id": "#mcwfences:metal_fences",
+      "required": false
+    }
+  ]
+}

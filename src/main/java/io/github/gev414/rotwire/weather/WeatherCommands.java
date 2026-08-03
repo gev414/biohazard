@@ -4,6 +4,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.gev414.rotwire.config.WeatherConfig;
+import io.github.gev414.rotwire.mob.ai.InfectedAiCommands;
+import io.github.gev414.rotwire.settlement.SettlementSiegeCommands;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.TimeArgument;
@@ -37,6 +39,8 @@ public final class WeatherCommands {
                                                         )
                                         )
                         )
+                        .then(SettlementSiegeCommands.branch())
+                        .then(InfectedAiCommands.branch())
         );
     }
 

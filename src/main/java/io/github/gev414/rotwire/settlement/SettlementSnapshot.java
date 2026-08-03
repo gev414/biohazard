@@ -18,9 +18,13 @@ public record SettlementSnapshot(
         UUID primaryCampId,
         int civilianPopulation,
         int guardPopulation,
+        int pistolmanPopulation,
+        int shotgunnerPopulation,
         int rations,
         int rationContainerCount,
         int mosinAmmunition,
+        int pistolAmmunition,
+        int shotgunAmmunition,
         int upgradeMask,
         SettlementSiegeState siegeState,
         long nextSiegeAt,
@@ -34,6 +38,7 @@ public record SettlementSnapshot(
         return (int) Math.min(
                 Integer.MAX_VALUE,
                 (long) civilianPopulation + guardPopulation
+                        + pistolmanPopulation + shotgunnerPopulation
         );
     }
 

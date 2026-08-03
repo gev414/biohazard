@@ -2,7 +2,6 @@ package io.github.gev414.rotwire.settlement;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.food.FoodProperties;
@@ -29,12 +28,6 @@ import java.util.Set;
  * screen, plus prepared portions from whole food items already consumed.
  */
 final class SettlementStockpile {
-
-    private static final ResourceLocation MOSIN_AMMUNITION_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    "pointblank",
-                    "ammo762x51"
-            );
 
     static StockpileSnapshot inspect(
             ServerLevel level,
@@ -95,8 +88,22 @@ final class SettlementStockpile {
             Collection<SettlementRadioStatus> radios,
             int requestedRounds
     ) {
+        return consumeAmmunition(
+                level,
+                radios,
+                SettlementAmmunition.MOSIN_762X51,
+                requestedRounds
+        );
+    }
+
+    static AmmunitionConsumption consumeAmmunition(
+            ServerLevel level,
+            Collection<SettlementRadioStatus> radios,
+            SettlementAmmunition ammunitionType,
+            int requestedRounds
+    ) {
         int remaining = Math.max(0, requestedRounds);
-        Item ammunition = mosinAmmunition();
+        Item ammunition = ammunition(ammunitionType);
         List<StorageSource> sources = findSources(level, radios);
         if (ammunition == null || remaining == 0) {
             return new AmmunitionConsumption(summarize(sources), 0);
@@ -123,6 +130,50 @@ final class SettlementStockpile {
             }
         }
         return new AmmunitionConsumption(summarize(sources), removed);
+    }
+
+    /**
+     * Removes an exact percentage of all physical item counts in the supplied
+     * camp containers. This is used for deferred virtual-siege losses, so it
+     * never asks the level to load an unavailable camp chunk.
+     */
+    static ResourceDestruction destroyPercentage(
+            ServerLevel level,
+            Collection<SettlementRadioStatus> radios,
+            int percentage
+    ) {
+        List<StorageSource> sources = findSources(level, radios);
+        int totalItems = 0;
+        for (StorageSource source : sources) {
+            for (int slot = 0; slot < source.slotCount(); slot++) {
+                totalItems = saturatedAdd(
+                        totalItems,
+                        source.stackInSlot(slot).getCount()
+                );
+            }
+        }
+        int remaining = (int) Math.min(
+                totalItems,
+                ((long) totalItems * Math.clamp(percentage, 0, 100) + 99L)
+                        / 100L
+        );
+        int removed = 0;
+        for (StorageSource source : sources) {
+            for (int slot = 0;
+                    slot < source.slotCount() && remaining > 0;
+                    slot++) {
+                ItemStack extracted = source.extract(
+                        slot,
+                        Math.min(remaining, source.stackInSlot(slot).getCount())
+                );
+                removed = saturatedAdd(removed, extracted.getCount());
+                remaining -= extracted.getCount();
+            }
+            if (remaining <= 0) {
+                break;
+            }
+        }
+        return new ResourceDestruction(summarize(sources), removed);
     }
 
     private static List<StorageSource> findSources(
@@ -209,14 +260,32 @@ final class SettlementStockpile {
         int rations = 0;
         int containers = 0;
         int mosinRounds = 0;
-        Item ammunition = mosinAmmunition();
+        int pistolRounds = 0;
+        int shotgunShells = 0;
+        Item mosinAmmunition = ammunition(SettlementAmmunition.MOSIN_762X51);
+        Item pistolAmmunition = ammunition(SettlementAmmunition.PISTOL_45_ACP);
+        Item shotgunAmmunition = ammunition(
+                SettlementAmmunition.SHOTGUN_12_GAUGE
+        );
         for (StorageSource source : sources) {
             int sourceRations = 0;
             for (int slot = 0; slot < source.slotCount(); slot++) {
                 ItemStack stack = source.stackInSlot(slot);
-                if (ammunition != null && stack.is(ammunition)) {
+                if (mosinAmmunition != null && stack.is(mosinAmmunition)) {
                     mosinRounds = saturatedAdd(
                             mosinRounds,
+                            stack.getCount()
+                    );
+                }
+                if (pistolAmmunition != null && stack.is(pistolAmmunition)) {
+                    pistolRounds = saturatedAdd(
+                            pistolRounds,
+                            stack.getCount()
+                    );
+                }
+                if (shotgunAmmunition != null && stack.is(shotgunAmmunition)) {
+                    shotgunShells = saturatedAdd(
+                            shotgunShells,
                             stack.getCount()
                     );
                 }
@@ -233,11 +302,17 @@ final class SettlementStockpile {
                 rations = saturatedAdd(rations, sourceRations);
             }
         }
-        return new StockpileSnapshot(rations, containers, mosinRounds);
+        return new StockpileSnapshot(
+                rations,
+                containers,
+                mosinRounds,
+                pistolRounds,
+                shotgunShells
+        );
     }
 
-    private static Item mosinAmmunition() {
-        Item item = BuiltInRegistries.ITEM.get(MOSIN_AMMUNITION_ID);
+    private static Item ammunition(SettlementAmmunition ammunitionType) {
+        Item item = BuiltInRegistries.ITEM.get(ammunitionType.itemId());
         return item == null || item == net.minecraft.world.item.Items.AIR
                 ? null
                 : item;
@@ -440,11 +515,17 @@ final class SettlementStockpile {
     record StockpileSnapshot(
             int rations,
             int containerCount,
-            int mosinRounds
+            int mosinRounds,
+            int pistolRounds,
+            int shotgunShells
     ) {
 
         StockpileSnapshot(int rations, int containerCount) {
-            this(rations, containerCount, 0);
+            this(rations, containerCount, 0, 0, 0);
+        }
+
+        StockpileSnapshot(int rations, int containerCount, int mosinRounds) {
+            this(rations, containerCount, mosinRounds, 0, 0);
         }
     }
 
@@ -457,6 +538,12 @@ final class SettlementStockpile {
     record AmmunitionConsumption(
             StockpileSnapshot remainingStockpile,
             int roundsRemoved
+    ) {
+    }
+
+    record ResourceDestruction(
+            StockpileSnapshot remainingStockpile,
+            int itemsRemoved
     ) {
     }
 

@@ -3,6 +3,7 @@ package io.github.gev414.rotwire.entity.ai;
 import io.github.gev414.rotwire.config.SettlementConfig;
 import io.github.gev414.rotwire.entity.SurvivorEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
@@ -28,6 +29,20 @@ public final class SurvivorCityRoamGoal extends RandomStrollGoal {
     ) {
         super(survivor, speedModifier, DEFAULT_INTERVAL, false);
         this.survivor = survivor;
+    }
+
+    @Override
+    public void start() {
+        if (!(survivor.level() instanceof ServerLevel level)
+                || !SurvivorNavigationBudget.requestPath(level)) {
+            return;
+        }
+        long pathStartedAt = System.nanoTime();
+        super.start();
+        SurvivorNavigationBudget.recordPathCalculation(
+                level,
+                System.nanoTime() - pathStartedAt
+        );
     }
 
     @Override

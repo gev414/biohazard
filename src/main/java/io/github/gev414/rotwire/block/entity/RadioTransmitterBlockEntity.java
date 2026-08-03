@@ -496,11 +496,23 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         return true;
     }
 
-    /**
-     * Calls a persistent settlement rifleman with a five-round PointBlank
-     * Mosin magazine loaded from the camp's physical 7.62x51 stockpile.
-     */
     public boolean callRifleman(ServerPlayer player) {
+        return callArmedSurvivor(player, ArmedSurvivorType.RIFLEMAN);
+    }
+
+    public boolean callPistolman(ServerPlayer player) {
+        return callArmedSurvivor(player, ArmedSurvivorType.PISTOLMAN);
+    }
+
+    public boolean callShotgunner(ServerPlayer player) {
+        return callArmedSurvivor(player, ArmedSurvivorType.SHOTGUNNER);
+    }
+
+    private boolean callArmedSurvivor(
+            ServerPlayer player,
+            ArmedSurvivorType type
+    ) {
+        String key = type.translationKey();
         if (!canManage(player)) {
             player.sendSystemMessage(Component.translatable(
                     "message.rotwire.camp.owner_only"
@@ -510,7 +522,7 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         if (cityZone == null || campId == null
                 || !isPrimarySettlementRadio(player.serverLevel())) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.primary_only"
+                    "message.rotwire." + key + ".primary_only"
             ));
             return false;
         }
@@ -543,34 +555,35 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         }
         if (!settlement.hasUpgrade(SettlementUpgrade.CAMP_HUB)) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.requires_hub"
+                    "message.rotwire." + key + ".requires_hub"
             ));
             return false;
         }
 
-        int magazineCapacity = SurvivorEntity.mosinMagazineCapacity();
+        int magazineCapacity = type.magazineCapacity();
         if (magazineCapacity <= 0) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.mosin_unavailable"
+                    "message.rotwire." + key + ".weapon_unavailable"
             ));
             return false;
         }
-        int requiredRations = SettlementConfig
-                .RIFLEMAN_CALL_RATION_REQUIREMENT.get();
+        int requiredRations = type.requiredRations();
         if (settlement.rations() < requiredRations) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.requires_rations",
+                    "message.rotwire." + key + ".requires_rations",
                     requiredRations
             ));
             return false;
         }
         int requiredAmmunition = Math.max(
                 magazineCapacity,
-                SettlementConfig.RIFLEMAN_CALL_AMMUNITION_REQUIREMENT.get()
+                type.requiredAmmunition()
         );
-        if (settlement.mosinAmmunition() < requiredAmmunition) {
+        int initialAmmunitionItems =
+                SurvivorEntity.storedAmmunitionItemsForShots(magazineCapacity);
+        if (type.availableAmmunition(settlement) < requiredAmmunition) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.requires_ammunition",
+                    "message.rotwire." + key + ".requires_ammunition",
                     requiredAmmunition
             ));
             return false;
@@ -588,23 +601,23 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
             return false;
         }
 
-        SurvivorEntity rifleman = ModEntities.SURVIVOR.get().create(
+        SurvivorEntity survivor = ModEntities.SURVIVOR.get().create(
                 player.serverLevel()
         );
-        if (rifleman == null || !rifleman.equipMosinRifle(magazineCapacity)) {
+        if (survivor == null || !type.equip(survivor, magazineCapacity)) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.mosin_unavailable"
+                    "message.rotwire." + key + ".weapon_unavailable"
             ));
             return false;
         }
-        rifleman.moveTo(
+        survivor.moveTo(
                 spawnPosition.getX() + 0.5D,
                 spawnPosition.getY(),
                 spawnPosition.getZ() + 0.5D,
                 player.getYRot(),
                 0.0F
         );
-        rifleman.bindToSettlement(
+        survivor.bindToSettlement(
                 settlement.id(),
                 cityZone,
                 player.getUUID(),
@@ -612,25 +625,17 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
                 camp.radius()
         );
 
-        if (!SettlementManager.addRifleman(
-                player.serverLevel(),
-                cityZone,
-                requiredRations,
-                requiredAmmunition,
-                magazineCapacity,
-                SettlementConfig.MAX_RIFLEMEN.get()
+        if (!type.reserve(
+                player.serverLevel(), cityZone, requiredRations,
+                requiredAmmunition, initialAmmunitionItems
         )) {
             player.sendSystemMessage(Component.translatable(
-                    "message.rotwire.rifleman.limit_reached"
+                    "message.rotwire." + key + ".limit_reached"
             ));
             return false;
         }
-        if (!player.serverLevel().addFreshEntity(rifleman)) {
-            SettlementManager.removeRifleman(
-                    player.serverLevel(),
-                    cityZone,
-                    settlement.id()
-            );
+        if (!player.serverLevel().addFreshEntity(survivor)) {
+            type.release(player.serverLevel(), cityZone, settlement.id());
             player.sendSystemMessage(Component.translatable(
                     "message.rotwire.survivor.no_safe_spawn"
             ));
@@ -638,7 +643,7 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         }
 
         player.sendSystemMessage(Component.translatable(
-                "message.rotwire.rifleman.called",
+                "message.rotwire." + key + ".called",
                 settlement.name()
         ));
         return true;
@@ -1002,5 +1007,105 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
             case CRAFTING -> "item.rotwire.field_workshop_module";
             case OPERATIONS -> "item.rotwire.operations_relay_module";
         };
+    }
+
+    private enum ArmedSurvivorType {
+        RIFLEMAN,
+        PISTOLMAN,
+        SHOTGUNNER;
+
+        private String translationKey() {
+            return name().toLowerCase(java.util.Locale.ROOT);
+        }
+
+        private int magazineCapacity() {
+            return switch (this) {
+                case RIFLEMAN -> SurvivorEntity.mosinMagazineCapacity();
+                case PISTOLMAN -> SurvivorEntity.pistolMagazineCapacity();
+                case SHOTGUNNER -> SurvivorEntity.shotgunMagazineCapacity();
+            };
+        }
+
+        private int requiredRations() {
+            return switch (this) {
+                case RIFLEMAN -> SettlementConfig
+                        .RIFLEMAN_CALL_RATION_REQUIREMENT.get();
+                case PISTOLMAN -> SettlementConfig
+                        .PISTOLMAN_CALL_RATION_REQUIREMENT.get();
+                case SHOTGUNNER -> SettlementConfig
+                        .SHOTGUNNER_CALL_RATION_REQUIREMENT.get();
+            };
+        }
+
+        private int requiredAmmunition() {
+            return switch (this) {
+                case RIFLEMAN -> SettlementConfig
+                        .RIFLEMAN_CALL_AMMUNITION_REQUIREMENT.get();
+                case PISTOLMAN -> SettlementConfig
+                        .PISTOLMAN_CALL_AMMUNITION_REQUIREMENT.get();
+                case SHOTGUNNER -> SettlementConfig
+                        .SHOTGUNNER_CALL_AMMUNITION_REQUIREMENT.get();
+            };
+        }
+
+        private int availableAmmunition(SettlementSnapshot settlement) {
+            return switch (this) {
+                case RIFLEMAN -> settlement.mosinAmmunition();
+                case PISTOLMAN -> settlement.pistolAmmunition();
+                case SHOTGUNNER -> settlement.shotgunAmmunition();
+            };
+        }
+
+        private boolean equip(SurvivorEntity survivor, int ammunition) {
+            return switch (this) {
+                case RIFLEMAN -> survivor.equipMosinRifle(ammunition);
+                case PISTOLMAN -> survivor.equipPistol(ammunition);
+                case SHOTGUNNER -> survivor.equipShotgun(ammunition);
+            };
+        }
+
+        private boolean reserve(
+                ServerLevel level,
+                CityZoneKey cityZone,
+                int rations,
+                int ammunition,
+                int initialAmmunitionItems
+        ) {
+            return switch (this) {
+                case RIFLEMAN -> SettlementManager.addRifleman(
+                        level, cityZone, rations, ammunition,
+                        initialAmmunitionItems,
+                        SettlementConfig.MAX_RIFLEMEN.get()
+                );
+                case PISTOLMAN -> SettlementManager.addPistolman(
+                        level, cityZone, rations, ammunition,
+                        initialAmmunitionItems,
+                        SettlementConfig.MAX_PISTOLMEN.get()
+                );
+                case SHOTGUNNER -> SettlementManager.addShotgunner(
+                        level, cityZone, rations, ammunition,
+                        initialAmmunitionItems,
+                        SettlementConfig.MAX_SHOTGUNNERS.get()
+                );
+            };
+        }
+
+        private void release(
+                ServerLevel level,
+                CityZoneKey cityZone,
+                UUID settlementId
+        ) {
+            switch (this) {
+                case RIFLEMAN -> SettlementManager.removeRifleman(
+                        level, cityZone, settlementId
+                );
+                case PISTOLMAN -> SettlementManager.removePistolman(
+                        level, cityZone, settlementId
+                );
+                case SHOTGUNNER -> SettlementManager.removeShotgunner(
+                        level, cityZone, settlementId
+                );
+            }
+        }
     }
 }

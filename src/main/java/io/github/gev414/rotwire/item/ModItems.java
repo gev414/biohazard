@@ -44,6 +44,13 @@ public final class ModItems {
             "encrypted_intel",
             new Item.Properties().stacksTo(16)
     );
+    public static final Supplier<SurvivorGunDisplayItem>
+            SURVIVOR_FIREARM_DISPLAY = ITEMS.register(
+                    "survivor_firearm_display",
+                    () -> new SurvivorGunDisplayItem(
+                            new Item.Properties().stacksTo(1)
+                    )
+            );
     public static final Supplier<CampModuleItem> QUARTERMASTER_CACHE_MODULE =
             module(
                     "quartermaster_cache_module",

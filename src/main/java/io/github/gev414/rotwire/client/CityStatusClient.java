@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 
 public final class CityStatusClient {
 
-    private static final int PANEL_WIDTH = 178;
-    private static final int PANEL_HEIGHT = 104;
+    private static final int PANEL_WIDTH = 198;
+    private static final int PANEL_HEIGHT = 144;
     private static final int PANEL_TOP = 72;
     private static final int TAB_WIDTH = 34;
     private static final int TAB_HEIGHT = 20;
@@ -196,6 +196,48 @@ public final class CityStatusClient {
                 0xB8C9B5,
                 false
         );
+        graphics.drawString(
+                MinecraftFonts.font(graphics),
+                Component.translatable(
+                        status.operationalSettlement()
+                                ? "screen.rotwire.city_status.settlement.operational"
+                                : "screen.rotwire.city_status.settlement.inactive"
+                ),
+                textLeft,
+                line + 76,
+                status.operationalSettlement() ? 0x8FCB92 : 0xD6BDA6,
+                false
+        );
+        int siegeState = Math.clamp(status.siegeState(), 0, 3);
+        int siegeColor = siegeState == 2 ? 0xF08E72
+                : siegeState == 1 ? 0xE8D39B : 0xB8C9B5;
+        graphics.drawString(
+                MinecraftFonts.font(graphics),
+                Component.translatable(
+                        "screen.rotwire.city_status.siege",
+                        Component.translatable(
+                                "screen.rotwire.city_status.siege."
+                                        + siegeStateName(siegeState)
+                        )
+                ),
+                textLeft,
+                line + 93,
+                siegeColor,
+                false
+        );
+        if (status.siegeTransitionAt() >= 0L) {
+            graphics.drawString(
+                    MinecraftFonts.font(graphics),
+                    Component.translatable(
+                            "screen.rotwire.city_status.siege.time",
+                            countdown(status.siegeTransitionAt())
+                    ),
+                    textLeft,
+                    line + 110,
+                    siegeColor,
+                    false
+            );
+        }
     }
 
     public static boolean handleMouseClick(
@@ -242,6 +284,24 @@ public final class CityStatusClient {
                         screen.height - PANEL_HEIGHT - 12
                 )
         );
+    }
+
+    private static String siegeStateName(int state) {
+        return switch (state) {
+            case 1 -> "warning";
+            case 2 -> "active";
+            case 3 -> "recovery";
+            default -> "calm";
+        };
+    }
+
+    private static String countdown(long transitionAt) {
+        long now = net.minecraft.client.Minecraft.getInstance().level == null
+                ? transitionAt
+                : net.minecraft.client.Minecraft.getInstance().level
+                .getGameTime();
+        long seconds = Math.max(0L, (transitionAt - now + 19L) / 20L);
+        return String.format("%02d:%02d", seconds / 60L, seconds % 60L);
     }
 
     private static boolean contains(

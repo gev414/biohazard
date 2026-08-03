@@ -18,12 +18,13 @@ public final class SurvivorRenderer extends
     public SurvivorRenderer(EntityRendererProvider.Context context) {
         super(
                 context,
-                new PlayerModel<>(
-                        context.bakeLayer(ModelLayers.PLAYER),
-                        false
-                ),
+                new SurvivorModel(context.bakeLayer(ModelLayers.PLAYER)),
                 0.5F
         );
+        addLayer(new SurvivorItemInHandLayer(
+                this,
+                context.getItemInHandRenderer()
+        ));
     }
 
     @Override

@@ -257,4 +257,73 @@ class SettlementTest {
         assertTrue(settlement.removeCivilian(settlement.snapshot().id()));
         assertEquals(0, settlement.snapshot().civilianPopulation());
     }
+
+    @Test
+    void onlyANamedActiveHubWithThreePeopleCanOpenSiegeScheduling() {
+        UUID owner = UUID.randomUUID();
+        UUID camp = UUID.randomUUID();
+        Settlement settlement = Settlement.createPrimary(
+                new CityZoneKey(
+                        ResourceLocation.parse("minecraft:overworld"),
+                        2,
+                        -3,
+                        false
+                ),
+                camp,
+                owner,
+                BlockPos.ZERO,
+                BlockPos.ZERO,
+                8,
+                true,
+                true,
+                0,
+                0L,
+                0L
+        );
+
+        settlement.setPopulation(2, 0);
+        assertFalse(settlement.canRunSieges(3));
+
+        settlement.setPopulation(3, 0);
+        settlement.setUpgrade(SettlementUpgrade.CAMP_HUB, true);
+        assertFalse(settlement.canRunSieges(3));
+
+        assertTrue(settlement.rename(camp, owner, "Beacon Hill"));
+        assertTrue(settlement.canRunSieges(3));
+
+        settlement.markRadioDestroyed(camp, BlockPos.ZERO, 20L);
+        assertFalse(settlement.canRunSieges(3));
+    }
+
+    @Test
+    void unattendedSiegeKeepsItsNightfallDeadlineAcrossRestart() {
+        Settlement settlement = Settlement.createPrimary(
+                new CityZoneKey(
+                        ResourceLocation.parse("minecraft:overworld"),
+                        0,
+                        0,
+                        false
+                ),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                BlockPos.ZERO,
+                BlockPos.ZERO,
+                8,
+                true,
+                true,
+                0,
+                0L,
+                0L
+        );
+
+        assertTrue(settlement.beginSiege(600L, 300L));
+        assertFalse(settlement.isUnattendedSiegeDue(299L));
+
+        Settlement restored = Settlement.load(settlement.save());
+        assertTrue(restored.isUnattendedSiegeDue(300L));
+        assertTrue(restored.resolveVirtualSiege(72, 500L));
+        assertEquals(SettlementSiegeState.RECOVERY,
+                restored.snapshot().siegeState());
+        assertEquals(500L, restored.snapshot().nextSiegeAt());
+    }
 }

@@ -23,6 +23,18 @@ public final class SurvivorEvents {
                         binding.cityZone(),
                         binding.settlementId()
                 );
+            } else if (survivor.isPistolman()) {
+                SettlementManager.removePistolman(
+                        level,
+                        binding.cityZone(),
+                        binding.settlementId()
+                );
+            } else if (survivor.isShotgunner()) {
+                SettlementManager.removeShotgunner(
+                        level,
+                        binding.cityZone(),
+                        binding.settlementId()
+                );
             } else {
                 SettlementManager.removeCivilian(
                         level,

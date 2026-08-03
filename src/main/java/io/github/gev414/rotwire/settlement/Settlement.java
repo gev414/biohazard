@@ -29,12 +29,20 @@ final class Settlement {
     private static final String PRIMARY_POSITION_TAG = "primaryPosition";
     private static final String CIVILIANS_TAG = "civilians";
     private static final String GUARDS_TAG = "guards";
+    private static final String PISTOLMEN_TAG = "pistolmen";
+    private static final String SHOTGUNNERS_TAG = "shotgunners";
     private static final String RATIONS_TAG = "rations";
     private static final String RATION_CONTAINERS_TAG = "rationContainers";
     private static final String PREPARED_RATIONS_TAG = "preparedRations";
     private static final String UPGRADES_TAG = "upgrades";
     private static final String SIEGE_STATE_TAG = "siegeState";
     private static final String NEXT_SIEGE_TAG = "nextSiegeAt";
+    private static final String SIEGE_ATTENDED_TAG = "siegeAttended";
+    private static final String SIEGE_VIRTUAL_DEADLINE_TAG =
+            "siegeVirtualDeadline";
+    private static final String PENDING_RAID_PERCENT_TAG =
+            "pendingRaidPercent";
+    private static final String PENDING_RAID_CAMPS_TAG = "pendingRaidCamps";
     private static final String LAST_RATION_DAY_TAG = "lastRationDay";
     private static final String RADIOS_TAG = "radios";
 
@@ -50,13 +58,22 @@ final class Settlement {
     private String name = "";
     private int civilianPopulation;
     private int guardPopulation;
+    private int pistolmanPopulation;
+    private int shotgunnerPopulation;
     private int rations;
     private int rationContainerCount;
     private int mosinAmmunition;
+    private int pistolAmmunition;
+    private int shotgunAmmunition;
     private int preparedRations;
     private int upgradeMask;
     private SettlementSiegeState siegeState = SettlementSiegeState.CALM;
     private long nextSiegeAt = -1L;
+    private boolean siegeAttended;
+    private long siegeVirtualDeadline = -1L;
+    private int pendingRaidPercent;
+    private final java.util.Set<UUID> pendingRaidCamps =
+            new java.util.HashSet<>();
     private long lastRationDay = -1L;
     private long lastStockpileScan = Long.MIN_VALUE;
 
@@ -232,11 +249,11 @@ final class Settlement {
             ServerLevel level,
             int minimumRations,
             int minimumAmmunition,
-            int loadedAmmunition,
+            int initialAmmunitionItems,
             int maximumRiflemen
     ) {
         refreshStockpile(level, level.getGameTime(), true);
-        int roundsToLoad = Math.max(0, loadedAmmunition);
+        int ammunitionItemsToWithdraw = Math.max(0, initialAmmunitionItems);
         if (!hasUpgrade(SettlementUpgrade.CAMP_HUB)
                 || name.isEmpty()
                 || rations < Math.max(0, minimumRations)
@@ -249,10 +266,10 @@ final class Settlement {
                 SettlementStockpile.consumeMosinAmmunition(
                         level,
                         radios.values(),
-                        roundsToLoad
+                        ammunitionItemsToWithdraw
                 );
         updateStockpile(consumption.remainingStockpile());
-        if (consumption.roundsRemoved() != roundsToLoad) {
+        if (consumption.roundsRemoved() != ammunitionItemsToWithdraw) {
             return false;
         }
         guardPopulation++;
@@ -267,11 +284,113 @@ final class Settlement {
         return true;
     }
 
-    int withdrawMosinAmmunition(ServerLevel level, int requestedRounds) {
+    boolean addPistolman(
+            ServerLevel level,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumPistolmen
+    ) {
+        return addArmedSurvivor(
+                level,
+                SettlementAmmunition.PISTOL_45_ACP,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumPistolmen,
+                GuardRole.PISTOLMAN
+        );
+    }
+
+    boolean removePistolman(UUID expectedSettlementId) {
+        return removeArmedSurvivor(expectedSettlementId, GuardRole.PISTOLMAN);
+    }
+
+    boolean addShotgunner(
+            ServerLevel level,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumShotgunners
+    ) {
+        return addArmedSurvivor(
+                level,
+                SettlementAmmunition.SHOTGUN_12_GAUGE,
+                minimumRations,
+                minimumAmmunition,
+                initialAmmunitionItems,
+                maximumShotgunners,
+                GuardRole.SHOTGUNNER
+        );
+    }
+
+    boolean removeShotgunner(UUID expectedSettlementId) {
+        return removeArmedSurvivor(expectedSettlementId, GuardRole.SHOTGUNNER);
+    }
+
+    private boolean addArmedSurvivor(
+            ServerLevel level,
+            SettlementAmmunition ammunition,
+            int minimumRations,
+            int minimumAmmunition,
+            int initialAmmunitionItems,
+            int maximumPopulation,
+            GuardRole role
+    ) {
+        refreshStockpile(level, level.getGameTime(), true);
+        int ammunitionItemsToWithdraw = Math.max(0, initialAmmunitionItems);
+        if (!hasUpgrade(SettlementUpgrade.CAMP_HUB)
+                || name.isEmpty()
+                || rations < Math.max(0, minimumRations)
+                || ammunitionCount(ammunition)
+                < Math.max(0, minimumAmmunition)
+                || guardCount(role) >= Math.max(1, maximumPopulation)) {
+            return false;
+        }
         SettlementStockpile.AmmunitionConsumption consumption =
-                SettlementStockpile.consumeMosinAmmunition(
+                SettlementStockpile.consumeAmmunition(
                         level,
                         radios.values(),
+                        ammunition,
+                        ammunitionItemsToWithdraw
+                );
+        updateStockpile(consumption.remainingStockpile());
+        if (consumption.roundsRemoved() != ammunitionItemsToWithdraw) {
+            return false;
+        }
+        incrementGuard(role);
+        return true;
+    }
+
+    private boolean removeArmedSurvivor(
+            UUID expectedSettlementId,
+            GuardRole role
+    ) {
+        if (!id.equals(expectedSettlementId) || guardCount(role) <= 0) {
+            return false;
+        }
+        decrementGuard(role);
+        return true;
+    }
+
+    int withdrawMosinAmmunition(ServerLevel level, int requestedRounds) {
+        return withdrawAmmunition(
+                level,
+                SettlementAmmunition.MOSIN_762X51,
+                requestedRounds
+        );
+    }
+
+    int withdrawAmmunition(
+            ServerLevel level,
+            SettlementAmmunition ammunition,
+            int requestedRounds
+    ) {
+        SettlementStockpile.AmmunitionConsumption consumption =
+                SettlementStockpile.consumeAmmunition(
+                        level,
+                        radios.values(),
+                        ammunition,
                         requestedRounds
                 );
         updateStockpile(consumption.remainingStockpile());
@@ -304,14 +423,20 @@ final class Settlement {
         );
         int nextContainers = Math.max(0, stockpile.containerCount());
         int nextMosinAmmunition = Math.max(0, stockpile.mosinRounds());
+        int nextPistolAmmunition = Math.max(0, stockpile.pistolRounds());
+        int nextShotgunAmmunition = Math.max(0, stockpile.shotgunShells());
         if (rations == nextRations
                 && rationContainerCount == nextContainers
-                && mosinAmmunition == nextMosinAmmunition) {
+                && mosinAmmunition == nextMosinAmmunition
+                && pistolAmmunition == nextPistolAmmunition
+                && shotgunAmmunition == nextShotgunAmmunition) {
             return false;
         }
         rations = nextRations;
         rationContainerCount = nextContainers;
         mosinAmmunition = nextMosinAmmunition;
+        pistolAmmunition = nextPistolAmmunition;
+        shotgunAmmunition = nextShotgunAmmunition;
         return true;
     }
 
@@ -397,6 +522,119 @@ final class Settlement {
         return true;
     }
 
+    boolean beginSiege(long activeEndsAt, long virtualDeadlineAt) {
+        if (siegeState == SettlementSiegeState.ACTIVE
+                && nextSiegeAt == activeEndsAt
+                && siegeVirtualDeadline == virtualDeadlineAt
+                && !siegeAttended) {
+            return false;
+        }
+        siegeState = SettlementSiegeState.ACTIVE;
+        nextSiegeAt = activeEndsAt;
+        siegeVirtualDeadline = virtualDeadlineAt;
+        siegeAttended = false;
+        return true;
+    }
+
+    boolean markSiegeAttended() {
+        if (siegeState != SettlementSiegeState.ACTIVE || siegeAttended) {
+            return false;
+        }
+        siegeAttended = true;
+        return true;
+    }
+
+    boolean isUnattendedSiegeDue(long gameTime) {
+        return siegeState == SettlementSiegeState.ACTIVE
+                && !siegeAttended
+                && siegeVirtualDeadline >= 0L
+                && gameTime >= siegeVirtualDeadline;
+    }
+
+    boolean resolveVirtualSiege(int raidPercent, long recoveryEndsAt) {
+        int safePercent = Math.clamp(raidPercent, 0, 100);
+        boolean changed = siegeState != SettlementSiegeState.RECOVERY
+                || nextSiegeAt != recoveryEndsAt
+                || siegeVirtualDeadline != -1L;
+        siegeState = SettlementSiegeState.RECOVERY;
+        nextSiegeAt = recoveryEndsAt;
+        siegeVirtualDeadline = -1L;
+        siegeAttended = false;
+        if (safePercent > 0) {
+            pendingRaidPercent = Math.max(pendingRaidPercent, safePercent);
+            for (SettlementRadioStatus radio : radios.values()) {
+                if (radio.contributesStockpile()) {
+                    pendingRaidCamps.add(radio.campId());
+                }
+            }
+            changed = true;
+        }
+        return changed;
+    }
+
+    boolean applyPendingRaids(ServerLevel level) {
+        if (pendingRaidPercent <= 0 || pendingRaidCamps.isEmpty()) {
+            return false;
+        }
+        boolean changed = false;
+        for (UUID campId : java.util.Set.copyOf(pendingRaidCamps)) {
+            SettlementRadioStatus radio = radios.get(campId);
+            if (radio == null || !radio.contributesStockpile()) {
+                pendingRaidCamps.remove(campId);
+                changed = true;
+                continue;
+            }
+            if (!level.isAreaLoaded(radio.campCenter(), radio.campRadius())) {
+                continue;
+            }
+            SettlementStockpile.destroyPercentage(
+                    level,
+                    java.util.List.of(radio),
+                    pendingRaidPercent
+            );
+            pendingRaidCamps.remove(campId);
+            changed = true;
+        }
+        if (pendingRaidCamps.isEmpty()) {
+            pendingRaidPercent = 0;
+        }
+        if (changed) {
+            updateStockpile(SettlementStockpile.inspect(level, radios.values()));
+        }
+        return changed;
+    }
+
+    boolean canRunSieges(int minimumPopulation) {
+        SettlementRadioStatus primary = radios.get(primaryCampId);
+        return hasUpgrade(SettlementUpgrade.CAMP_HUB)
+                && !name.isEmpty()
+                && snapshot().population() >= Math.max(1, minimumPopulation)
+                && primary != null
+                && primary.contributesStockpile()
+                && primary.connected();
+    }
+
+    Optional<SettlementRadioStatus> primaryRadio() {
+        return Optional.ofNullable(radios.get(primaryCampId))
+                .filter(radio -> !radio.destroyed());
+    }
+
+    int raidRations(ServerLevel level, int requestedRations) {
+        int requested = Math.max(0, requestedRations);
+        if (requested == 0) {
+            return 0;
+        }
+        int prepared = consumePreparedRations(requested);
+        int remaining = requested - prepared;
+        if (remaining <= 0) {
+            return prepared;
+        }
+        SettlementStockpile.StockpileConsumption consumption =
+                consumePhysicalStockpile(level, remaining);
+        updateStockpile(consumption.remainingStockpile());
+        return saturatedAdd(prepared, consumption.nutritionRemoved());
+    }
+
     SettlementSnapshot snapshot() {
         int online = 0;
         int active = 0;
@@ -421,9 +659,13 @@ final class Settlement {
                 primaryCampId,
                 civilianPopulation,
                 guardPopulation,
+                pistolmanPopulation,
+                shotgunnerPopulation,
                 rations,
                 rationContainerCount,
                 mosinAmmunition,
+                pistolAmmunition,
+                shotgunAmmunition,
                 upgradeMask,
                 siegeState,
                 nextSiegeAt,
@@ -446,12 +688,24 @@ final class Settlement {
         tag.putLong(PRIMARY_POSITION_TAG, primaryRadioPosition.asLong());
         tag.putInt(CIVILIANS_TAG, civilianPopulation);
         tag.putInt(GUARDS_TAG, guardPopulation);
+        tag.putInt(PISTOLMEN_TAG, pistolmanPopulation);
+        tag.putInt(SHOTGUNNERS_TAG, shotgunnerPopulation);
         tag.putInt(RATIONS_TAG, rations);
         tag.putInt(RATION_CONTAINERS_TAG, rationContainerCount);
         tag.putInt(PREPARED_RATIONS_TAG, preparedRations);
         tag.putInt(UPGRADES_TAG, upgradeMask);
         tag.putString(SIEGE_STATE_TAG, siegeState.name());
         tag.putLong(NEXT_SIEGE_TAG, nextSiegeAt);
+        tag.putBoolean(SIEGE_ATTENDED_TAG, siegeAttended);
+        tag.putLong(SIEGE_VIRTUAL_DEADLINE_TAG, siegeVirtualDeadline);
+        tag.putInt(PENDING_RAID_PERCENT_TAG, pendingRaidPercent);
+        ListTag savedPendingRaidCamps = new ListTag();
+        for (UUID campId : pendingRaidCamps) {
+            CompoundTag savedCamp = new CompoundTag();
+            savedCamp.putUUID("campId", campId);
+            savedPendingRaidCamps.add(savedCamp);
+        }
+        tag.put(PENDING_RAID_CAMPS_TAG, savedPendingRaidCamps);
         tag.putLong(LAST_RATION_DAY_TAG, lastRationDay);
 
         ListTag savedRadios = new ListTag();
@@ -480,6 +734,14 @@ final class Settlement {
                 tag.getInt(CIVILIANS_TAG)
         );
         settlement.guardPopulation = Math.max(0, tag.getInt(GUARDS_TAG));
+        settlement.pistolmanPopulation = Math.max(
+                0,
+                tag.getInt(PISTOLMEN_TAG)
+        );
+        settlement.shotgunnerPopulation = Math.max(
+                0,
+                tag.getInt(SHOTGUNNERS_TAG)
+        );
         settlement.rations = Math.max(0, tag.getInt(RATIONS_TAG));
         settlement.rationContainerCount = Math.max(
                 0,
@@ -496,6 +758,25 @@ final class Settlement {
                 tag.getString(SIEGE_STATE_TAG)
         );
         settlement.nextSiegeAt = tag.getLong(NEXT_SIEGE_TAG);
+        settlement.siegeAttended = tag.getBoolean(SIEGE_ATTENDED_TAG);
+        settlement.siegeVirtualDeadline = tag.contains(
+                SIEGE_VIRTUAL_DEADLINE_TAG
+        ) ? tag.getLong(SIEGE_VIRTUAL_DEADLINE_TAG) : -1L;
+        settlement.pendingRaidPercent = Math.clamp(
+                tag.getInt(PENDING_RAID_PERCENT_TAG),
+                0,
+                100
+        );
+        ListTag savedPendingRaidCamps = tag.getList(
+                PENDING_RAID_CAMPS_TAG,
+                Tag.TAG_COMPOUND
+        );
+        for (int index = 0; index < savedPendingRaidCamps.size(); index++) {
+            CompoundTag savedCamp = savedPendingRaidCamps.getCompound(index);
+            if (savedCamp.hasUUID("campId")) {
+                settlement.pendingRaidCamps.add(savedCamp.getUUID("campId"));
+            }
+        }
         settlement.lastRationDay = tag.contains(LAST_RATION_DAY_TAG)
                 ? tag.getLong(LAST_RATION_DAY_TAG)
                 : -1L;
@@ -523,5 +804,39 @@ final class Settlement {
                 Integer.MAX_VALUE,
                 (long) Math.max(0, left) + Math.max(0, right)
         );
+    }
+
+    private int ammunitionCount(SettlementAmmunition ammunition) {
+        return switch (ammunition) {
+            case MOSIN_762X51 -> mosinAmmunition;
+            case PISTOL_45_ACP -> pistolAmmunition;
+            case SHOTGUN_12_GAUGE -> shotgunAmmunition;
+        };
+    }
+
+    private int guardCount(GuardRole role) {
+        return switch (role) {
+            case PISTOLMAN -> pistolmanPopulation;
+            case SHOTGUNNER -> shotgunnerPopulation;
+        };
+    }
+
+    private void incrementGuard(GuardRole role) {
+        switch (role) {
+            case PISTOLMAN -> pistolmanPopulation++;
+            case SHOTGUNNER -> shotgunnerPopulation++;
+        }
+    }
+
+    private void decrementGuard(GuardRole role) {
+        switch (role) {
+            case PISTOLMAN -> pistolmanPopulation--;
+            case SHOTGUNNER -> shotgunnerPopulation--;
+        }
+    }
+
+    private enum GuardRole {
+        PISTOLMAN,
+        SHOTGUNNER
     }
 }

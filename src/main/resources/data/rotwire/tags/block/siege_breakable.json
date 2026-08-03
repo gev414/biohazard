@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:leaves",
+    "#minecraft:fences",
+    "#minecraft:fence_gates",
+    "#minecraft:walls",
+    "minecraft:torch",
+    "minecraft:wall_torch",
+    "minecraft:lantern",
+    "minecraft:chain",
+    {
+      "id": "#mcwfences:metal_fences",
+      "required": false
+    },
+    {
+      "id": "#mcwfences:hedges",
+      "required": false
+    }
+  ]
+}

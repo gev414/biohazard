@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:leaves",
+    "minecraft:torch",
+    "minecraft:wall_torch",
+    "minecraft:lantern",
+    "minecraft:chain",
+    {
+      "id": "#mcwfences:hedges",
+      "required": false
+    }
+  ]
+}

@@ -26,6 +26,15 @@ public final class ModEntityTypeTags {
                     )
             );
 
+    public static final TagKey<EntityType<?>> COORDINATED_HOSTILES =
+            TagKey.create(
+                    Registries.ENTITY_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Rotwire.MOD_ID,
+                            "coordinated_hostiles"
+                    )
+            );
+
     private ModEntityTypeTags() {
     }
 }

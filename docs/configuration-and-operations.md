@@ -186,6 +186,118 @@ Section: `[settlements]`
 | `rationsPerSettlerPerDay` | 0 to 1,000 | `1` | Hunger points consumed by each civilian or guard at the next Minecraft-day boundary |
 | `stockpileScanIntervalTicks` | 20 to 1,200 | `100` | Live interval for discovering edible items in active, loaded campsite containers |
 
+Section: `[settlements.survivorAwareness]`
+
+| Key | Default | Meaning |
+|---|---:|---|
+| `hostileAwarenessRadius` / `contactMemoryTicks` | `16` / `120` | Direction-independent close awareness and six-second memory after contact is lost |
+| `threatScanIntervalTicks` | `12` | Staggered interval for finding a new close-range threat |
+| `repositionIntervalTicks` / `repositionAttempts` / `repositionRadius` | `30` / `6` / `8` | Bounded firing-position search; only the selected candidate receives a path calculation |
+| `pathCalculationsPerTick` | `1` | Shared per-level ceiling for survivor return, combat-reposition, and roaming paths |
+| `returnPathRetryTicks` | `40` | Base backoff after an unsuccessful camp-return segment |
+
+The rifleman, pistolman, and shotgunner sections expose
+`minimumEngagementDistance` values of `8`, `6`, and `5` blocks respectively.
+Armed survivors retreat inside that distance, fire from their current position
+when within weapon range, and otherwise reposition laterally or hold when cover
+blocks a shot. They neither acquire nor pursue a new threat beyond their firearm
+range, so the minimum distance is never treated as a destination ring.
+Rally and safety returns calculate only one rotating camp approach at a time,
+use 16-block path segments, accept useful partial progress, and back off after
+an unsuccessful segment. Camp approaches are resolved near the radio's feet
+level rather than from a heightmap that could select the tent or a building
+roof. `/rotwire ai status` reports the survivor path budget and last-second
+timings alongside the infected diagnostics.
+
+Section: `[settlements.sieges]`
+
+| Key | Default | Meaning |
+|---|---:|---|
+| `enabled` | `true` | Master switch; disabling it clears future schedules |
+| `minimumPopulation` | `3` | Named active primary hubs need this many survivors to become operational |
+| `intervalTicks` / `warningTicks` / `durationTicks` / `recoveryTicks` | `72000` / `12000` / `6000` / `6000` | Calm interval and the warning, assault, and recovery phases |
+| `spawnIntervalTicks` / `zombiesPerWave` / `nearbyCap` | `600` / `24` / `72` | Thirty-second horde-scale surge cadence, attempted wave size, and siege-only local maximum |
+| `minimumSpawnDistance` / `maximumSpawnDistance` | `90` / `100` | Outdoor spawn annulus around the main tent |
+| `fragileBreachTicks` / `standardBreachTicks` / `reinforcedBreachTicks` | `40` / `100` / `200` | Progressive obstacle-breaking time for ordinary tagged defenses |
+| `structuralBreachingEnabled` / `structuralFailureThreshold` | `true` / `3` | Allow one ordinary-solid-block lane after three distinct blocked infected report failure |
+| `structuralIndividualFailureThreshold` | `4` | Failed routes a lone infected needs before it may start the same guarded structural lane |
+| `structuralBaseTicks` / `structuralHardnessTicks` / `structuralMaximumTicks` | `200` / `200` / `1200` | Hardness-scaled structural time, capped at 60 seconds per block |
+| `structuralMaximumDepth` / `structuralMaximumCampDistance` | `4` / `48` | Horizontal lane depth and maximum distance from the camp or pursuit-target anchor |
+| `structuralMaximumContributors` | `2` | Zombies permitted to add shared breach progress during one tick |
+| `structuralProgressDecayDelayTicks` | `200` | Retain shared structural breach progress for 10 seconds without contributors before decay begins |
+| `playerActivationDistance` | `128` | A player must be nearby before active sieges spawn or raid stores |
+| `resourceDrainIntervalTicks` / `resourceDrainRations` | `400` / `4` | Food-stockpile raid cadence and requested nutrition |
+
+Siege zombies use `MobSpawnType.EVENT`, so natural surface rules do not affect
+them. They never force-load chunks and may spawn only at positions whose chunks
+are currently entity-ticking, not merely loaded. If no player attends before
+nightfall, the server queues a random 60-80% physical-store loss for every
+active camp and applies each loss when that camp's full radius next loads.
+`rotwire:siege_breakable` controls immediate ordinary breach targets; its
+bundled fence, fence-gate, and wall references also accept modded blocks that
+correctly join the corresponding Minecraft tags. Servers can replace or extend
+that data-pack tag. Structural fallback is separately guarded below.
+`rotwire:siege_breach_fragile` and `rotwire:siege_breach_reinforced` classify
+allowed blocks by breaking time; every allowed block in neither category uses
+the standard time. Breaking displays progressive cracks and does not change the
+block's normal player-mining hardness.
+After the first failed close-range route, an infected may inspect a physically
+blocking tagged fence or gate. Structural fallback still requires either the
+shared group evidence threshold or the lone-infected failure threshold.
+Completing a valid route segment does not count as failure. An eligible infected
+then checks the direct target line and a short forward corridor for a tagged
+obstacle; it does not mine an
+arbitrary block merely because that block is nearby. Any ordinary coordinated
+infected hunting a survivor or non-creative player may breach a tagged local
+defense such as a fence or gate. After persistent failed routes, the same
+target-scoped group may use the guarded all-solid-block structural lane;
+target-less ambient zombies retain the build-protection guardrail.
+
+When no tagged obstacle or open path is available, recent reports from the
+configured number of distinct blocked infected, or persistent failures from one
+infected, allow the target's pursuit group to designate one structural lane.
+Each report expires after ten seconds and is withdrawn as soon as that infected
+obtains a valid route. The scout can select only an exposed block immediately
+ahead of it and closer to the pursued target; infected that still have valid
+paths are not diverted to that lane. Any
+ordinary solid block can participate regardless of material or mod origin,
+preventing dirt, stone, and other terrain blocks from becoming immunity
+exploits. A fresh, budgeted full-route check is required before an infected
+starts either a local or shared breach, and survivor/player-targeted breachers
+repeat that check once per second so a moved target or newly opened path cancels
+unnecessary damage. After every destroyed block, all participants abandon stale
+breach
+targets and immediately request normal paths through or around the opening.
+The lane advances by one block only if enough of those same participants again
+prove that no route exists; a successful route ends the lane. Full blocks with
+clear headroom that navigation can treat as a one-block step are not selected
+as structural obstacles. The lane is fixed horizontally, one block wide, two
+blocks high, never descends below one block beneath the pursuit objective,
+stops at
+the configured depth, and produces no item drops. A group trapped below that
+floor may create a local escape ramp instead: every horizontal step rises one
+block, the normal depth cap still applies, and only infected within eight
+blocks share it. It cannot become a level or downward tunnel. Negative-hardness blocks,
+fluids, blocks with block entities, and `rotwire:siege_unbreakable` remain
+protected. The bundled protected tag covers technical portal/command blocks,
+bedrock, and reinforced deepslate and can be extended by a server data pack.
+
+A physically traversable destroyed block is retained for 60 seconds as the
+pursuit group's shared gateway. Outside infected route to its exterior approach,
+then use short collision-checked steering through the passage before resuming
+their survivor, player, or camp objective. The gateway tests all cardinal
+orientations and selects the objective-facing clear side, rather than assuming
+that a modded fence is aligned with the target vector. Geometry checks use block
+collision only, so a zombie temporarily standing in the breach cannot poison
+the cached route for the rest of the group. If adjacent multipart block
+collision still makes the visual gap too narrow for that mob, diagnostics mark
+the opening `obstructed` and ordinary failure/breach validation continues.
+
+Permission-level-2 operators standing at a connected radio can use
+`/rotwire siege start` to begin an immediate active siege for that radio's
+operational settlement, `/rotwire siege status` to inspect its phase, and
+`/rotwire siege cancel` to remove local siege zombies and reset its schedule.
+
 The Camp Hub Module must be installed by the primary camp owner at the online,
 complete primary radio before campsite storage supplies the city. Every edible
 item in a chest, barrel, Handcrafted storage block, or other standard inventory
@@ -226,7 +338,18 @@ Root section: `[survivalSystems]`
 | `attention.unsuppressedFireRange` | `96.0` | Unsuppressed PointBlank shot radius |
 | `attention.meleeRange` | `16.0` | Melee investigation radius |
 | `attention.blockBreakRange` | `20.0` | Non-instant block-break radius |
-| `attention.replaceZombieTacticsMarkers` | `true` | Replace automatic markers with Rotwire-approved loud-gun markers |
+| `attention.replaceZombieTacticsMarkers` | `true` | Suppress ZombieTactics marker entities; loud events become Rotwire investigation intents |
+| `infectedAi.enabled` | `true` | Give tagged infected one intent/action coordinator and movement owner |
+| `infectedAi.pathCalculationsPerTick` | `2` | Per-level ceiling for new coordinated paths; capped at 2 with 24+ active infected and granted through a fair waiting queue |
+| `infectedAi.pathRetryTicks` / `pathRetryJitterTicks` | `30` / `30` | Base route-replacement delay and desynchronizing random delay |
+| `infectedAi.pathSegmentDistance` | `24` | Maximum segment used for long-distance assault routing |
+| `infectedAi.survivorScanTicks` | `20` | Base interval for staggered assault-target scans |
+| `infectedAi.contactRadius` / `contactMemoryTicks` | `8` / `120` | Close obstruction-aware contact and transient memory for an already-known target |
+| `infectedAi.buildingEncounterBreaching` | `true` | Building-encounter infected may use progressive breaching |
+| `infectedAi.hordeEventBreaching` | `true` | The Hordes event infected may use progressive breaching |
+| `infectedAi.ambientBreaching` | `false` | Ordinary coordinated infected cannot damage unrelated defenses without an active player/survivor pursuit |
+| `infectedAi.suppressZombieTacticsMovementGoals` | `true` | Remove ZombieTactics mining and marker-navigation goals from coordinated entities |
+| `infectedAi.suppressZombieTacticsCollisionClimbing` | `true` | Disable ZombieTactics' global zombie-on-zombie vertical boost while Rotwire owns movement |
 | `knockback.enabled` | `true` | Enable reduced knockback for zombies and players |
 | `knockback.zombieRetention` | `0.15` | Fraction of normal knockback retained by Zombie subclasses |
 | `knockback.playerRetention` | `0.30` | Fraction of normal knockback retained by players |
@@ -264,8 +387,25 @@ all `Zombie` subclasses, including husks, drowned, zombie villagers, and
 Rotwire brutes. Other living entities retain normal knockback. Set a retention
 to `1.0` for vanilla strength or `0.0` to remove knockback for that category.
 
+`rotwire:coordinated_hostiles` selects entity types that receive the unified
+controller. Its intent precedence is `HUNT`, `ASSAULT`, `INVESTIGATE`, then
+`IDLE`; one executor owns movement, attack approach, and breaching while an
+intent is active. Long routes are divided into bounded segments, and every
+level shares the configured path-calculation budget. `/rotwire ai status`
+reports the active path cap, live calculations, deferrals and timing, nearby
+intent/action counts, plus the nearest entity's path state,
+target visibility, distance, last detected obstacle, consecutive individual
+route failures, the distinct recent group-failure count, and the active shared
+breach lane. It also distinguishes a full route from a partial path that merely
+ends near the requested destination and reports the current shared opening;
+append a radius from 8 to 256 blocks to override the default 64.
+The enable and ZombieTactics-suppression switches are applied when an entity
+joins a level; restart or reload those entities after changing either switch.
+Path budgets, retry timing, contact memory, scan timing, and breach-source
+switches are read live by already coordinated entities.
+
 Read [Stealth, attention, and encumbrance](stealth-attention-and-encumbrance.md)
-before changing noise radii or ZombieTactics marker ownership.
+before changing noise radii or coordinated AI ownership.
 Read [Sleep survival](sleep-survival.md) for the sleeping-bag trigger, complete
 night-awake requirements, and shared meter-pulse behavior.
 
@@ -463,7 +603,7 @@ Typical file: `<world>/data/rotwire_settlements.dat`
 
 Contains one settlement record for every city where a complete mapped camp has
 been established: its chosen name, fixed primary hub, relay radio state,
-population, rations, upgrades, and future siege schedule. Do not delete it to
+population, rations, upgrades, and siege schedule. Do not delete it to
 move a primary hub; that would erase the city's future settlement progress.
 
 ### Weather schedule data

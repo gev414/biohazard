@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SurvivorSafetyRulesTest {
 
     @Test
-    void activeSiegeAlwaysOrdersARetreat() {
+    void activeSiegeRetreatsCiviliansButArmedGuardsHold() {
         assertTrue(SurvivorSafetyRules.mustReturnToCamp(
                 new SurvivorSafetyRules.SafetyContext(
                         SettlementSiegeState.ACTIVE,
@@ -17,6 +17,16 @@ class SurvivorSafetyRulesTest {
                         false,
                         0,
                         0
+                )
+        ));
+        assertFalse(SurvivorSafetyRules.mustReturnToCamp(
+                new SurvivorSafetyRules.SafetyContext(
+                        SettlementSiegeState.ACTIVE,
+                        true,
+                        8,
+                        true,
+                        6,
+                        1
                 )
         ));
     }
