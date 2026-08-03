@@ -5,7 +5,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModPayloads {
 
-    private static final String PROTOCOL_VERSION = "5";
+    private static final String PROTOCOL_VERSION = "6";
 
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
@@ -43,6 +43,11 @@ public final class ModPayloads {
                 CourierChoiceSelectPayload.TYPE,
                 CourierChoiceSelectPayload.STREAM_CODEC,
                 CourierChoiceSelectPayload::handle
+        );
+        registrar.playToServer(
+                SettlementNamePayload.TYPE,
+                SettlementNamePayload.STREAM_CODEC,
+                SettlementNamePayload::handle
         );
     }
 

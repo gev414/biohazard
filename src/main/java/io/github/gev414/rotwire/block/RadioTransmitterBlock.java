@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
 import io.github.gev414.rotwire.block.entity.ModBlockEntities;
 import io.github.gev414.rotwire.item.CampModuleItem;
+import io.github.gev414.rotwire.item.SettlementUpgradeItem;
 import io.github.gev414.rotwire.quest.RadioNetwork;
 import io.github.gev414.rotwire.quest.RadioServices;
 import net.minecraft.core.BlockPos;
@@ -130,7 +131,8 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
                         serverPlayer.serverLevel()
                 )
                 && transmitter.hasCampIdentity()) {
-            serverPlayer.openMenu(transmitter, position);
+            transmitter.refreshSettlement(serverPlayer.serverLevel());
+            transmitter.openCampHub(serverPlayer);
             return InteractionResult.CONSUME;
         }
 
@@ -168,7 +170,8 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
             InteractionHand hand,
             BlockHitResult hit
     ) {
-        if (!(stack.getItem() instanceof CampModuleItem module)) {
+        if (!(stack.getItem() instanceof CampModuleItem)
+                && !(stack.getItem() instanceof SettlementUpgradeItem)) {
             return super.useItemOn(
                     stack,
                     state,
@@ -184,12 +187,18 @@ public final class RadioTransmitterBlock extends HorizontalDirectionalBlock
         }
         if (player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(position)
-                instanceof RadioTransmitterBlockEntity transmitter
-                && transmitter.installModule(
-                        serverPlayer,
-                        module.moduleType()
-                )) {
-            if (!player.getAbilities().instabuild) {
+                instanceof RadioTransmitterBlockEntity transmitter) {
+            boolean installed = stack.getItem()
+                    instanceof CampModuleItem module
+                    ? transmitter.installModule(
+                    serverPlayer,
+                    module.moduleType()
+            )
+                    : transmitter.installSettlementUpgrade(
+                    serverPlayer,
+                    ((SettlementUpgradeItem) stack.getItem()).upgrade()
+            );
+            if (installed && !player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
         }

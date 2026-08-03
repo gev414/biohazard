@@ -7,14 +7,23 @@ import io.github.gev414.rotwire.camp.CampModuleType;
 import io.github.gev414.rotwire.camp.CampWorkshopRules;
 import io.github.gev414.rotwire.config.CityOperationsConfig;
 import io.github.gev414.rotwire.config.RadioQuestConfig;
+import io.github.gev414.rotwire.config.SettlementConfig;
+import io.github.gev414.rotwire.entity.ModEntities;
+import io.github.gev414.rotwire.entity.SurvivorEntity;
 import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.lostcities.LostCitiesCityResolver;
 import io.github.gev414.rotwire.lostcities.LostCitiesIntegration;
 import io.github.gev414.rotwire.menu.CampRadioMenu;
 import io.github.gev414.rotwire.menu.CampStorageMenu;
+import io.github.gev414.rotwire.menu.SurvivorManagementMenu;
+import io.github.gev414.rotwire.settlement.SettlementManager;
+import io.github.gev414.rotwire.settlement.SettlementNameRules;
+import io.github.gev414.rotwire.settlement.SettlementSnapshot;
+import io.github.gev414.rotwire.settlement.SettlementUpgrade;
 import io.github.gev414.rotwire.sleep.CampInspector;
 import io.github.gev414.rotwire.sleep.CampStatus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,6 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -162,6 +172,7 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
             owner = player.getUUID();
         }
         installedModules |= type.mask();
+        refreshSettlement(player.serverLevel());
         setChanged();
         player.sendSystemMessage(Component.translatable(
                 "message.rotwire.camp.module_installed",
@@ -254,6 +265,16 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         if (level.isClientSide()) {
             return;
         }
+        if (level instanceof ServerLevel serverLevel
+                && cityZone != null
+                && campId != null) {
+            SettlementManager.markRadioDestroyed(
+                    serverLevel,
+                    cityZone,
+                    campId,
+                    worldPosition
+            );
+        }
         for (int slot = 0; slot < cache.getSlots(); slot++) {
             ItemStack stack = cache.getStackInSlot(slot);
             if (!stack.isEmpty()) {
@@ -284,6 +305,523 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         campId = UUID.randomUUID();
         setChanged();
         return true;
+    }
+
+    public boolean installSettlementUpgrade(
+            ServerPlayer player,
+            SettlementUpgrade upgrade
+    ) {
+        if (!canManage(player)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.camp.owner_only"
+            ));
+            return false;
+        }
+        if (cityZone == null || campId == null
+                || !isPrimarySettlementRadio(player.serverLevel())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.primary_only"
+            ));
+            return false;
+        }
+        CampStatus status = CampInspector.inspectRadio(
+                player.serverLevel(),
+                player,
+                worldPosition
+        );
+        if (!status.active() || !isConnected(level.getGameTime())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.upgrade_requires_online"
+            ));
+            return false;
+        }
+        SettlementSnapshot settlement = settlement(player.serverLevel())
+                .orElse(null);
+        if (settlement == null || settlement.name().isEmpty()) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.name_required"
+            ));
+            return false;
+        }
+        if (settlement.hasUpgrade(upgrade)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.upgrade_already_installed"
+            ));
+            return false;
+        }
+        if (!SettlementManager.setUpgrade(
+                player.serverLevel(),
+                cityZone,
+                upgrade,
+                true
+        )) {
+            return false;
+        }
+        SettlementManager.refreshStockpile(
+                player.serverLevel(),
+                cityZone,
+                true
+        );
+        player.sendSystemMessage(Component.translatable(
+                "message.rotwire.settlement.hub_installed"
+        ));
+        return true;
+    }
+
+    /**
+     * Calls the first persistent civilian from the named primary Camp Hub.
+     * Population is reserved before the entity is added, then rolled back if
+     * the world rejects the spawn for any reason.
+     */
+    public boolean callCivilian(ServerPlayer player) {
+        if (!canManage(player)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.camp.owner_only"
+            ));
+            return false;
+        }
+        if (cityZone == null || campId == null
+                || !isPrimarySettlementRadio(player.serverLevel())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.primary_only"
+            ));
+            return false;
+        }
+
+        CampStatus camp = CampInspector.inspectRadio(
+                player.serverLevel(),
+                player,
+                worldPosition
+        );
+        if (!camp.active() || !isConnected(level.getGameTime())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.upgrade_requires_online"
+            ));
+            return false;
+        }
+
+        refreshSettlement(player.serverLevel());
+        SettlementManager.refreshStockpile(
+                player.serverLevel(),
+                cityZone,
+                true
+        );
+        SettlementSnapshot settlement = settlement(player.serverLevel())
+                .orElse(null);
+        if (settlement == null || settlement.name().isEmpty()) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.name_required"
+            ));
+            return false;
+        }
+        if (!settlement.hasUpgrade(SettlementUpgrade.CAMP_HUB)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.requires_hub"
+            ));
+            return false;
+        }
+        int requiredRations = SettlementConfig
+                .CIVILIAN_CALL_RATION_REQUIREMENT.get();
+        if (settlement.rations() < requiredRations) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.requires_rations",
+                    requiredRations
+            ));
+            return false;
+        }
+
+        BlockPos spawnPosition = findSurvivorSpawnPosition(
+                player.serverLevel(),
+                camp.center(),
+                camp.radius()
+        );
+        if (spawnPosition == null) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.no_safe_spawn"
+            ));
+            return false;
+        }
+
+        SurvivorEntity survivor = ModEntities.SURVIVOR.get().create(
+                player.serverLevel()
+        );
+        if (survivor == null) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.no_safe_spawn"
+            ));
+            return false;
+        }
+        survivor.moveTo(
+                spawnPosition.getX() + 0.5D,
+                spawnPosition.getY(),
+                spawnPosition.getZ() + 0.5D,
+                player.getYRot(),
+                0.0F
+        );
+        survivor.bindToSettlement(
+                settlement.id(),
+                cityZone,
+                player.getUUID(),
+                camp.center(),
+                camp.radius()
+        );
+
+        if (!SettlementManager.addCivilian(
+                player.serverLevel(),
+                cityZone,
+                requiredRations,
+                SettlementConfig.MAX_CIVILIAN_SURVIVORS.get()
+        )) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.limit_reached"
+            ));
+            return false;
+        }
+        if (!player.serverLevel().addFreshEntity(survivor)) {
+            SettlementManager.removeCivilian(
+                    player.serverLevel(),
+                    cityZone,
+                    settlement.id()
+            );
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.no_safe_spawn"
+            ));
+            return false;
+        }
+
+        player.sendSystemMessage(Component.translatable(
+                "message.rotwire.survivor.called",
+                settlement.name()
+        ));
+        return true;
+    }
+
+    /**
+     * Calls a persistent settlement rifleman with a five-round PointBlank
+     * Mosin magazine loaded from the camp's physical 7.62x51 stockpile.
+     */
+    public boolean callRifleman(ServerPlayer player) {
+        if (!canManage(player)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.camp.owner_only"
+            ));
+            return false;
+        }
+        if (cityZone == null || campId == null
+                || !isPrimarySettlementRadio(player.serverLevel())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.primary_only"
+            ));
+            return false;
+        }
+
+        CampStatus camp = CampInspector.inspectRadio(
+                player.serverLevel(),
+                player,
+                worldPosition
+        );
+        if (!camp.active() || !isConnected(level.getGameTime())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.upgrade_requires_online"
+            ));
+            return false;
+        }
+
+        refreshSettlement(player.serverLevel());
+        SettlementManager.refreshStockpile(
+                player.serverLevel(),
+                cityZone,
+                true
+        );
+        SettlementSnapshot settlement = settlement(player.serverLevel())
+                .orElse(null);
+        if (settlement == null || settlement.name().isEmpty()) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.name_required"
+            ));
+            return false;
+        }
+        if (!settlement.hasUpgrade(SettlementUpgrade.CAMP_HUB)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.requires_hub"
+            ));
+            return false;
+        }
+
+        int magazineCapacity = SurvivorEntity.mosinMagazineCapacity();
+        if (magazineCapacity <= 0) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.mosin_unavailable"
+            ));
+            return false;
+        }
+        int requiredRations = SettlementConfig
+                .RIFLEMAN_CALL_RATION_REQUIREMENT.get();
+        if (settlement.rations() < requiredRations) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.requires_rations",
+                    requiredRations
+            ));
+            return false;
+        }
+        int requiredAmmunition = Math.max(
+                magazineCapacity,
+                SettlementConfig.RIFLEMAN_CALL_AMMUNITION_REQUIREMENT.get()
+        );
+        if (settlement.mosinAmmunition() < requiredAmmunition) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.requires_ammunition",
+                    requiredAmmunition
+            ));
+            return false;
+        }
+
+        BlockPos spawnPosition = findSurvivorSpawnPosition(
+                player.serverLevel(),
+                camp.center(),
+                camp.radius()
+        );
+        if (spawnPosition == null) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.no_safe_spawn"
+            ));
+            return false;
+        }
+
+        SurvivorEntity rifleman = ModEntities.SURVIVOR.get().create(
+                player.serverLevel()
+        );
+        if (rifleman == null || !rifleman.equipMosinRifle(magazineCapacity)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.mosin_unavailable"
+            ));
+            return false;
+        }
+        rifleman.moveTo(
+                spawnPosition.getX() + 0.5D,
+                spawnPosition.getY(),
+                spawnPosition.getZ() + 0.5D,
+                player.getYRot(),
+                0.0F
+        );
+        rifleman.bindToSettlement(
+                settlement.id(),
+                cityZone,
+                player.getUUID(),
+                camp.center(),
+                camp.radius()
+        );
+
+        if (!SettlementManager.addRifleman(
+                player.serverLevel(),
+                cityZone,
+                requiredRations,
+                requiredAmmunition,
+                magazineCapacity,
+                SettlementConfig.MAX_RIFLEMEN.get()
+        )) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.rifleman.limit_reached"
+            ));
+            return false;
+        }
+        if (!player.serverLevel().addFreshEntity(rifleman)) {
+            SettlementManager.removeRifleman(
+                    player.serverLevel(),
+                    cityZone,
+                    settlement.id()
+            );
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.no_safe_spawn"
+            ));
+            return false;
+        }
+
+        player.sendSystemMessage(Component.translatable(
+                "message.rotwire.rifleman.called",
+                settlement.name()
+        ));
+        return true;
+    }
+
+    public boolean rallySurvivors(ServerPlayer player) {
+        if (!canManage(player)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.camp.owner_only"
+            ));
+            return false;
+        }
+        if (cityZone == null || campId == null
+                || !isPrimarySettlementRadio(player.serverLevel())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.rally_primary_only"
+            ));
+            return false;
+        }
+        CampStatus camp = CampInspector.inspectRadio(
+                player.serverLevel(),
+                player,
+                worldPosition
+        );
+        if (!camp.active() || !isConnected(level.getGameTime())) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.settlement.upgrade_requires_online"
+            ));
+            return false;
+        }
+        SettlementSnapshot settlement = settlement(player.serverLevel())
+                .orElse(null);
+        if (settlement == null
+                || !settlement.hasUpgrade(SettlementUpgrade.CAMP_HUB)) {
+            player.sendSystemMessage(Component.translatable(
+                    "message.rotwire.survivor.requires_hub"
+            ));
+            return false;
+        }
+
+        int ordered = 0;
+        for (Entity entity : player.serverLevel().getAllEntities()) {
+            if (!(entity instanceof SurvivorEntity survivor)) {
+                continue;
+            }
+            boolean belongsToSettlement = survivor.settlementBinding()
+                    .map(binding -> settlement.id().equals(
+                            binding.settlementId()
+                    ))
+                    .orElse(false);
+            if (belongsToSettlement) {
+                survivor.orderReturnToCamp();
+                ordered++;
+            }
+        }
+        player.sendSystemMessage(Component.translatable(
+                "message.rotwire.survivor.rallied",
+                ordered
+        ));
+        return true;
+    }
+
+    /**
+     * Records this radio against the persistent settlement for its mapped city.
+     * A settlement is only created by a complete camp; once present, every
+     * later sheltered radio in that city becomes a relay even while offline.
+     */
+    public void refreshSettlement(ServerLevel level) {
+        if (cityZone == null || campId == null) {
+            return;
+        }
+        CampStatus status = CampInspector.inspectRadio(level, worldPosition);
+        SettlementManager.syncRadio(
+                level,
+                cityZone,
+                campId,
+                owner,
+                worldPosition,
+                status.center(),
+                status.radius(),
+                status.active(),
+                isConnected(level.getGameTime()),
+                installedModules
+        );
+        SettlementManager.refreshStockpile(level, cityZone, false);
+    }
+
+    public Optional<SettlementSnapshot> settlement(ServerLevel level) {
+        return cityZone == null
+                ? Optional.empty()
+                : SettlementManager.status(level, cityZone);
+    }
+
+    @Nullable
+    private static BlockPos findSurvivorSpawnPosition(
+            ServerLevel level,
+            BlockPos campCenter,
+            int campRadius
+    ) {
+        int searchRadius = Math.max(2, Math.min(6, campRadius));
+        for (int distance = 0; distance <= searchRadius; distance++) {
+            for (int x = -distance; x <= distance; x++) {
+                for (int z = -distance; z <= distance; z++) {
+                    if (Math.max(Math.abs(x), Math.abs(z)) != distance) {
+                        continue;
+                    }
+                    for (int y = -2; y <= 3; y++) {
+                        BlockPos candidate = campCenter.offset(x, y, z);
+                        if (isSafeSurvivorSpawn(level, candidate)) {
+                            return candidate;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isSafeSurvivorSpawn(
+            ServerLevel level,
+            BlockPos position
+    ) {
+        return level.getBlockState(position)
+                .getCollisionShape(level, position).isEmpty()
+                && level.getBlockState(position.above())
+                .getCollisionShape(level, position.above()).isEmpty()
+                && level.getBlockState(position.below()).isFaceSturdy(
+                level,
+                position.below(),
+                Direction.UP
+        );
+    }
+
+    public boolean isPrimarySettlementRadio(ServerLevel level) {
+        return campId != null && settlement(level)
+                .map(snapshot -> campId.equals(snapshot.primaryCampId()))
+                .orElse(false);
+    }
+
+    public String settlementName(ServerLevel level) {
+        return settlement(level).map(SettlementSnapshot::name).orElse("");
+    }
+
+    public void openCampHub(ServerPlayer player) {
+        String name = settlementName(player.serverLevel());
+        player.openMenu(
+                new SimpleMenuProvider(
+                        (containerId, inventory, ignored) ->
+                                new CampRadioMenu(
+                                        containerId,
+                                        inventory,
+                                        this,
+                                        name
+                                ),
+                        getDisplayName()
+                ),
+                buffer -> {
+                    buffer.writeBlockPos(worldPosition);
+                    buffer.writeUtf(name, SettlementNameRules.MAX_LENGTH);
+                }
+        );
+    }
+
+    public void openSurvivorManagement(ServerPlayer player) {
+        String name = settlementName(player.serverLevel());
+        player.openMenu(
+                new SimpleMenuProvider(
+                        (containerId, inventory, ignored) ->
+                                new SurvivorManagementMenu(
+                                        containerId,
+                                        inventory,
+                                        this,
+                                        name
+                                ),
+                        Component.translatable(
+                                "screen.rotwire.survivors.title"
+                        )
+                ),
+                buffer -> {
+                    buffer.writeBlockPos(worldPosition);
+                    buffer.writeUtf(name, SettlementNameRules.MAX_LENGTH);
+                }
+        );
     }
 
     public boolean isConnected(long gameTime) {
@@ -323,6 +861,7 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
                 CAMP_REFRESH_TICKS
         ) == 0L) {
             refreshCampIdentity(serverLevel);
+            refreshSettlement(serverLevel);
         }
         if (surveyComplete) {
             return;
@@ -362,6 +901,7 @@ public final class RadioTransmitterBlockEntity extends BlockEntity
         ).orElse(null);
         surveyComplete = true;
         activeSurvey = null;
+        refreshSettlement(serverLevel);
         setChanged();
     }
 

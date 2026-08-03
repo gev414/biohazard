@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "DRD",
+    "RCR",
+    "DID"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "D": {
+      "item": "rotwire:documents"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "rotwire:research_data"
+    }
+  },
+  "result": {
+    "id": "rotwire:camp_hub_module"
+  },
+  "show_notification": true
+}

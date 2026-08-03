@@ -23,6 +23,8 @@ public final class CampRadioScreen
     private Button contractsButton;
     private Button storageButton;
     private Button workshopButton;
+    private Button nameSettlementButton;
+    private Button survivorsButton;
 
     public CampRadioScreen(
             CampRadioMenu menu,
@@ -31,7 +33,7 @@ public final class CampRadioScreen
     ) {
         super(menu, inventory, title);
         imageWidth = 292;
-        imageHeight = 238;
+        imageHeight = 330;
         inventoryLabelY = 10_000;
     }
 
@@ -45,7 +47,7 @@ public final class CampRadioScreen
                 button -> openContracts()
         ).bounds(
                 leftPos + 164,
-                topPos + 204,
+                topPos + 280,
                 110,
                 20
         ).build());
@@ -69,6 +71,28 @@ public final class CampRadioScreen
                 leftPos + 171,
                 topPos + 96,
                 108,
+                20
+        ).build());
+        nameSettlementButton = addRenderableWidget(Button.builder(
+                Component.translatable(
+                        "screen.rotwire.settlement.name.button"
+                ),
+                button -> nameSettlement()
+        ).bounds(
+                leftPos + 22,
+                topPos + 296,
+                132,
+                20
+        ).build());
+        survivorsButton = addRenderableWidget(Button.builder(
+                Component.translatable(
+                        "screen.rotwire.camp_radio.survivors"
+                ),
+                button -> openSurvivors()
+        ).bounds(
+                leftPos + 164,
+                topPos + 232,
+                110,
                 20
         ).build());
         contractsButton.active = menu.connected();
@@ -119,17 +143,17 @@ public final class CampRadioScreen
                 BORDER_COLOR
         );
         graphics.fill(
-                leftPos + 14,
-                topPos + 42,
-                leftPos + 155,
-                topPos + 224,
+            leftPos + 14,
+            topPos + 42,
+            leftPos + 155,
+            topPos + 316,
                 INNER_COLOR
         );
         graphics.fill(
-                leftPos + 163,
-                topPos + 42,
-                leftPos + 278,
-                topPos + 224,
+            leftPos + 163,
+            topPos + 42,
+            leftPos + 278,
+            topPos + 316,
                 INNER_COLOR
         );
     }
@@ -142,7 +166,7 @@ public final class CampRadioScreen
     ) {
         graphics.drawCenteredString(
                 font,
-                title,
+                settlementTitle(),
                 imageWidth / 2,
                 10,
                 TEXT_COLOR
@@ -203,8 +227,8 @@ public final class CampRadioScreen
                 graphics,
                 22,
                 122,
-                "screen.rotwire.camp_radio.backpack",
-                menu.backpackPresent()
+                "screen.rotwire.camp_radio.container",
+                menu.containerPresent()
         );
         drawRequirement(
                 graphics,
@@ -229,6 +253,7 @@ public final class CampRadioScreen
                 "screen.rotwire.camp_radio.network",
                 menu.connected()
         );
+        drawSettlement(graphics);
 
         graphics.drawString(
                 font,
@@ -248,6 +273,16 @@ public final class CampRadioScreen
                 menu.hasModule(CampModuleType.OPERATIONS),
                 menu.operationsActive()
         );
+        if (menu.hasSettlement()) {
+            drawModule(
+                    graphics,
+                    171,
+                    204,
+                    "screen.rotwire.settlement.hub",
+                    menu.campHubInstalled(),
+                    menu.campHubInstalled()
+            );
+        }
 
         if (menu.operationsActive()) {
             drawOperations(graphics);
@@ -368,6 +403,102 @@ public final class CampRadioScreen
         );
     }
 
+    private void drawSettlement(GuiGraphics graphics) {
+        if (!menu.hasSettlement()) {
+            return;
+        }
+        graphics.drawString(
+                font,
+                Component.translatable("screen.rotwire.settlement.section"),
+                22,
+                190,
+                MUTED_COLOR,
+                false
+        );
+        drawValue(
+                graphics,
+                22,
+                205,
+                "screen.rotwire.settlement.role",
+                Component.translatable(
+                        menu.primarySettlementRadio()
+                                ? "screen.rotwire.settlement.role.primary"
+                                : "screen.rotwire.settlement.role.relay"
+                )
+        );
+        drawValue(
+                graphics,
+                22,
+                218,
+                "screen.rotwire.settlement.hub",
+                Component.translatable(
+                        menu.campHubInstalled()
+                                ? "screen.rotwire.settlement.hub.online"
+                                : "screen.rotwire.settlement.hub.offline"
+                )
+        );
+        drawValue(
+                graphics,
+                22,
+                231,
+                "screen.rotwire.settlement.population",
+                Component.literal(
+                        Integer.toString(menu.settlementPopulation())
+                )
+        );
+        drawValue(
+                    graphics,
+                    22,
+                    244,
+                    "screen.rotwire.settlement.rations",
+                Component.literal(Integer.toString(menu.settlementRations()))
+        );
+        if (menu.campHubInstalled()) {
+            drawValue(
+                    graphics,
+                    22,
+                    257,
+                    "screen.rotwire.settlement.stockpiles",
+                    Component.literal(
+                            Integer.toString(menu.settlementRationContainers())
+                    )
+            );
+            drawValue(
+                    graphics,
+                    22,
+                    270,
+                    "screen.rotwire.settlement.daily_rations",
+                    Component.literal(
+                            Integer.toString(menu.settlementDailyRations())
+                    )
+            );
+        } else if (!menu.needsSettlementName()) {
+            graphics.drawString(
+                    font,
+                    Component.translatable(
+                            "screen.rotwire.settlement.hub.install_hint"
+                    ),
+                    22,
+                    257,
+                    MISSING_COLOR,
+                    false
+            );
+        }
+        if (!menu.needsSettlementName()) {
+            drawValue(
+                    graphics,
+                    22,
+                    283,
+                    "screen.rotwire.settlement.radios",
+                    Component.literal(
+                            menu.activeSettlementRadios()
+                                    + " / "
+                                    + menu.settlementRadioCount()
+                    )
+            );
+        }
+    }
+
     private void drawOperations(GuiGraphics graphics) {
         drawOperationValue(
                 graphics,
@@ -464,6 +595,37 @@ public final class CampRadioScreen
                     && menu.active()
                     && menu.connected();
         }
+        if (nameSettlementButton != null) {
+            nameSettlementButton.visible = menu.needsSettlementName();
+            nameSettlementButton.active = menu.needsSettlementName();
+        }
+        if (survivorsButton != null) {
+            survivorsButton.visible = menu.primarySettlementRadio()
+                    && menu.campHubInstalled()
+                    && !menu.needsSettlementName();
+            survivorsButton.active = survivorsButton.visible
+                    && menu.owner()
+                    && menu.active()
+                    && menu.connected();
+        }
+    }
+
+    private Component settlementTitle() {
+        return menu.hasSettlement() && !menu.settlementName().isEmpty()
+                ? Component.literal(menu.settlementName())
+                : title;
+    }
+
+    private void nameSettlement() {
+        if (minecraft != null && menu.needsSettlementName()) {
+            minecraft.setScreen(new SettlementNameScreen(
+                    menu.radioPosition()
+            ));
+        }
+    }
+
+    private void openSurvivors() {
+        clickMenuButton(CampRadioMenu.SURVIVORS_BUTTON);
     }
 
     private static void outline(

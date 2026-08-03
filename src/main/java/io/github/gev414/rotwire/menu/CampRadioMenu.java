@@ -4,9 +4,14 @@ import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.block.entity.RadioTransmitterBlockEntity;
 import io.github.gev414.rotwire.camp.CampModuleType;
 import io.github.gev414.rotwire.city.CityZoneManager;
+import io.github.gev414.rotwire.config.SettlementConfig;
 import io.github.gev414.rotwire.quest.RadioNetwork;
 import io.github.gev414.rotwire.quest.RadioServices;
 import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
+import io.github.gev414.rotwire.settlement.SettlementNameRules;
+import io.github.gev414.rotwire.settlement.SettlementRationRules;
+import io.github.gev414.rotwire.settlement.SettlementSnapshot;
+import io.github.gev414.rotwire.settlement.SettlementUpgrade;
 import io.github.gev414.rotwire.sleep.CampInspector;
 import io.github.gev414.rotwire.sleep.CampStatus;
 import io.github.gev414.rotwire.weather.ScheduledWeather;
@@ -30,7 +35,7 @@ public final class CampRadioMenu extends AbstractContainerMenu {
     public static final int CONTRACTS_BUTTON = 0;
     public static final int STORAGE_BUTTON = 1;
     public static final int WORKSHOP_BUTTON = 2;
-
+    public static final int SURVIVORS_BUTTON = 3;
     private static final int SHELTER_DATA = 0;
     private static final int RADIUS_DATA = 1;
     private static final int FLAGS_DATA = 2;
@@ -42,19 +47,35 @@ public final class CampRadioMenu extends AbstractContainerMenu {
     private static final int CITY_DANGER_DATA = 8;
     private static final int DELIVERY_READY_DATA = 9;
     private static final int DELIVERY_PENDING_DATA = 10;
-    private static final int DATA_COUNT = 11;
+    private static final int SETTLEMENT_FLAGS_DATA = 11;
+    private static final int SETTLEMENT_POPULATION_DATA = 12;
+    private static final int SETTLEMENT_RATIONS_DATA = 13;
+    private static final int SETTLEMENT_ACTIVE_RADIOS_DATA = 14;
+    private static final int SETTLEMENT_RADIOS_DATA = 15;
+    private static final int SETTLEMENT_UPGRADES_DATA = 16;
+    private static final int SETTLEMENT_RATION_CONTAINERS_DATA = 17;
+    private static final int SETTLEMENT_DAILY_RATIONS_DATA = 18;
+    private static final int SETTLEMENT_CIVILIANS_DATA = 19;
+    private static final int SETTLEMENT_RIFLEMEN_DATA = 20;
+    private static final int SETTLEMENT_MOSIN_AMMUNITION_DATA = 21;
+    private static final int DATA_COUNT = 22;
 
     private static final int ESTABLISHED_FLAG = 1;
     private static final int SLEEPING_BAG_FLAG = 1 << 1;
     private static final int CAMPFIRE_FLAG = 1 << 2;
-    private static final int BACKPACK_FLAG = 1 << 3;
+    private static final int CONTAINER_FLAG = 1 << 3;
     private static final int RATION_FLAG = 1 << 4;
     private static final int CONNECTED_FLAG = 1 << 5;
     private static final int ACTIVE_FLAG = 1 << 6;
     private static final int OWNER_FLAG = 1 << 7;
     private static final int OPERATIONS_ACTIVE_FLAG = 1 << 8;
+    private static final int SETTLEMENT_PRESENT_FLAG = 1;
+    private static final int PRIMARY_RADIO_FLAG = 1 << 1;
+    private static final int NAME_REQUIRED_FLAG = 1 << 2;
+    private static final int CAMP_HUB_FLAG = 1 << 3;
 
     private final BlockPos radioPosition;
+    private final String settlementName;
     private final Inventory playerInventory;
     private final ContainerData data;
     private long lastRefresh = Long.MIN_VALUE;
@@ -68,6 +89,7 @@ public final class CampRadioMenu extends AbstractContainerMenu {
                 containerId,
                 playerInventory,
                 buffer.readBlockPos(),
+                buffer.readUtf(SettlementNameRules.MAX_LENGTH),
                 new SimpleContainerData(DATA_COUNT)
         );
     }
@@ -77,10 +99,20 @@ public final class CampRadioMenu extends AbstractContainerMenu {
             Inventory playerInventory,
             RadioTransmitterBlockEntity radio
     ) {
+        this(containerId, playerInventory, radio, "");
+    }
+
+    public CampRadioMenu(
+            int containerId,
+            Inventory playerInventory,
+            RadioTransmitterBlockEntity radio,
+            String settlementName
+    ) {
         this(
                 containerId,
                 playerInventory,
                 radio.getBlockPos(),
+                settlementName,
                 new SimpleContainerData(DATA_COUNT)
         );
         refreshServerData();
@@ -90,11 +122,13 @@ public final class CampRadioMenu extends AbstractContainerMenu {
             int containerId,
             Inventory playerInventory,
             BlockPos radioPosition,
+            String settlementName,
             ContainerData data
     ) {
         super(ModMenus.CAMP_RADIO.get(), containerId);
         this.playerInventory = playerInventory;
         this.radioPosition = radioPosition.immutable();
+        this.settlementName = settlementName;
         this.data = data;
         checkContainerDataCount(data, DATA_COUNT);
         addDataSlots(data);
@@ -132,6 +166,10 @@ public final class CampRadioMenu extends AbstractContainerMenu {
             );
             case STORAGE_BUTTON -> radio.openStorage(serverPlayer);
             case WORKSHOP_BUTTON -> radio.repairHeldItem(serverPlayer);
+            case SURVIVORS_BUTTON -> {
+                radio.openSurvivorManagement(serverPlayer);
+                yield true;
+            }
             default -> false;
         };
     }
@@ -143,6 +181,10 @@ public final class CampRadioMenu extends AbstractContainerMenu {
 
     public BlockPos radioPosition() {
         return radioPosition;
+    }
+
+    public String settlementName() {
+        return settlementName;
     }
 
     public CampStatus.ShelterType shelter() {
@@ -175,8 +217,8 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         return flag(CAMPFIRE_FLAG);
     }
 
-    public boolean backpackPresent() {
-        return flag(BACKPACK_FLAG);
+    public boolean containerPresent() {
+        return flag(CONTAINER_FLAG);
     }
 
     public boolean rationReady() {
@@ -223,8 +265,68 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         return data.get(DELIVERY_PENDING_DATA);
     }
 
+    public boolean hasSettlement() {
+        return settlementFlag(SETTLEMENT_PRESENT_FLAG);
+    }
+
+    public boolean primarySettlementRadio() {
+        return settlementFlag(PRIMARY_RADIO_FLAG);
+    }
+
+    public boolean needsSettlementName() {
+        return settlementFlag(NAME_REQUIRED_FLAG);
+    }
+
+    public int settlementPopulation() {
+        return data.get(SETTLEMENT_POPULATION_DATA);
+    }
+
+    public int settlementRations() {
+        return data.get(SETTLEMENT_RATIONS_DATA);
+    }
+
+    public int activeSettlementRadios() {
+        return data.get(SETTLEMENT_ACTIVE_RADIOS_DATA);
+    }
+
+    public int settlementRadioCount() {
+        return data.get(SETTLEMENT_RADIOS_DATA);
+    }
+
+    public int settlementUpgradeMask() {
+        return data.get(SETTLEMENT_UPGRADES_DATA);
+    }
+
+    public boolean campHubInstalled() {
+        return settlementFlag(CAMP_HUB_FLAG);
+    }
+
+    public int settlementRationContainers() {
+        return data.get(SETTLEMENT_RATION_CONTAINERS_DATA);
+    }
+
+    public int settlementDailyRations() {
+        return data.get(SETTLEMENT_DAILY_RATIONS_DATA);
+    }
+
+    public int civilianPopulation() {
+        return data.get(SETTLEMENT_CIVILIANS_DATA);
+    }
+
+    public int riflemanPopulation() {
+        return data.get(SETTLEMENT_RIFLEMEN_DATA);
+    }
+
+    public int mosinAmmunition() {
+        return data.get(SETTLEMENT_MOSIN_AMMUNITION_DATA);
+    }
+
     private boolean flag(int flag) {
         return (data.get(FLAGS_DATA) & flag) != 0;
+    }
+
+    private boolean settlementFlag(int flag) {
+        return (data.get(SETTLEMENT_FLAGS_DATA) & flag) != 0;
     }
 
     private void refreshServerData() {
@@ -244,6 +346,9 @@ public final class CampRadioMenu extends AbstractContainerMenu {
                 blockEntity instanceof RadioTransmitterBlockEntity value
                         ? value
                         : null;
+        if (radio != null) {
+            radio.refreshSettlement(level);
+        }
         boolean established = radio != null && radio.hasCampIdentity();
         CampStatus status = CampInspector.inspectRadio(
                 level,
@@ -258,7 +363,7 @@ public final class CampRadioMenu extends AbstractContainerMenu {
         int flags = established ? ESTABLISHED_FLAG : 0;
         flags |= status.sleepingBagPresent() ? SLEEPING_BAG_FLAG : 0;
         flags |= status.litCampfirePresent() ? CAMPFIRE_FLAG : 0;
-        flags |= status.backpackPresent() ? BACKPACK_FLAG : 0;
+        flags |= status.containerPresent() ? CONTAINER_FLAG : 0;
         flags |= status.rationReady() ? RATION_FLAG : 0;
         flags |= connected ? CONNECTED_FLAG : 0;
         flags |= status.active() ? ACTIVE_FLAG : 0;
@@ -288,6 +393,80 @@ public final class CampRadioMenu extends AbstractContainerMenu {
                                 )
                         )
         );
+
+        SettlementSnapshot settlement = radio == null
+                ? null
+                : radio.settlement(level).orElse(null);
+        int settlementFlags = 0;
+        if (settlement == null) {
+            data.set(SETTLEMENT_POPULATION_DATA, 0);
+            data.set(SETTLEMENT_RATIONS_DATA, 0);
+            data.set(SETTLEMENT_ACTIVE_RADIOS_DATA, 0);
+            data.set(SETTLEMENT_RADIOS_DATA, 0);
+            data.set(SETTLEMENT_UPGRADES_DATA, 0);
+            data.set(SETTLEMENT_RATION_CONTAINERS_DATA, 0);
+            data.set(SETTLEMENT_DAILY_RATIONS_DATA, 0);
+            data.set(SETTLEMENT_CIVILIANS_DATA, 0);
+            data.set(SETTLEMENT_RIFLEMEN_DATA, 0);
+            data.set(SETTLEMENT_MOSIN_AMMUNITION_DATA, 0);
+        } else {
+            settlementFlags |= SETTLEMENT_PRESENT_FLAG;
+            boolean primary = radio != null
+                    && radio.isPrimarySettlementRadio(level);
+            settlementFlags |= primary ? PRIMARY_RADIO_FLAG : 0;
+            settlementFlags |= primary
+                    && settlement.name().isEmpty()
+                    && radio != null
+                    && radio.canManage(player)
+                    ? NAME_REQUIRED_FLAG
+                    : 0;
+            settlementFlags |= settlement.hasUpgrade(
+                    SettlementUpgrade.CAMP_HUB
+            ) ? CAMP_HUB_FLAG : 0;
+            data.set(
+                    SETTLEMENT_POPULATION_DATA,
+                    settlement.population()
+            );
+            data.set(SETTLEMENT_RATIONS_DATA, settlement.rations());
+            data.set(
+                    SETTLEMENT_ACTIVE_RADIOS_DATA,
+                    settlement.activeRadioCount()
+            );
+            data.set(
+                    SETTLEMENT_RADIOS_DATA,
+                    settlement.radioCount()
+            );
+            data.set(
+                    SETTLEMENT_UPGRADES_DATA,
+                    settlement.upgradeMask()
+            );
+            data.set(
+                    SETTLEMENT_RATION_CONTAINERS_DATA,
+                    settlement.rationContainerCount()
+            );
+            data.set(
+                    SETTLEMENT_DAILY_RATIONS_DATA,
+                    SettlementRationRules.dailyCost(
+                            settlement.population(),
+                            SettlementConfig
+                                    .RATIONS_PER_SETTLER_PER_DAY
+                                    .get()
+                    )
+            );
+            data.set(
+                    SETTLEMENT_CIVILIANS_DATA,
+                    settlement.civilianPopulation()
+            );
+            data.set(
+                    SETTLEMENT_RIFLEMEN_DATA,
+                    settlement.guardPopulation()
+            );
+            data.set(
+                    SETTLEMENT_MOSIN_AMMUNITION_DATA,
+                    settlement.mosinAmmunition()
+            );
+        }
+        data.set(SETTLEMENT_FLAGS_DATA, settlementFlags);
 
         if (!operationsActive) {
             data.set(HOSTILES_DATA, 0);

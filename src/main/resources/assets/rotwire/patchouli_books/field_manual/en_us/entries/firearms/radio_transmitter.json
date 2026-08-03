@@ -29,6 +29,17 @@
       "text": "The Camp Radio hub is your campsite dashboard. It reports shelter readiness, nutrition, the survivor network, courier traffic, and any modules installed on the transmitter."
     },
     {
+      "type": "patchouli:crafting",
+      "recipe": "rotwire:camp_hub_module",
+      "title": "Build a Settlement Hub",
+      "text": "After naming a mapped city camp, craft a Camp Hub Module and use it on the online primary Camp Radio. This establishes the shared support stockpile for that city."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Stock Rations",
+      "text": "Once the Camp Hub is online, every connected city radio shows the shared ration balance. Put edible food in chests, barrels, or storage furniture inside any active city campsite; its hunger value is counted automatically and it stays there until settlement upkeep needs it. Future survivors consume hunger points each day, so stock up before calling anyone in."
+    },
+    {
       "type": "patchouli:image",
       "images": ["rotwire:patchouli_books/field_manual/en_us/images/campsite2.png"],
       "title": "Install Extensions",

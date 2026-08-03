@@ -27,6 +27,13 @@ public final class ModMenus {
                             CampStorageMenu::new
                     )
             );
+    public static final Supplier<MenuType<SurvivorManagementMenu>>
+            SURVIVOR_MANAGEMENT = MENU_TYPES.register(
+                    "survivor_management",
+                    () -> IMenuTypeExtension.create(
+                            SurvivorManagementMenu::new
+                    )
+            );
 
     private ModMenus() {
     }

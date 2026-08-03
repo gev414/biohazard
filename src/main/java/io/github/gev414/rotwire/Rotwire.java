@@ -10,6 +10,7 @@ import io.github.gev414.rotwire.config.EncounterConfig;
 import io.github.gev414.rotwire.config.HordeAtmosphereConfig;
 import io.github.gev414.rotwire.config.MobSpawnConfig;
 import io.github.gev414.rotwire.config.RadioQuestConfig;
+import io.github.gev414.rotwire.config.SettlementConfig;
 import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import io.github.gev414.rotwire.config.WeatherConfig;
 import io.github.gev414.rotwire.entity.ModEntities;
@@ -19,6 +20,7 @@ import io.github.gev414.rotwire.event.HordeAtmosphereSyncEvents;
 import io.github.gev414.rotwire.event.ModEntityEvents;
 import io.github.gev414.rotwire.event.ModCreativeTabEvents;
 import io.github.gev414.rotwire.event.SurvivalSystemsEvents;
+import io.github.gev414.rotwire.event.SurvivorEvents;
 import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.lostcities.LostCitiesIntegration;
 import io.github.gev414.rotwire.lostcities.LostCitiesOvergrowth;
@@ -30,6 +32,7 @@ import io.github.gev414.rotwire.network.ModPayloads;
 import io.github.gev414.rotwire.quest.FTBQuestsIntegration;
 import io.github.gev414.rotwire.quest.QuestDefaultsInstaller;
 import io.github.gev414.rotwire.quest.delivery.DeliveryManager;
+import io.github.gev414.rotwire.settlement.SettlementManager;
 import io.github.gev414.rotwire.weather.WeatherCommands;
 import io.github.gev414.rotwire.weather.WeatherManager;
 import net.neoforged.bus.api.IEventBus;
@@ -89,6 +92,12 @@ public final class Rotwire {
                 RadioQuestConfig.SPEC,
                 "rotwire-radio-quests.toml"
         );
+        SettlementConfig.initialize();
+        modContainer.registerConfig(
+                ModConfig.Type.SERVER,
+                SettlementConfig.SPEC,
+                "rotwire-settlements.toml"
+        );
         SurvivalSystemsConfig.initialize();
         modContainer.registerConfig(
                 ModConfig.Type.SERVER,
@@ -112,6 +121,7 @@ public final class Rotwire {
                 EventPriority.LOWEST,
                 EncounterEvents::onLivingDeath
         );
+        NeoForge.EVENT_BUS.addListener(SurvivorEvents::onLivingDeath);
         NeoForge.EVENT_BUS.addListener(EncounterEvents::onRightClickBlock);
         NeoForge.EVENT_BUS.addListener(
                 InfectedCityScaling::onEntityJoinLevel
@@ -139,6 +149,7 @@ public final class Rotwire {
         );
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(DeliveryManager::onServerStopped);
+        NeoForge.EVENT_BUS.addListener(SettlementManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(WeatherCommands::register);
         NeoForge.EVENT_BUS.addListener(WeatherManager::onServerTick);
         NeoForge.EVENT_BUS.addListener(WeatherManager::onServerStopped);

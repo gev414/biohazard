@@ -3,6 +3,7 @@ package io.github.gev414.rotwire.client;
 import io.github.gev414.rotwire.Rotwire;
 import io.github.gev414.rotwire.entity.ModEntities;
 import io.github.gev414.rotwire.client.renderer.BruteRenderer;
+import io.github.gev414.rotwire.client.renderer.SurvivorRenderer;
 import io.github.gev414.rotwire.item.ModItems;
 import io.github.gev414.rotwire.effect.ModEffects;
 import io.github.gev414.rotwire.menu.ModMenus;
@@ -66,6 +67,10 @@ public final class ClientModEvents {
                 ModEntities.BRUTE.get(),
                 BruteRenderer::new
         );
+        event.registerEntityRenderer(
+                ModEntities.SURVIVOR.get(),
+                SurvivorRenderer::new
+        );
 
         event.registerEntityRenderer(
                 ModEntities.BRUTE_ROCK.get(),
@@ -114,6 +119,10 @@ public final class ClientModEvents {
         event.register(
                 ModMenus.CAMP_STORAGE.get(),
                 CampStorageScreen::new
+        );
+        event.register(
+                ModMenus.SURVIVOR_MANAGEMENT.get(),
+                SurvivorManagementScreen::new
         );
     }
 

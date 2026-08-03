@@ -13,6 +13,7 @@ public final class ModCreativeTabEvents {
             event.accept(ModItems.QUARTERMASTER_CACHE_MODULE.get());
             event.accept(ModItems.FIELD_WORKSHOP_MODULE.get());
             event.accept(ModItems.OPERATIONS_RELAY_MODULE.get());
+            event.accept(ModItems.CAMP_HUB_MODULE.get());
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.DOCUMENTS.get());

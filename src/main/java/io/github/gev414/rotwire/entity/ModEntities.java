@@ -17,7 +17,7 @@
                         Rotwire.MOD_ID
                 );
 
-        public static final Supplier<EntityType<BruteEntity>> BRUTE =
+    public static final Supplier<EntityType<BruteEntity>> BRUTE =
                 ENTITY_TYPES.register(
                         "brute",
                         () -> EntityType.Builder.of(
@@ -31,6 +31,19 @@
                                 .eyeHeight(BruteEntity.EYE_HEIGHT)
                                 .clientTrackingRange(8)
                                 .build(Rotwire.MOD_ID + ":brute")
+                );
+
+        public static final Supplier<EntityType<SurvivorEntity>> SURVIVOR =
+                ENTITY_TYPES.register(
+                        "survivor",
+                        () -> EntityType.Builder.of(
+                                        SurvivorEntity::new,
+                                        MobCategory.CREATURE
+                                )
+                                .sized(0.6F, 1.8F)
+                                .eyeHeight(1.62F)
+                                .clientTrackingRange(8)
+                                .build(Rotwire.MOD_ID + ":survivor")
                 );
 
         public static final Supplier<EntityType<BruteRockProjectile>> BRUTE_ROCK =

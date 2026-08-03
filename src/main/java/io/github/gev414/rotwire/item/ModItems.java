@@ -3,6 +3,7 @@ package io.github.gev414.rotwire.item;
 import io.github.gev414.rotwire.Rotwire;
 import io.github.gev414.rotwire.block.ModBlocks;
 import io.github.gev414.rotwire.camp.CampModuleType;
+import io.github.gev414.rotwire.settlement.SettlementUpgrade;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -58,6 +59,8 @@ public final class ModItems {
                     "operations_relay_module",
                     CampModuleType.OPERATIONS
             );
+    public static final Supplier<SettlementUpgradeItem> CAMP_HUB_MODULE =
+            settlementUpgrade("camp_hub_module", SettlementUpgrade.CAMP_HUB);
     public static final Supplier<Item> FIELD_REPAIR_KIT =
             ITEMS.registerSimpleItem(
                     "field_repair_kit",
@@ -94,6 +97,19 @@ public final class ModItems {
                 name,
                 () -> new CampModuleItem(
                         type,
+                        new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
+                )
+        );
+    }
+
+    private static Supplier<SettlementUpgradeItem> settlementUpgrade(
+            String name,
+            SettlementUpgrade upgrade
+    ) {
+        return ITEMS.register(
+                name,
+                () -> new SettlementUpgradeItem(
+                        upgrade,
                         new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
                 )
         );
