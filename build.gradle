@@ -179,6 +179,9 @@ dependencies {
     // resolved firing sound and inspects active attachment groups to classify
     // suppressed shots without modifying firearm behavior.
     compileOnly "maven.modrinth:RghT3FYJ:${pointblank_modrinth_version}"
+    // PointBlank firearm items implement GeckoLib's GeoItem API, so its
+    // public gun methods need the companion API present at compile time.
+    compileOnly "maven.modrinth:8BmcQJ2H:${geckolib_modrinth_version}"
     // Optional encumbrance integration. The dependency remains non-transitive
     // for Rotwire consumers and is loaded only when Traveler's Backpack is
     // present.

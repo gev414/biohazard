@@ -12,6 +12,54 @@ to the radio block entity if the shelter is temporarily dismantled, allowing
 the Camp Hub to report an inactive camp without erasing future progression.
 Breaking and replacing the radio creates a new camp identity.
 
+## City settlements and relays
+
+Once a complete Camp Radio has finished mapping a Lost Cities zone, it becomes
+that city's **primary hub**. The owner is prompted to name the settlement from
+the Camp Hub. The name is attached to the city zone—not to a particular player
+or block position—so it remains the city identity used by future survivor,
+fast-travel, and siege systems.
+
+The first completed camp in a mapped city stays primary. Any later sheltered
+radio mapped to the same city is a **relay**: it retains its own private cache
+and installed camp modules, but reports into the same settlement population,
+rations, city-wide upgrades, and siege state. The Camp Hub identifies whether
+the current radio is the primary hub or a relay and shows the shared radio and
+resource totals.
+
+Breaking the primary radio marks that primary hub destroyed rather than quietly
+promoting a relay. This keeps future travel destinations and siege targets
+stable; rebuilding/recovery rules can be added deliberately instead of letting
+block replacement move them unexpectedly.
+
+### Camp Hub and ration stockpile
+
+The named primary hub can install a **Camp Hub Module** while its camp and
+radio link are online. Craft the module from Documents, Research Data, a copper
+block, and iron; use it directly on the primary Camp Radio. This unlocks the
+city-wide ration stockpile for every connected primary or relay radio in that
+settlement.
+
+Every inventory-capable container inside an active campsite automatically
+supplies its city's stockpile. This includes vanilla chests and barrels plus
+Handcrafted desks, nightstands, cupboards, drawers, shelves, and other storage
+that exposes a standard inventory. Each food stack contributes its Minecraft
+nutrition value, so a loaf of bread supplies more rations than a weak snack.
+Food remains in its original container until daily upkeep needs it. When a
+whole item supplies more hunger points than the current day needs, its unused
+value becomes prepared settlement rations rather than being wasted. Overlapping
+camp zones never count the same container twice, and returned food containers
+such as bowls are put back into the source inventory or dropped beside it if
+there is no room.
+
+The panel shows the shared ration total, number of food-supplying containers,
+and daily usage. Active camp zones are rescanned on the server at the configured
+interval (five seconds by default); only currently loaded camp chunks can
+contribute. Every civilian or guard consumes the configured number of hunger
+points at each Minecraft-day boundary. There are no settlers yet, so a new
+settlement shows zero daily use, but supplies can be prepared before recruitment
+arrives.
+
 The saved identity owns modular progression and private infrastructure. The
 placing player is the camp owner: only that player can install modules, use the
 workshop, or open the Quartermaster Cache. Breaking the radio removes the camp
@@ -26,9 +74,9 @@ panel refreshes once per second and reports:
 - the effective campsite coverage radius;
 - a Traveler's Backpack sleeping bag sheltered by the same structure;
 - a lit campfire or soul campfire within the campsite radius;
-- a deployed Traveler's Backpack within the radius;
-- whether one backpack contains a qualifying ration;
-- the greatest total food nutrition found in one nearby backpack; and
+- at least one inventory-capable block within the radius;
+- whether nearby containers hold a qualifying ration;
+- the total food nutrition across nearby containers; and
 - the Radio Transmitter's Survivor Network connection.
 
 The camp is online only when every campsite requirement is present. Status

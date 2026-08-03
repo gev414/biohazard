@@ -74,7 +74,7 @@ Choose the path that matches the work you are doing:
 | Property | Current value |
 |---|---|
 | Mod id | `rotwire` |
-| Released version represented here | `1.1.3` |
+| Released version represented here | `1.1.6` |
 | Minecraft | `1.21.1` |
 | NeoForge | `21.1.235` |
 | Java | `21` |
@@ -103,6 +103,7 @@ rotwire/
 |   |-- lostcities/                  Lost Cities API adapter
 |   |-- mob/                         Surface populations and depth restrictions
 |   |-- network/                     Custom payload protocol
+|   |-- settlement/                  City settlement identity and SavedData
 |   |-- stealth/                     Awareness and noise investigation
 |   |-- weather/                     Forecast schedule and exposure authority
 |   `-- quest/                       FTB Quests and courier deliveries

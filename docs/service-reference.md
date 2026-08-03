@@ -165,6 +165,14 @@ Defines server-side `rotwire-radio-quests.toml`: transmitter range,
 calibration duration, and per-category courier delays. It is consumed by radio
 block entities, radio proximity search, and `DeliveryCategory.delayTicks()`.
 
+### `SettlementConfig`
+
+Source: [`SettlementConfig.java`](../src/main/java/io/github/gev414/rotwire/config/SettlementConfig.java)
+
+Defines the server-side `rotwire-settlements.toml`: shared ration capacity and
+nutrition consumed per civilian/guard per Minecraft day. It is read live by
+the Camp Hub donation flow, Camp Radio menu, and settlement upkeep tick.
+
 ### `SurvivalSystemsConfig`
 
 Source: [`SurvivalSystemsConfig.java`](../src/main/java/io/github/gev414/rotwire/config/SurvivalSystemsConfig.java)
@@ -672,6 +680,20 @@ empties the cache and returns one item for every installed module.
 
 Because the absolute deadline is saved, changing `calibrationTicks` does not
 retroactively change a transmitter that already has `ready_at`.
+
+### `SettlementManager` and `SettlementSavedData`
+
+Sources: [`SettlementManager.java`](../src/main/java/io/github/gev414/rotwire/settlement/SettlementManager.java),
+[`SettlementSavedData.java`](../src/main/java/io/github/gev414/rotwire/settlement/SettlementSavedData.java)
+
+`SettlementManager` maps an active, surveyed Camp Radio to the server-wide
+settlement record for its `CityZoneKey`. The first complete camp becomes the
+fixed primary hub; later radios in that city become relays. It exposes the
+server-authoritative naming, Camp Hub upgrade, physical stockpile scan and
+consumption, population, siege-schedule, and radio-status operations intended
+for future survivor, travel, and siege work.
+`SettlementSavedData` persists those records under `rotwire_settlements` and
+skips malformed individual entries when loading.
 
 ### `RadioNetwork`
 

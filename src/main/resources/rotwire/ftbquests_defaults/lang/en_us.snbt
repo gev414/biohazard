@@ -76,29 +76,29 @@
 	quest.6100000000000001.quest_desc: [
 		"Mason Reed kept municipal crews patching roads and shoring up condemned buildings before the evacuation failed. Now he judges survivors by whether they build to last."
 		""
-		"Bring him thirty-two iron bars for braces and guardrails. If the first handoff goes cleanly, Reed will add you to his material ledger and send a full stack of scaffolding."
+		"Bring him sixty-four iron bars for braces and guardrails. If the first handoff goes cleanly, Reed will add you to his material ledger and send a full stack of scaffolding."
 	]
 	quest.6100000000000001.quest_subtitle: "Prove you can contribute to a safe work site."
 	quest.6100000000000001.title: "SITE INDUCTION"
-	quest.6100000000000002.quest_desc: ["Reed's saw crews can fill a pallet with mixed structural lumber. Send recovered plans, iron for fasteners, and a serviceable axe; the return load contains full stacks of oak, spruce, and dark oak planks."]
+	quest.6100000000000002.quest_desc: ["Reed's saw crews can fill a pallet with mixed structural lumber. Send one recovered Document, eight iron ingots for fasteners, and a serviceable iron axe; the return load contains full stacks of oak, spruce, and dark oak planks."]
 	quest.6100000000000002.quest_subtitle: "Commission a mixed shipment of structural timber."
 	quest.6100000000000002.title: "TIMBER ORDER"
-	quest.6100000000000003.quest_desc: ["Old restoration surveys identify masonry that can be recovered without bringing a wall down. Supply one set of Research Data, raw cobble, and a pickaxe for Reed's salvage crew. The shipment includes standard, mossy, and cracked stone bricks."]
+	quest.6100000000000003.quest_desc: ["Old restoration surveys identify masonry that can be recovered without bringing a wall down. Supply one set of Research Data, thirty-two cobblestone blocks, and an iron pickaxe for Reed's salvage crew. The shipment includes standard, mossy, and cracked stone bricks."]
 	quest.6100000000000003.quest_subtitle: "Recover three finishes of durable city masonry."
 	quest.6100000000000003.title: "MASONRY STOCK"
-	quest.6100000000000004.quest_desc: ["Deep foundations need blocks that can take weight and heat. Reed will trade three full deepslate pallets for subsurface Research Data, cobbled deepslate, and a lava bucket for the yard furnace."]
+	quest.6100000000000004.quest_desc: ["Deep foundations need blocks that can take weight and heat. Reed will trade three full deepslate pallets for two sets of Research Data, three bottles of Purified Water, and a lava bucket for the yard furnace."]
 	quest.6100000000000004.quest_subtitle: "Order dense blocks for foundations and fortified rooms."
 	quest.6100000000000004.title: "DEEP FOUNDATIONS"
-	quest.6100000000000005.quest_desc: ["A surviving stonecutter outside the dust belt still produces clean facade blocks. Send a route document, sand, and water for the cutting yard to receive standard, cut, and smooth sandstone."]
+	quest.6100000000000005.quest_desc: ["A surviving stonecutter outside the dust belt still produces clean facade blocks. Send one route Document, twelve blocks of sand, and a water bucket for the cutting yard to receive standard, cut, and smooth sandstone."]
 	quest.6100000000000005.quest_subtitle: "Secure a warm-toned facade and trim palette."
 	quest.6100000000000005.title: "DUST BELT FACADES"
-	quest.6100000000000006.quest_desc: ["Reed has three kilns running, each with a different feedstock. Documents locate safe clay pits; clay and coal keep the line moving. The return load mixes fired brick, mud brick, and nether brick pallets."]
+	quest.6100000000000006.quest_desc: ["Reed has three kilns running, each with a different feedstock. Two Documents locate safe clay pits; three bottles of Purified Water and seven pieces of coal keep the line moving. The return load mixes fired brick, mud brick, and nether brick pallets."]
 	quest.6100000000000006.quest_subtitle: "Keep the kilns hot and collect three masonry palettes."
 	quest.6100000000000006.title: "BRICKWORKS"
-	quest.6100000000000007.quest_desc: ["Blackstone is reserved for blast walls and furnace rooms. Reed needs deep-site Research Data, basalt samples, and a lava bucket before he will risk a recovery crew. Expect raw, polished, and cracked blackstone masonry."]
+	quest.6100000000000007.quest_desc: ["Blackstone is reserved for blast walls and furnace rooms. Reed needs two sets of deep-site Research Data, sixteen loaves of bread for the recovery crew, and a lava bucket before he will risk the run. Expect raw, polished, and cracked blackstone masonry."]
 	quest.6100000000000007.quest_subtitle: "Source fire-resistant blocks for hardened construction."
 	quest.6100000000000007.title: "FIREBREAK MASONRY"
-	quest.6100000000000008.quest_desc: ["Reed found roofing copper stored at three stages of weathering. Send the warehouse documents, gold for electrical contacts, and shears for sheet work; his crew will palletize clean, exposed, and weathered cut copper."]
+	quest.6100000000000008.quest_desc: ["Reed found roofing copper stored at three stages of weathering. Send two warehouse Documents, eight gold ingots for electrical contacts, and shears for sheet work; his crew will palletize clean, exposed, and weathered cut copper."]
 	quest.6100000000000008.quest_subtitle: "Order a ready-made copper weathering gradient."
 	quest.6100000000000008.title: "ROOFLINE PATINA"
 	reward.1190000000000001.title: "COURIER: STARTER SIGNAL CACHE + TARP"
@@ -152,7 +152,7 @@
 	task.5130000000000004.title: "SUBMIT 10 GOLD INGOTS"
 	task.5130000000000005.title: "TRANSMIT AND TURN IN"
 	task.6110000000000001.title: "ACCEPT SITE INDUCTION"
-	task.6110000000000002.title: "SUBMIT 32 IRON BARS"
+	task.6110000000000002.title: "SUBMIT 64 IRON BARS"
 	task.6110000000000003.title: "TRANSMIT AND TURN IN"
 	task.6120000000000001.title: "ACCEPT CONTRACT"
 	task.6120000000000002.title: "SUBMIT 1 DOCUMENT"
@@ -166,27 +166,27 @@
 	task.6130000000000005.title: "TRANSMIT AND TURN IN"
 	task.6140000000000001.title: "ACCEPT CONTRACT"
 	task.6140000000000002.title: "SUBMIT 2 RESEARCH DATA"
-	task.6140000000000003.title: "SUBMIT 32 COBBLED DEEPSLATE"
+	task.6140000000000003.title: "SUBMIT 3 PURIFIED WATER BOTTLES"
 	task.6140000000000004.title: "SUBMIT 1 LAVA BUCKET"
 	task.6140000000000005.title: "TRANSMIT AND TURN IN"
 	task.6150000000000001.title: "ACCEPT CONTRACT"
 	task.6150000000000002.title: "SUBMIT 1 DOCUMENT"
-	task.6150000000000003.title: "SUBMIT 32 SAND"
+	task.6150000000000003.title: "SUBMIT 12 SAND"
 	task.6150000000000004.title: "SUBMIT 1 WATER BUCKET"
 	task.6150000000000005.title: "TRANSMIT AND TURN IN"
 	task.6160000000000001.title: "ACCEPT CONTRACT"
 	task.6160000000000002.title: "SUBMIT 2 DOCUMENTS"
-	task.6160000000000003.title: "SUBMIT 32 CLAY BALLS"
-	task.6160000000000004.title: "SUBMIT 16 COAL"
+	task.6160000000000003.title: "SUBMIT 3 PURIFIED WATER BOTTLES"
+	task.6160000000000004.title: "SUBMIT 7 COAL"
 	task.6160000000000005.title: "TRANSMIT AND TURN IN"
 	task.6170000000000001.title: "ACCEPT CONTRACT"
-	task.6170000000000002.title: "SUBMIT 3 RESEARCH DATA"
-	task.6170000000000003.title: "SUBMIT 32 BASALT"
+	task.6170000000000002.title: "SUBMIT 2 RESEARCH DATA"
+	task.6170000000000003.title: "SUBMIT 16 BREAD"
 	task.6170000000000004.title: "SUBMIT 1 LAVA BUCKET"
 	task.6170000000000005.title: "TRANSMIT AND TURN IN"
 	task.6180000000000001.title: "ACCEPT CONTRACT"
-	task.6180000000000002.title: "SUBMIT 3 DOCUMENTS"
-	task.6180000000000003.title: "SUBMIT 12 GOLD INGOTS"
+	task.6180000000000002.title: "SUBMIT 2 DOCUMENTS"
+	task.6180000000000003.title: "SUBMIT 8 GOLD INGOTS"
 	task.6180000000000004.title: "SUBMIT 1 SHEARS"
 	task.6180000000000005.title: "TRANSMIT AND TURN IN"
 	quest.2E8F33AC76297DAF.quest_desc: [

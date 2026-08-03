@@ -269,14 +269,15 @@ public final class SurvivalSystemsConfig {
         SLEEP_CAMPSITE_RADIUS = BUILDER
                 .comment(
                         "Maximum distance from a campsite shelter center to",
-                        "the lit campfire and deployed Traveler's Backpack.",
+                        "the lit campfire and inventory-capable food blocks.",
                         "SimplyTents shelters enforce a size-based minimum",
                         "so the radius always covers their full footprint."
                 )
                 .defineInRange("campsiteRadius", 12, 1, 32);
         SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD = BUILDER
                 .comment(
-                        "A campsite backpack must contain food totaling",
+                        "Nearby inventory-capable blocks must contain food",
+                        "totaling",
                         "strictly more nutrition than this value. The smallest",
                         "qualifying ration is consumed after the night skips."
                 )

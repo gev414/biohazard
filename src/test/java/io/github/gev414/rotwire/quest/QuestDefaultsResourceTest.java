@@ -106,6 +106,133 @@ class QuestDefaultsResourceTest {
         ));
     }
 
+    @Test
+    void masonReedRequirementLabelsMatchTheConfiguredItems()
+            throws IOException {
+        String builder = readQuestResource("chapters/builder.snbt");
+        String language = readQuestResource("lang/en_us.snbt");
+
+        assertMasonReedRequirement(
+                builder, language, "6110000000000002", "64L",
+                "minecraft:iron_bars", "SUBMIT 64 IRON BARS"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6120000000000002", null,
+                "rotwire:documents", "SUBMIT 1 DOCUMENT"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6120000000000003", "8L",
+                "minecraft:iron_ingot", "SUBMIT 8 IRON INGOTS"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6120000000000004", null,
+                "minecraft:iron_axe", "SUBMIT 1 IRON AXE"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6130000000000002", null,
+                "rotwire:research_data", "SUBMIT 1 RESEARCH DATA"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6130000000000003", "32L",
+                "minecraft:cobblestone", "SUBMIT 32 COBBLESTONE"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6130000000000004", null,
+                "minecraft:iron_pickaxe", "SUBMIT 1 IRON PICKAXE"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6140000000000002", "2L",
+                "rotwire:research_data", "SUBMIT 2 RESEARCH DATA"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6140000000000003", "3L",
+                "toughasnails:purified_water_bottle",
+                "SUBMIT 3 PURIFIED WATER BOTTLES"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6140000000000004", null,
+                "minecraft:lava_bucket", "SUBMIT 1 LAVA BUCKET"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6150000000000002", null,
+                "rotwire:documents", "SUBMIT 1 DOCUMENT"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6150000000000003", "12L",
+                "minecraft:sand", "SUBMIT 12 SAND"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6150000000000004", null,
+                "minecraft:water_bucket", "SUBMIT 1 WATER BUCKET"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6160000000000002", "2L",
+                "rotwire:documents", "SUBMIT 2 DOCUMENTS"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6160000000000003", "3L",
+                "toughasnails:purified_water_bottle",
+                "SUBMIT 3 PURIFIED WATER BOTTLES"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6160000000000004", "7L",
+                "minecraft:coal", "SUBMIT 7 COAL"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6170000000000002", "2L",
+                "rotwire:research_data", "SUBMIT 2 RESEARCH DATA"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6170000000000003", "16L",
+                "minecraft:bread", "SUBMIT 16 BREAD"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6170000000000004", null,
+                "minecraft:lava_bucket", "SUBMIT 1 LAVA BUCKET"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6180000000000002", "2L",
+                "rotwire:documents", "SUBMIT 2 DOCUMENTS"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6180000000000003", "8L",
+                "minecraft:gold_ingot", "SUBMIT 8 GOLD INGOTS"
+        );
+        assertMasonReedRequirement(
+                builder, language, "6180000000000004", null,
+                "minecraft:shears", "SUBMIT 1 SHEARS"
+        );
+    }
+
+    private static void assertMasonReedRequirement(
+            String builder,
+            String language,
+            String taskId,
+            String count,
+            String itemId,
+            String title
+    ) {
+        int taskIdIndex = builder.indexOf("id: \"" + taskId + "\"");
+        assertTrue(taskIdIndex >= 0, () -> "Missing task " + taskId);
+
+        int taskStart = builder.lastIndexOf("\n\t\t\t\t{", taskIdIndex);
+        int taskEnd = builder.indexOf("\n\t\t\t\t{", taskIdIndex);
+        if (taskEnd < 0) {
+            taskEnd = builder.indexOf("\n\t\t\t]", taskIdIndex);
+        }
+        assertTrue(taskStart >= 0 && taskEnd >= 0,
+                () -> "Could not isolate task " + taskId);
+        String task = builder.substring(taskStart, taskEnd);
+
+        if (count != null) {
+            assertTrue(task.contains("count: " + count));
+        }
+        assertTrue(task.contains("item: { count: 1, id: \"" + itemId + "\" }"));
+        assertTrue(language.contains(
+                "task." + taskId + ".title: \"" + title + "\""
+        ));
+    }
+
     private static void assertResourceExists(String resource) {
         assertNotNull(
                 QuestDefaultsResourceTest.class.getResource(resource),

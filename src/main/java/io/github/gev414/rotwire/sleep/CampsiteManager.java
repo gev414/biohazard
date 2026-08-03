@@ -33,7 +33,7 @@ final class CampsiteManager {
             return false;
         }
 
-        return TravelersBackpackSleepIntegration.tryConsumeCampRations(
+        return CampContainerSupplies.tryConsumeCampRations(
                 level,
                 player,
                 area.center(),
@@ -102,7 +102,7 @@ final class CampsiteManager {
                 area.center(),
                 area.radius()
         )
-                && TravelersBackpackSleepIntegration.hasCampRations(
+                && CampContainerSupplies.hasCampRations(
                         level,
                         player,
                         area.center(),

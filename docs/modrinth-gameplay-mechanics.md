@@ -1,15 +1,10 @@
-# Modrinth gameplay descriptions
-
-Each paragraph below is standalone copy for the Modrinth project or version
-description.
-
 ## Encumbrance and carried weight
 
 Everything you carry now matters: stackable supplies contribute linearly by per-item weight category, while firearms, armor, blocks, other equipment, and the contents, tools, upgrades, and fluids of an equipped Traveler's Backpack all contribute through suitable fallbacks. Four weight tiers apply increasingly serious movement penalties, while a compact survival HUD and an inventory weight bar show your current burden; hover the inventory indicator to see the live tier thresholds and penalties used by the server.
 
 ## Sleep survival
 
-A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp or inside a supported SimplyTents shelter with a lit campfire and a nearby deployed backpack containing more than 5 nutrition consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
+A Traveler's Backpack sleeping bag skips the danger of night at the cost of Restless Sleep, which drains one full hunger and thirst icon every ten seconds for fifty seconds. Sleeping beneath a complete deployed tarp or inside a supported SimplyTents shelter with a lit campfire and more than 5 combined nutrition in nearby inventory-capable blocks consumes the smallest qualifying ration and prevents that penalty. Survivors who instead remain awake through an entire natural night earn New Dawn, restoring the same amount at the same interval.
 
 ## Camp Radio and extensions
 
@@ -25,15 +20,15 @@ Combat and scavenging can pull danger toward you even before you are seen. Suppr
 
 ## Radio Horde Watch
 
-A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor Network interface, confirming whether the current day is a horde day, whether a horde is active, and the current world time in 24-hour format. The display intentionally avoids an unreliable countdown and leaves Rotwire's existing pre-horde fog warnings fully intact.
+A calibrated Radio Transmitter adds a compact Horde Watch panel to the Survivor Network interface, confirming whether the current day is a horde day, whether a horde is active, and the current world time in 24-hour format.
 
 ## Weather forecast and contaminated storms
 
-A calibrated Radio Transmitter now provides a two-day weather forecast so expeditions can be planned around clear skies, rain, storms, and their contaminated variants. Ordinary wet weather masks sight and sound from infected, while direct exposure to contaminated precipitation gives a short dirty-green vignette warning before shifting to a pulsing red-orange hazard that damages survivors until they find a roof; the warning stays readable without adding a countdown bar.
+A calibrated Radio Transmitter now provides a two-day weather forecast so expeditions can be planned around clear skies, rain, storms, and their contaminated variants. Ordinary wet weather masks sight and sound from infected, while direct exposure to contaminated precipitation gives a short dirty-green vignette warning before shifting to a pulsing red-orange hazard that damages survivors until they find a roof.
 
-## Underground skeletons and creepers
+## Enemies
 
-Skeletons and creepers no longer emerge naturally across the surface: their ordinary spawns are pushed into deeper caves, making underground exploration more dangerous while keeping outdoor threats focused on the infected. Deliberate encounters such as dungeon spawners and scripted events remain intact.
+Skeletons and creepers no longer emerge naturally across the surface: their ordinary spawns are pushed into deeper caves, making underground exploration more dangerous while keeping outdoor threats focused on the infected. Zombies have 95% chance to infect players if they hit them. The infection has multiple stages, each stage lasting 10 minutes. Cures and infection suppressants are available through the Radio Transmitter Tasks.
 
 ## Daylight surface wanderers
 

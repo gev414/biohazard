@@ -28,8 +28,28 @@ class CampStatusTest {
                 ready.radius(),
                 ready.sleepingBagPresent(),
                 false,
-                ready.backpackPresent(),
+                ready.containerPresent(),
                 ready.rationReady(),
+                ready.availableNutrition()
+        ).active());
+        assertFalse(new CampStatus(
+                ready.shelter(),
+                ready.center(),
+                ready.radius(),
+                ready.sleepingBagPresent(),
+                ready.litCampfirePresent(),
+                false,
+                ready.rationReady(),
+                ready.availableNutrition()
+        ).active());
+        assertFalse(new CampStatus(
+                ready.shelter(),
+                ready.center(),
+                ready.radius(),
+                ready.sleepingBagPresent(),
+                ready.litCampfirePresent(),
+                ready.containerPresent(),
+                false,
                 ready.availableNutrition()
         ).active());
         assertFalse(new CampStatus(

@@ -8,7 +8,7 @@ public record CampStatus(
         int radius,
         boolean sleepingBagPresent,
         boolean litCampfirePresent,
-        boolean backpackPresent,
+        boolean containerPresent,
         boolean rationReady,
         int availableNutrition
 ) {
@@ -21,7 +21,7 @@ public record CampStatus(
         return sheltered()
                 && sleepingBagPresent
                 && litCampfirePresent
-                && backpackPresent
+                && containerPresent
                 && rationReady;
     }
 

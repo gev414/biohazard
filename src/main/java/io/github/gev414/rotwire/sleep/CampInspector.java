@@ -5,9 +5,12 @@ import io.github.gev414.rotwire.config.SurvivalSystemsConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
+
+import javax.annotation.Nullable;
 
 import java.util.Optional;
 
@@ -23,6 +26,26 @@ public final class CampInspector {
     public static CampStatus inspectRadio(
             ServerLevel level,
             ServerPlayer player,
+            BlockPos radioPosition
+    ) {
+        return inspectRadio(level, (Player) player, radioPosition);
+    }
+
+    /**
+     * Radio persistence ticks need the same camp readiness check even when no
+     * player currently has the hub open. Food components support a null player
+     * context, so this remains a world-authoritative inspection.
+     */
+    public static CampStatus inspectRadio(
+            ServerLevel level,
+            BlockPos radioPosition
+    ) {
+        return inspectRadio(level, (Player) null, radioPosition);
+    }
+
+    private static CampStatus inspectRadio(
+            ServerLevel level,
+            @Nullable Player player,
             BlockPos radioPosition
     ) {
         int configuredRadius =
@@ -46,20 +69,16 @@ public final class CampInspector {
                 area.center(),
                 area.radius()
         );
-        TravelersBackpackSleepIntegration.CampSupplyStatus supplies =
-                TRAVELERS_BACKPACK_LOADED
-                        ? TravelersBackpackSleepIntegration
-                        .inspectCampSupplies(
-                                level,
-                                player,
-                                area.center(),
-                                area.radius(),
-                                SurvivalSystemsConfig
-                                        .SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD
-                                        .get()
-                        )
-                        : new TravelersBackpackSleepIntegration
-                        .CampSupplyStatus(false, false, 0);
+        CampContainerSupplies.CampSupplyStatus supplies =
+                CampContainerSupplies.inspectCampSupplies(
+                        level,
+                        player,
+                        area.center(),
+                        area.radius(),
+                        SurvivalSystemsConfig
+                                .SLEEP_CAMPSITE_FOOD_NUTRITION_THRESHOLD
+                                .get()
+                );
 
         return new CampStatus(
                 area.type(),
@@ -67,7 +86,7 @@ public final class CampInspector {
                 area.radius(),
                 sleepingBagPresent,
                 litCampfirePresent,
-                supplies.backpackPresent(),
+                supplies.containerPresent(),
                 supplies.rationReady(),
                 supplies.availableNutrition()
         );

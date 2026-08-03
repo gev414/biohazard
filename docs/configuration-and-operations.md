@@ -6,13 +6,14 @@ the persistent files that must be protected during upgrades or recovery.
 
 ## 1. Configuration file ownership
 
-Rotwire registers seven NeoForge configuration files:
+Rotwire registers eight NeoForge configuration files:
 
 | File | NeoForge type | Effective location | Authority |
 |---|---|---|---|
 | `rotwire-encounters.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-radio-quests.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-city-operations.toml` | server | a world's `serverconfig` directory | logical server |
+| `rotwire-settlements.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-mobs.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-survival.toml` | server | a world's `serverconfig` directory | logical server |
 | `rotwire-weather.toml` | server | a world's `serverconfig` directory | logical server |
@@ -174,6 +175,28 @@ Read [City operations](city-operations.md) before changing progression values
 on an established world. Street zombies are ordinary despawning mobs and do
 not add persistent city or encounter records.
 
+## 4.1 Settlement config
+
+File: `rotwire-settlements.toml`
+
+Section: `[settlements]`
+
+| Key | Type/range | Default | Existing-state effect |
+|---|---|---:|---|
+| `rationsPerSettlerPerDay` | 0 to 1,000 | `1` | Hunger points consumed by each civilian or guard at the next Minecraft-day boundary |
+| `stockpileScanIntervalTicks` | 20 to 1,200 | `100` | Live interval for discovering edible items in active, loaded campsite containers |
+
+The Camp Hub Module must be installed by the primary camp owner at the online,
+complete primary radio before campsite storage supplies the city. Every edible
+item in a chest, barrel, Handcrafted storage block, or other standard inventory
+within an active camp zone contributes its hunger value; food is not copied into
+a radio inventory. When upkeep removes a whole food item, surplus nutrition is
+kept as prepared rations so no hunger value is lost. `rotwire_settlements`
+persists the latest observed total, prepared rations, and source count, while
+the source containers remain authoritative and work through all relays. With no
+settlers, the displayed daily use is zero; the same persisted upkeep rule
+becomes active as population is added.
+
 ## 5. Survival systems config
 
 File: `rotwire-survival.toml`
@@ -211,7 +234,7 @@ Root section: `[survivalSystems]`
 | `sleepSurvival.effectDurationTicks` | `1000` | Both effects last 50 seconds |
 | `sleepSurvival.pulseIntervalTicks` | `200` | Change hunger and thirst every 10 seconds |
 | `sleepSurvival.meterPointsPerPulse` | `2` | Change one full HUD icon per pulse |
-| `sleepSurvival.campsiteRadius` | `12` | Maximum shelter-center distance to the lit campfire and deployed backpack; SimplyTents enforces footprint-sized minimums |
+| `sleepSurvival.campsiteRadius` | `12` | Maximum shelter-center distance to the lit campfire and inventory-capable food blocks; SimplyTents enforces footprint-sized minimums |
 | `sleepSurvival.campsiteFoodNutritionThreshold` | `5` | Backpack food must total strictly more than this; the smallest qualifying ration is consumed |
 
 The `[survivalSystems.encumbrance.weights]` section controls per-item category
@@ -431,6 +454,17 @@ Contains mapped city footprints or capped fallback sectors, unique cleared
 building keys, and active FTB city-operation bindings. Removing it forgets
 city progress and can cause existing operations to lose their recorded city
 baseline. Back it up with the encounter repository.
+
+### Settlement state
+
+Logical name: `rotwire_settlements`
+
+Typical file: `<world>/data/rotwire_settlements.dat`
+
+Contains one settlement record for every city where a complete mapped camp has
+been established: its chosen name, fixed primary hub, relay radio state,
+population, rations, upgrades, and future siege schedule. Do not delete it to
+move a primary hub; that would erase the city's future settlement progress.
 
 ### Weather schedule data
 

@@ -87,8 +87,8 @@ with `@Mod("rotwire")`. Its constructor wires the system in this order:
    bus.
 2. Attach creative-tab population, entity attributes, and network payload
    registration to the mod event bus.
-3. Build and register the encounter, radio, city-operations, mob-spawning,
-   survival, and weather server configs plus the horde-atmosphere client
+3. Build and register the encounter, radio, city-operations, settlement,
+   mob-spawning, survival, and weather server configs plus the horde-atmosphere client
    config.
 4. Install the bundled FTB Quests defaults if the target quest directory is
    absent or empty.
@@ -98,8 +98,8 @@ with `@Mod("rotwire")`. Its constructor wires the system in this order:
 7. Attach gameplay listeners to the NeoForge event bus: encounter ticks and
    deaths, ambient city/wilderness surface spawning, natural-spawn
    restrictions, container interactions, Handcrafted placement, horde state
-   sync, delivery ticks, stealth/attention signals, encumbrance updates, and
-   server-stop cleanup.
+   sync, delivery and settlement upkeep ticks, stealth/attention signals,
+   encumbrance updates, and server-stop cleanup.
 
 ### The two event buses
 
@@ -276,7 +276,32 @@ Spawned zombies carry only an origin marker used for the appropriate transient
 cap and otherwise use ordinary mob despawning. Vanilla zombie placement is
 never replaced or rejected, so natural underground spawning remains intact.
 
-### 5.6 Weather schedule state
+### 5.6 Settlement world state
+
+`SettlementSavedData` is stored server-wide under `rotwire_settlements` and is
+keyed by `CityZoneKey`. A complete, mapped Camp Radio creates the one primary
+settlement for that city; the primary owner names it through the Camp Hub. Any
+later mapped camp radio is persisted as a relay of that same record.
+
+Each settlement persists its UUID, city zone, name, fixed primary camp UUID and
+position, civilian and guard population, last observed ration and supplying
+container totals, city-wide upgrade bitmask, future siege state/timing, and the
+last known state of every radio. Radio state includes its primary/relay role,
+position, campsite center/radius, active/connected state, installed local module
+mask, destruction status, and update time. Destroying a primary radio marks it
+destroyed without silently choosing a new one, preserving the stable future
+fast-travel destination and siege target.
+
+The Camp Hub is a deliberate settlement upgrade, not an implicit property of a
+primary radio. When installed by the primary owner, it enables a physical,
+container-backed city stockpile. Active camp containers are scanned through
+vanilla inventories or the NeoForge item-handler capability; their nutrition
+total and prepared partial-food portions are persisted for the UI while the
+containers retain unconsumed food. `SettlementManager` processes daily
+per-population hunger-point consumption from the Overworld clock and persists
+the last processed day to prevent double charging after a restart.
+
+### 5.7 Weather schedule state
 
 `WeatherScheduleSavedData` is stored server-wide under
 `rotwire_weather_schedule`. It keeps deterministic plans around the rolling
@@ -289,14 +314,14 @@ Exposure timers are deliberately transient. The server rebuilds them from the
 current contaminated plan and whether precipitation reaches each player.
 Reaching shelter discards the timer instead of persisting partial exposure.
 
-### 5.7 Brute and normal entity state
+### 5.8 Brute and normal entity state
 
 The Brute relies on ordinary Minecraft entity persistence for health, target,
 position, and the encounter marker. Its boss-bar participant sets and tracking
 sets are in-memory presentation state; they are rebuilt from interaction and
 tracking and cleared on death/removal.
 
-### 5.8 Transient client state
+### 5.9 Transient client state
 
 `HordeAtmosphereState` contains only the most recent payload snapshot. It is
 reset when the client logs out and is never saved. The Hordes remains the
@@ -505,15 +530,21 @@ failed turn-in.
    records the owner UUID.
 3. Interacting with an established camp opens `CampRadioMenu`; once per second
    it synchronizes the authoritative shelter checklist and network state.
-4. Using a module item asks the block entity to verify owner, active campsite,
-   connected radio, and absence of that module before consuming the item.
+4. Using a camp module item asks the block entity to verify owner, active
+   campsite, connected radio, and absence of that module before consuming the
+   item. A Camp Hub Module uses the same checks at the fixed primary radio and
+   unlocks the shared city ration stockpile.
 5. Storage opens a persistent 3x9 item handler. Workshop repair verifies a
    damaged main-hand item and Field Repair Kit before applying quarter-maximum
    repair. Operations telemetry is populated only while both camp and radio
    remain online.
 6. The Operations Relay broadens radio lookup to the active campsite radius;
    ordinary transmitters continue using the configured interaction radius.
-7. Dismantling the radio drops all cached stacks and installed module items.
+7. The Camp Hub periodically totals food nutrition in every active campsite
+   container linked to the city. A settlement tick spends the configured hunger
+   points per civilian/guard at each day boundary without wasting excess food
+   nutrition from a whole item.
+8. Dismantling the radio drops all cached stacks and installed module items.
 
 ### 6.6 Horde atmosphere synchronization
 

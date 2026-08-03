@@ -12,13 +12,13 @@
     {
       "type": "patchouli:text",
       "title": "A Rested Camp",
-      "text": "Avoid Restless Sleep beneath a complete tarp or inside a SimplyTents shelter, with a lit campfire and deployed Traveler's Backpack in range. The pack needs food worth more than 5 nutrition. Prepared Shelter appears while the camp is ready; food is consumed only when dawn advances.$(br2)Place a Radio Transmitter inside the shelter to establish a Camp Radio. Use it to inspect every camp requirement and open Survivor Network contracts."
+      "text": "Avoid Restless Sleep beneath a complete tarp or inside a SimplyTents shelter, with a lit campfire and an inventory-capable block in range. Nearby containers need food worth more than 5 nutrition in total. Prepared Shelter appears while the camp is ready; food is consumed only when dawn advances.$(br2)Place a Radio Transmitter inside the shelter to establish a Camp Radio. Use it to inspect every camp requirement and open Survivor Network contracts."
     },
     {
       "type": "patchouli:image",
       "images": ["rotwire:patchouli_books/field_manual/en_us/images/campsite3.png"],
       "title": "Build a Campsite",
-      "text": "Start with a complete overhead shelter: a Rotwire tarp or a supported SimplyTents shelter. Put a lit campfire, a deployed Traveler's Backpack, and a sleeping bag inside the same sheltered area. The backpack must contain food worth more than 5 nutrition."
+      "text": "Start with a complete overhead shelter: a Rotwire tarp or a supported SimplyTents shelter. Put the sleeping bag inside it, then keep a lit campfire and an inventory-capable block within the campsite radius. Nearby containers must hold food worth more than 5 nutrition in total."
     },
     {
       "type": "patchouli:image",
